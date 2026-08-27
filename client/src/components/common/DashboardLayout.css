@@ -1,0 +1,72 @@
+/* ===== Dashboard Layout ===== */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  direction: rtl;
+}
+
+.dashboard-main {
+  flex: 1;
+  margin-right: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-alt);
+  min-height: 100vh;
+}
+
+.dashboard-topbar {
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 0 32px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.dashboard-topbar-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.dashboard-topbar-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.dashboard-topbar-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-topbar-name {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 32px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .dashboard-main {
+    margin-right: 0;
+  }
+
+  .dashboard-content {
+    padding: 16px;
+  }
+}

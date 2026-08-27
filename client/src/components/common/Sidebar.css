@@ -1,0 +1,129 @@
+/* ===== Sidebar Styles ===== */
+
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-on-dark);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 200;
+  border-left: 1px solid rgba(255,255,255,0.06);
+}
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-madrassa-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--color-accent);
+  padding: 2px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sidebar-user-info {
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-on-dark);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.75rem;
+  color: var(--color-accent-light);
+  margin: 2px 0 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  color: var(--color-text-on-dark-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  border-right: 3px solid transparent;
+  text-decoration: none;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255,255,255,0.05);
+  color: var(--color-text-on-dark);
+}
+
+.sidebar-link.sidebar-active {
+  background-color: rgba(255,255,255,0.08);
+  color: var(--color-accent-light);
+  border-right-color: var(--color-accent);
+}
+
+.sidebar-icon {
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  color: var(--color-text-on-dark-muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-logout:hover {
+  background-color: rgba(255,255,255,0.08);
+  color: var(--color-text-on-dark);
+  border-color: rgba(255,255,255,0.3);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    position: relative;
+  }
+}
