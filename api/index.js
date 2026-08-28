@@ -50,8 +50,13 @@ async function connectToDatabase() {
 
     // Check if initial seeding is needed
     const User = require('../server/models/User');
+    const Donation = require('../server/models/Donation');
+    const Student = require('../server/models/Student');
     const userCount = await User.countDocuments();
-    if (userCount === 0) {
+    const donationCount = await Donation.countDocuments();
+    const studentCount = await Student.countDocuments();
+
+    if (userCount === 0 || (donationCount === 0 && studentCount === 0)) {
       const seedDB = require('../server/seed');
       await seedDB();
     }

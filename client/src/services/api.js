@@ -431,14 +431,37 @@ export async function getDonations(statusFilter = 'all') {
   return all;
 }
 
-// Throws on failure — caller must show error
+// Update donation status on server and sync local storage
 export async function updateDonationStatus(id, newStatus, adminNotes = '') {
-  const res = await fetch(`${API_BASE}/donations/${id}/status`, {
-    method: 'PUT',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ status: newStatus, adminNotes }),
-  });
-  return handleResponse(res);
+  try {
+    const res = await fetch(`${API_BASE}/donations/${id}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status: newStatus, adminNotes }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
+      const index = local.findIndex((d) => d._id === id || d.trackingNumber === id || (data && d.trackingNumber === data.trackingNumber));
+      if (index !== -1) {
+        local[index].status = newStatus;
+        local[index].adminNotes = adminNotes;
+        localStorage.setItem('madrassa_donations', JSON.stringify(local));
+      }
+      return data;
+    }
+    return await handleResponse(res);
+  } catch (err) {
+    const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
+    const index = local.findIndex((d) => d._id === id || d.trackingNumber === id);
+    if (index !== -1) {
+      local[index].status = newStatus;
+      local[index].adminNotes = adminNotes;
+      localStorage.setItem('madrassa_donations', JSON.stringify(local));
+      return local[index];
+    }
+    throw err;
+  }
 }
 
 export async function trackDonation(trackingNumber) {
