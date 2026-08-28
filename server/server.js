@@ -81,3 +81,6 @@ connectDB()
     });
   });
 
+module.exports = app;
+
+
