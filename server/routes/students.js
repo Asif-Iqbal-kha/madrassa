@@ -6,8 +6,8 @@ const router = express.Router();
 
 // @route   GET /api/students
 // @desc    Get all students (optional filter by classId)
-// @access  Admin/Teacher
-router.get('/', protect, authorize('master_admin', 'teacher'), async (req, res) => {
+// @access  Public/Auth
+router.get('/', async (req, res) => {
   try {
     const filter = {};
     if (req.query.classId) filter.class = req.query.classId;

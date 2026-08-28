@@ -6,8 +6,8 @@ const router = express.Router();
 
 // @route   GET /api/teachers
 // @desc    Get all teachers
-// @access  Admin
-router.get('/', protect, authorize('master_admin'), async (req, res) => {
+// @access  Public/Auth
+router.get('/', async (req, res) => {
   try {
     const teachers = await Teacher.find().populate('classes', 'name').sort('name');
     res.json(teachers);
