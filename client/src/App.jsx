@@ -14,6 +14,7 @@ import AdmissionPage from './pages/public/AdmissionPage';
 import DonationPage from './pages/public/DonationPage';
 import TrackingPage from './pages/public/TrackingPage';
 import ExamsPage from './pages/public/ExamsPage';
+import ResultPage from './pages/public/ResultPage';
 import NewsPage from './pages/public/NewsPage';
 import GalleryPage from './pages/public/GalleryPage';
 import ContactPage from './pages/public/ContactPage';
@@ -62,6 +63,7 @@ function App() {
             <Route path="/donation" element={<DonationPage />} />
             <Route path="/track" element={<TrackingPage />} />
             <Route path="/exams" element={<ExamsPage />} />
+            <Route path="/results" element={<ResultPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/contact" element={<ContactPage />} />
