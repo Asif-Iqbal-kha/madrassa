@@ -6,9 +6,17 @@ const { protect, authorize } = require('../middleware/auth');
 const router = express.Router();
 
 // @route   POST /api/donations
-// @desc    Submit donation with screenshot
+// @desc    Submit donation with optional screenshot
 // @access  Public
-router.post('/', upload.single('screenshot'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  // Wrap multer so file upload errors return proper JSON
+  upload.single('screenshot')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'فائل اپلوڈ میں خرابی' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { donorName, phone, amount, method } = req.body;
 
@@ -36,7 +44,7 @@ router.post('/', upload.single('screenshot'), async (req, res) => {
       amount: Number(amount),
       method,
       screenshotPath: screenshotFilename,
-      screenshotData: screenshotData,
+      screenshotData,
       status: 'pending',
       date: new Date().toISOString().split('T')[0],
     });
@@ -56,6 +64,7 @@ router.post('/', upload.single('screenshot'), async (req, res) => {
 // @route   GET /api/donations/track/:trackingNumber
 // @desc    Track donation by tracking number
 // @access  Public
+// NOTE: Must be before /:id to avoid param conflict
 router.get('/track/:trackingNumber', async (req, res) => {
   try {
     const donation = await Donation.findOne({
@@ -66,7 +75,6 @@ router.get('/track/:trackingNumber', async (req, res) => {
       return res.status(404).json({ message: 'کوئی ریکارڈ نہیں ملا' });
     }
 
-    // Return info for public
     res.json({
       trackingNumber: donation.trackingNumber,
       donorName: donation.donorName,
@@ -78,6 +86,7 @@ router.get('/track/:trackingNumber', async (req, res) => {
       adminNotes: donation.adminNotes,
     });
   } catch (error) {
+    console.error('Track donation error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -88,11 +97,12 @@ router.get('/track/:trackingNumber', async (req, res) => {
 router.get('/', protect, authorize('master_admin'), async (req, res) => {
   try {
     const filter = {};
-    if (req.query.status) filter.status = req.query.status;
+    if (req.query.status && req.query.status !== 'all') filter.status = req.query.status;
 
     const donations = await Donation.find(filter).sort('-createdAt');
     res.json(donations);
   } catch (error) {
+    console.error('Get donations error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -118,6 +128,7 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
 
     res.json(donation);
   } catch (error) {
+    console.error('Update donation status error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

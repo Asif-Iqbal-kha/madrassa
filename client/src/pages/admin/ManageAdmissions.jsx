@@ -24,6 +24,8 @@ export default function ManageAdmissions() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [showDetail, setShowDetail] = useState(null);
   const [adminNote, setAdminNote] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const loadAdmissions = async () => {
     setLoading(true);
@@ -50,22 +52,28 @@ export default function ManageAdmissions() {
   const pendingCount = applications.filter((a) => a.status === 'pending' || a.status === 'under_review').length;
 
   const handleStatusChange = async (id, newStatus) => {
+    setActionError('');
+    setSaving(true);
     try {
       await updateAdmissionStatus(id, newStatus, adminNote);
       setApplications((prev) =>
         prev.map((a) => (a._id === id ? { ...a, status: newStatus, adminNotes: adminNote || a.adminNotes } : a))
       );
+      setShowDetail(null);
+      setAdminNote('');
       loadAdmissions();
     } catch (err) {
       console.error('Update admission status error:', err);
+      setActionError(err.message || 'حالت تبدیل کرنے میں خرابی ہوئی');
+    } finally {
+      setSaving(false);
     }
-    setShowDetail(null);
-    setAdminNote('');
   };
 
   const openDetail = (app) => {
     setShowDetail(app);
     setAdminNote(app.adminNotes || '');
+    setActionError('');
   };
 
   return (
@@ -249,6 +257,19 @@ export default function ManageAdmissions() {
                   style={{ minHeight: '60px' }}
                 />
               </div>
+              {actionError && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  border: '1px solid var(--color-error)',
+                  color: 'var(--color-error)',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  marginTop: '12px',
+                  fontSize: '0.875rem',
+                }}>
+                  {actionError}
+                </div>
+              )}
             </div>
             {(showDetail.status === 'pending' || showDetail.status === 'under_review') && (
               <div className="modal-footer">
@@ -257,28 +278,31 @@ export default function ManageAdmissions() {
                     className="btn btn-sm"
                     style={{ background: 'var(--color-info)', borderColor: 'var(--color-info)', color: '#fff' }}
                     onClick={() => handleStatusChange(showDetail._id, 'under_review')}
+                    disabled={saving}
                   >
                     <FiSearch size={14} style={{ marginLeft: '4px' }} />
-                    جائزہ شروع
+                    {saving ? '...' : 'جائزہ شروع'}
                   </button>
                 )}
                 <button
                   className="btn btn-primary btn-sm"
                   style={{ background: 'var(--color-success)', borderColor: 'var(--color-success)' }}
                   onClick={() => handleStatusChange(showDetail._id, 'admitted')}
+                  disabled={saving}
                 >
                   <FiCheckCircle size={14} style={{ marginLeft: '4px' }} />
-                  داخلہ منظور
+                  {saving ? '...' : 'داخلہ منظور'}
                 </button>
                 <button
                   className="btn btn-sm"
                   style={{ background: 'var(--color-error)', borderColor: 'var(--color-error)', color: '#fff' }}
                   onClick={() => handleStatusChange(showDetail._id, 'rejected')}
+                  disabled={saving}
                 >
                   <FiXCircle size={14} style={{ marginLeft: '4px' }} />
-                  مسترد
+                  {saving ? '...' : 'مسترد'}
                 </button>
-                <button className="btn btn-outline btn-sm" onClick={() => setShowDetail(null)}>بند کریں</button>
+                <button className="btn btn-outline btn-sm" onClick={() => setShowDetail(null)} disabled={saving}>بند کریں</button>
               </div>
             )}
             {showDetail.status !== 'pending' && showDetail.status !== 'under_review' && (
