@@ -11,26 +11,33 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
-      if (!req.user) {
-        return res.status(401).json({ message: 'User not found' });
+
+      let user = await User.findById(decoded.id).select('-password');
+      if (!user && decoded.role === 'master_admin') {
+        user = await User.findOne({ role: 'master_admin' });
       }
-      next();
+
+      if (!user) {
+        return res.status(401).json({ message: 'صارف نہیں ملا (User not found)' });
+      }
+
+      req.user = user;
+      return next();
     } catch (error) {
-      return res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'ٹوکن غیر درست ہے، دوبارہ لاگ ان کریں (Not authorized, token failed)' });
     }
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'برائے مہربانی پہلے لاگ ان کریں (Not authorized, no token)' });
   }
 };
 
 // Role-based access
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Not authorized for this action' });
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'اس عمل کی اجازت نہیں ہے (Not authorized for this action)' });
     }
     next();
   };

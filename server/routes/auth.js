@@ -16,7 +16,22 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'صارف نام اور پاسورڈ ضروری ہے' });
     }
 
-    const user = await User.findOne({ username: username.toLowerCase() });
+    let user = await User.findOne({ username: username.toLowerCase() });
+
+    // If database is empty, auto-seed default accounts
+    if (!user) {
+      const userCount = await User.countDocuments();
+      if (userCount === 0) {
+        try {
+          const seedDB = require('../seed');
+          await seedDB();
+          user = await User.findOne({ username: username.toLowerCase() });
+        } catch (seedErr) {
+          console.warn('Auto-seed in login error:', seedErr.message);
+        }
+      }
+    }
+
     if (!user) {
       return res.status(401).json({ message: 'صارف نام یا پاسورڈ غلط ہے' });
     }
@@ -90,6 +105,9 @@ router.post('/login', async (req, res) => {
 router.get('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'صارف نہیں ملا' });
+    }
     
     let profile = {
       _id: user._id,
