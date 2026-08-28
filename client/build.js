@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
-console.log('Building Vite client directly...');
+console.log('Building Vite client directly in ES Module mode...');
 execSync('npx vite build', { stdio: 'inherit' });
