@@ -1,40 +1,71 @@
-import { useState } from 'react';
-import { MOCK_STUDENTS, MOCK_CLASSES } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { getStudents, createStudent, deleteStudent, getClasses } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function ManageStudents() {
-  const [students, setStudents] = useState(MOCK_STUDENTS);
+  const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [newStudent, setNewStudent] = useState({ name: '', fatherName: '', class: '', phone: '', address: '' });
+  const [newStudent, setNewStudent] = useState({ name: '', fatherName: '', className: '', phone: '', address: '' });
 
-  const filtered = students.filter((s) =>
-    s.name.includes(search) || s.fatherName.includes(search) || s.rollNumber.includes(search)
-  );
-
-  const handleAdd = () => {
-    if (!newStudent.name || !newStudent.fatherName) return;
-    const id = 's' + (students.length + 1);
-    const rollNum = String(1000 + students.length + 1);
-    setStudents([...students, {
-      _id: id,
-      name: newStudent.name,
-      fatherName: newStudent.fatherName,
-      rollNumber: rollNum,
-      class: newStudent.class || 'ناظرہ',
-      classId: 'c1',
-      phone: newStudent.phone,
-      address: newStudent.address,
-      status: 'active',
-      dateOfBirth: '',
-      enrollmentDate: new Date().toISOString().split('T')[0],
-    }]);
-    setNewStudent({ name: '', fatherName: '', class: '', phone: '', address: '' });
-    setShowModal(false);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [stuData, clsData] = await Promise.all([getStudents(), getClasses()]);
+      setStudents(stuData || []);
+      setClasses(clsData || []);
+    } catch (err) {
+      console.error('Load students error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    setStudents(students.filter((s) => s._id !== id));
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const filtered = students.filter((s) =>
+    (s.name || '').includes(search) || (s.fatherName || '').includes(search) || (s.rollNumber || '').includes(search)
+  );
+
+  const handleAdd = async () => {
+    if (!newStudent.name || !newStudent.fatherName) return;
+    const rollNum = String(1000 + students.length + 1);
+    const selectedCls = classes.find((c) => c.name === newStudent.className);
+
+    try {
+      const created = await createStudent({
+        name: newStudent.name,
+        fatherName: newStudent.fatherName,
+        rollNumber: rollNum,
+        className: newStudent.className || (classes[0] ? classes[0].name : 'ناظرہ'),
+        class: selectedCls ? selectedCls._id : undefined,
+        phone: newStudent.phone,
+        address: newStudent.address,
+        status: 'active',
+        enrollmentDate: new Date().toISOString().split('T')[0],
+      });
+
+      setStudents([created, ...students]);
+      setNewStudent({ name: '', fatherName: '', className: '', phone: '', address: '' });
+      setShowModal(false);
+      loadData();
+    } catch (err) {
+      console.error('Add student error:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('کیا آپ واقعی اس طالب علم کو حذف کرنا چاہتے ہیں؟')) return;
+    try {
+      await deleteStudent(id);
+      setStudents(students.filter((s) => s._id !== id));
+    } catch (err) {
+      console.error('Delete student error:', err);
+    }
   };
 
   return (
@@ -76,7 +107,7 @@ export default function ManageStudents() {
                 <td style={{ fontFamily: 'var(--font-english)' }}>{student.rollNumber}</td>
                 <td>{student.name}</td>
                 <td>{student.fatherName}</td>
-                <td>{student.class}</td>
+                <td>{student.className || student.class?.name || student.class || '-'}</td>
                 <td>
                   <span className={`badge ${student.status === 'active' ? 'badge-success' : 'badge-warning'}`}>
                     {student.status === 'active' ? 'فعال' : 'غیر فعال'}
@@ -84,12 +115,18 @@ export default function ManageStudents() {
                 </td>
                 <td>
                   <div className="action-btns">
-                    <button className="action-btn">ترمیم</button>
                     <button className="action-btn action-btn-danger" onClick={() => handleDelete(student._id)}>حذف</button>
                   </div>
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && !loading && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                  کوئی طالب علم نہیں ملا
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -104,21 +141,21 @@ export default function ManageStudents() {
             </div>
             <div className="modal-body">
               <div className="form-group">
-                <label className="form-label">نام</label>
+                <label className="form-label">نام *</label>
                 <input type="text" className="form-input" value={newStudent.name}
                   onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })} />
               </div>
               <div className="form-group">
-                <label className="form-label">والد کا نام</label>
+                <label className="form-label">والد کا نام *</label>
                 <input type="text" className="form-input" value={newStudent.fatherName}
                   onChange={(e) => setNewStudent({ ...newStudent, fatherName: e.target.value })} />
               </div>
               <div className="form-group">
                 <label className="form-label">درجہ</label>
-                <select className="form-select" value={newStudent.class}
-                  onChange={(e) => setNewStudent({ ...newStudent, class: e.target.value })}>
+                <select className="form-select" value={newStudent.className}
+                  onChange={(e) => setNewStudent({ ...newStudent, className: e.target.value })}>
                   <option value="">درجہ منتخب کریں</option>
-                  {MOCK_CLASSES.map((c) => (
+                  {classes.map((c) => (
                     <option key={c._id} value={c.name}>{c.name}</option>
                   ))}
                 </select>

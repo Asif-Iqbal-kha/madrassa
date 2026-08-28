@@ -11,6 +11,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import HomePage from './pages/public/HomePage';
 import AboutPage from './pages/public/AboutPage';
 import AdmissionPage from './pages/public/AdmissionPage';
+import DonationPage from './pages/public/DonationPage';
+import TrackingPage from './pages/public/TrackingPage';
 import ExamsPage from './pages/public/ExamsPage';
 import NewsPage from './pages/public/NewsPage';
 import GalleryPage from './pages/public/GalleryPage';
@@ -25,6 +27,8 @@ import ManageClasses from './pages/admin/ManageClasses';
 import PromoteStudents from './pages/admin/PromoteStudents';
 import ManageNews from './pages/admin/ManageNews';
 import ManageGallery from './pages/admin/ManageGallery';
+import ManageDonations from './pages/admin/ManageDonations';
+import ManageAdmissions from './pages/admin/ManageAdmissions';
 
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
@@ -60,6 +64,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admission" element={<AdmissionPage />} />
+            <Route path="/donation" element={<DonationPage />} />
+            <Route path="/track" element={<TrackingPage />} />
             <Route path="/exams" element={<ExamsPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
@@ -83,6 +89,8 @@ function App() {
             <Route path="teachers" element={<ManageTeachers />} />
             <Route path="classes" element={<ManageClasses />} />
             <Route path="promote" element={<PromoteStudents />} />
+            <Route path="donations" element={<ManageDonations />} />
+            <Route path="admissions" element={<ManageAdmissions />} />
             <Route path="news" element={<ManageNews />} />
             <Route path="gallery" element={<ManageGallery />} />
           </Route>

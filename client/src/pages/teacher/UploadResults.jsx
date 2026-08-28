@@ -1,26 +1,44 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { MOCK_STUDENTS } from '../../data/mockData';
+import { getClasses, getStudents, uploadResult } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function UploadResults() {
   const { user } = useAuth();
-  const assignedClasses = user?.classes || [];
+  const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
-  const [examName, setExamName] = useState('');
+  const [examName, setExamName] = useState('ششماہی امتحان');
+  const [students, setStudents] = useState([]);
   const [results, setResults] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
   const subjects = ['قرآن مجید', 'حدیث شریف', 'فقہ', 'عربی', 'اردو', 'ریاضی'];
 
-  const students = selectedClass
-    ? MOCK_STUDENTS.filter((s) => {
-        const cls = assignedClasses.find((c) => c._id === selectedClass);
-        return cls && s.class === cls.name;
-      })
-    : [];
+  useEffect(() => {
+    async function loadData() {
+      const clsData = await getClasses();
+      setClasses(clsData || []);
+      if (clsData && clsData.length > 0) {
+        setSelectedClass(clsData[0]._id);
+      }
+    }
+    loadData();
+  }, []);
 
-  const displayStudents = students.length > 0 ? students : (selectedClass ? MOCK_STUDENTS.slice(0, 3) : []);
+  useEffect(() => {
+    async function loadStudentsForClass() {
+      if (!selectedClass) return;
+      const allStudents = await getStudents();
+      const currentClass = classes.find((c) => c._id === selectedClass);
+      const filtered = (allStudents || []).filter((s) => {
+        if (s.class === selectedClass || s.class?._id === selectedClass) return true;
+        if (currentClass && (s.className === currentClass.name || s.class === currentClass.name)) return true;
+        return false;
+      });
+      setStudents(filtered.length > 0 ? filtered : allStudents.slice(0, 5));
+    }
+    loadStudentsForClass();
+  }, [selectedClass, classes]);
 
   const setMark = (studentId, subject, value) => {
     setResults((prev) => ({
@@ -32,7 +50,35 @@ export default function UploadResults() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const currentClass = classes.find((c) => c._id === selectedClass);
+    const promises = students.map((s) => {
+      const marksObj = results[s._id] || {};
+      const marksArray = subjects.map((sub) => ({
+        subject: sub,
+        obtainedMarks: Number(marksObj[sub] || 0),
+        totalMarks: 100,
+      }));
+      const totalObtained = marksArray.reduce((acc, m) => acc + m.obtainedMarks, 0);
+      const totalMarks = marksArray.length * 100;
+      const percentage = Math.round((totalObtained / totalMarks) * 100);
+
+      return uploadResult({
+        examName: examName || 'امتحان',
+        student: s._id,
+        studentName: s.name,
+        rollNumber: s.rollNumber,
+        className: currentClass ? currentClass.name : '',
+        year: '1447',
+        marks: marksArray,
+        totalObtained,
+        totalMarks,
+        percentage,
+        grade: percentage >= 80 ? 'ممتاز' : percentage >= 60 ? 'جید جداً' : 'مقبول',
+      });
+    });
+
+    await Promise.all(promises);
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
   };
@@ -46,7 +92,7 @@ export default function UploadResults() {
           <label className="form-label">درجہ</label>
           <select className="form-select" value={selectedClass} onChange={(e) => { setSelectedClass(e.target.value); setResults({}); }}>
             <option value="">درجہ منتخب کریں</option>
-            {assignedClasses.map((cls) => (
+            {classes.map((cls) => (
               <option key={cls._id} value={cls._id}>{cls.name}</option>
             ))}
           </select>
@@ -58,7 +104,7 @@ export default function UploadResults() {
         </div>
       </div>
 
-      {selectedClass && displayStudents.length > 0 && (
+      {selectedClass && students.length > 0 && (
         <>
           <div className="table-container">
             <table>
@@ -72,7 +118,7 @@ export default function UploadResults() {
                 </tr>
               </thead>
               <tbody>
-                {displayStudents.map((student) => (
+                {students.map((student) => (
                   <tr key={student._id}>
                     <td style={{ fontFamily: 'var(--font-english)' }}>{student.rollNumber}</td>
                     <td>{student.name}</td>

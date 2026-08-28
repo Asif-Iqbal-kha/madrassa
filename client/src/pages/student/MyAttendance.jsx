@@ -1,8 +1,31 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { getStudentAttendance } from '../../services/api';
 import { MOCK_STUDENT_ATTENDANCE } from '../../data/mockData';
 import '../dashboard/DashboardPages.css';
 
 export default function MyAttendance() {
-  const att = MOCK_STUDENT_ATTENDANCE;
+  const { user } = useAuth();
+  const [att, setAtt] = useState(MOCK_STUDENT_ATTENDANCE);
+
+  useEffect(() => {
+    async function loadAttendance() {
+      if (user?._id) {
+        const data = await getStudentAttendance(user._id);
+        if (data && data.totalDays) {
+          setAtt((prev) => ({
+            ...prev,
+            totalDays: data.totalDays,
+            presentDays: data.presentDays,
+            absentDays: data.absentDays,
+            leaveDays: data.leaveDays,
+            percentage: data.percentage,
+          }));
+        }
+      }
+    }
+    loadAttendance();
+  }, [user]);
 
   return (
     <div>
@@ -57,7 +80,7 @@ export default function MyAttendance() {
                 </tr>
               </thead>
               <tbody>
-                {att.monthly.map((m, idx) => (
+                {(att.monthly || []).map((m, idx) => (
                   <tr key={idx}>
                     <td>{m.month}</td>
                     <td style={{ fontFamily: 'var(--font-english)' }}>{m.total}</td>

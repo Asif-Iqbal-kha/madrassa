@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiHome, FiUsers, FiBookOpen, FiFileText, FiImage, FiSettings, FiLogOut, FiCheckSquare, FiClipboard, FiBarChart2, FiUser, FiCalendar, FiArrowUpCircle } from 'react-icons/fi';
+import { FiHome, FiUsers, FiBookOpen, FiFileText, FiImage, FiSettings, FiLogOut, FiCheckSquare, FiClipboard, FiBarChart2, FiUser, FiCalendar, FiArrowUpCircle, FiHeart, FiUserPlus } from 'react-icons/fi';
 import './Sidebar.css';
 
 const menuItems = {
@@ -10,6 +10,8 @@ const menuItems = {
     { path: '/admin/teachers', label: 'اساتذہ', icon: FiUser },
     { path: '/admin/classes', label: 'درجات', icon: FiBookOpen },
     { path: '/admin/promote', label: 'ترقی / داخلہ', icon: FiArrowUpCircle },
+    { path: '/admin/donations', label: 'عطیات', icon: FiHeart },
+    { path: '/admin/admissions', label: 'داخلہ درخواستیں', icon: FiUserPlus },
     { path: '/admin/news', label: 'اعلانات', icon: FiFileText },
     { path: '/admin/gallery', label: 'تصاویر', icon: FiImage },
   ],

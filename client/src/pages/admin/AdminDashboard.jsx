@@ -1,34 +1,80 @@
+import { useState, useEffect } from 'react';
 import { MOCK_STATS, MOCK_NEWS, MOCK_CLASSES } from '../../data/mockData';
-import { FiUsers, FiUser, FiBookOpen, FiCheckSquare } from 'react-icons/fi';
+import { getDonations, getAdmissions } from '../../services/api';
+import { FiUsers, FiUser, FiBookOpen, FiCheckSquare, FiHeart, FiUserPlus } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import '../dashboard/DashboardPages.css';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    ...MOCK_STATS,
+    pendingDonations: 2,
+    pendingAdmissions: 3,
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [donations, admissions] = await Promise.all([
+          getDonations('pending'),
+          getAdmissions(),
+        ]);
+        const pendingAdm = (admissions || []).filter(
+          (a) => a.status === 'pending' || a.status === 'under_review'
+        ).length;
+
+        setStats((prev) => ({
+          ...prev,
+          pendingDonations: (donations || []).length,
+          pendingAdmissions: pendingAdm,
+        }));
+      } catch (err) {
+        console.warn('Stats fetch error:', err);
+      }
+    }
+    loadStats();
+  }, []);
+
   return (
     <div>
       <h2 className="page-title">ڈیش بورڈ</h2>
 
       {/* Stats */}
-      <div className="dash-stats">
+      <div className="dash-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         <div className="dash-stat-card">
           <FiUsers size={24} className="dash-stat-icon" />
-          <div className="stat-number">{MOCK_STATS.totalStudents}</div>
+          <div className="stat-number">{stats.totalStudents}</div>
           <div className="stat-label">کل طلباء</div>
         </div>
         <div className="dash-stat-card">
           <FiUser size={24} className="dash-stat-icon" />
-          <div className="stat-number">{MOCK_STATS.totalTeachers}</div>
+          <div className="stat-number">{stats.totalTeachers}</div>
           <div className="stat-label">اساتذہ</div>
         </div>
         <div className="dash-stat-card">
           <FiBookOpen size={24} className="dash-stat-icon" />
-          <div className="stat-number">{MOCK_STATS.totalClasses}</div>
+          <div className="stat-number">{stats.totalClasses}</div>
           <div className="stat-label">درجات</div>
         </div>
         <div className="dash-stat-card">
           <FiCheckSquare size={24} className="dash-stat-icon" />
-          <div className="stat-number">{MOCK_STATS.attendancePercentage}%</div>
+          <div className="stat-number">{stats.attendancePercentage}%</div>
           <div className="stat-label">آج کی حاضری</div>
         </div>
+        <Link to="/admin/donations" className="dash-stat-card" style={{ textDecoration: 'none', borderRight: '4px solid var(--color-accent)' }}>
+          <FiHeart size={24} className="dash-stat-icon" style={{ color: 'var(--color-primary)' }} />
+          <div className="stat-number" style={{ color: stats.pendingDonations > 0 ? 'var(--color-warning)' : 'inherit' }}>
+            {stats.pendingDonations}
+          </div>
+          <div className="stat-label">زیر غور عطیات</div>
+        </Link>
+        <Link to="/admin/admissions" className="dash-stat-card" style={{ textDecoration: 'none', borderRight: '4px solid var(--color-info)' }}>
+          <FiUserPlus size={24} className="dash-stat-icon" style={{ color: 'var(--color-info)' }} />
+          <div className="stat-number" style={{ color: stats.pendingAdmissions > 0 ? 'var(--color-info)' : 'inherit' }}>
+            {stats.pendingAdmissions}
+          </div>
+          <div className="stat-label">داخلہ درخواستیں</div>
+        </Link>
       </div>
 
       {/* Grid */}
