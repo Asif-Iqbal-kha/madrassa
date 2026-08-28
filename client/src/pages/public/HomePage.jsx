@@ -8,8 +8,6 @@ import {
   FiUser,
   FiCheckSquare,
   FiArrowLeft,
-  FiAward,
-  FiSearch,
 } from 'react-icons/fi';
 import './PublicPages.css';
 
@@ -17,7 +15,6 @@ export default function HomePage() {
   const [news, setNews] = useState(MOCK_NEWS.slice(0, 3));
   const [stats, setStats] = useState(MOCK_STATS);
   const [classes, setClasses] = useState(MOCK_CLASSES);
-  const [quickRoll, setQuickRoll] = useState('');
 
   useEffect(() => {
     async function loadHomeData() {
@@ -50,10 +47,8 @@ export default function HomePage() {
           <p className="hero-subtitle-en">Madrassa Syedina Sadeeq-e-Akbar (RA)</p>
           <p className="hero-desc">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا — تعلیم القرآن و حفظ اور دینی علوم کا مرکز</p>
           <div className="hero-actions">
-            <Link to="/results" className="btn btn-accent btn-lg" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <FiAward size={20} /> آن لائن رزلٹ کارڈ دیکھیں
-            </Link>
-            <Link to="/admission" className="btn btn-outline btn-lg hero-btn-outline">داخلہ معلومات</Link>
+            <Link to="/admission" className="btn btn-accent btn-lg">داخلہ معلومات</Link>
+            <Link to="/about" className="btn btn-outline btn-lg hero-btn-outline">مدرسہ کا تعارف</Link>
           </div>
         </div>
       </section>
@@ -81,59 +76,6 @@ export default function HomePage() {
               <FiCheckSquare size={28} className="stat-icon" />
               <div className="stat-number">{stats.attendancePercentage}%</div>
               <div className="stat-label">حاضری شرح</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Online Result Quick Access Banner */}
-      <section className="section" style={{ padding: '40px 0 20px' }}>
-        <div className="container">
-          <div className="donation-info-banner" style={{
-            background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.08) 0%, rgba(184, 150, 12, 0.08) 100%)',
-            border: '2px solid rgba(15, 118, 110, 0.2)',
-            borderRadius: '16px',
-            padding: '28px 32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '24px',
-            flexWrap: 'wrap',
-          }}>
-            <div style={{ flex: '1 1 350px' }}>
-              <div className="badge-pill" style={{ marginBottom: '8px' }}>امتحانی پورٹل</div>
-              <h3 style={{ fontSize: '1.4rem', color: 'var(--color-primary-dark)', margin: '0 0 6px' }}>
-                آن لائن امتحانی رزلٹ کارڈ معلوم کریں
-              </h3>
-              <p style={{ fontSize: '0.95rem', color: 'var(--color-text-muted)', margin: 0 }}>
-                طلباء اپنا رول نمبر درج کر کے سالانہ و ششماہی امتحانات کا تفصیلی رزلٹ کارڈ براہ راست آن لائن دیکھ اور پرنٹ کر سکتے ہیں۔
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                placeholder="رول نمبر (مثلاً: 1001)"
-                value={quickRoll}
-                onChange={(e) => setQuickRoll(e.target.value)}
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: '8px',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '0.95rem',
-                  fontFamily: 'var(--font-english)',
-                  direction: 'ltr',
-                  textAlign: 'right',
-                  width: '180px',
-                }}
-              />
-              <Link
-                to={quickRoll.trim() ? `/results?roll=${encodeURIComponent(quickRoll.trim())}` : '/results'}
-                className="btn btn-primary"
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <FiSearch size={16} /> رزلٹ دیکھیں
-              </Link>
             </div>
           </div>
         </div>
