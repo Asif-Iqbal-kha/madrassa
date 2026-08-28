@@ -12,14 +12,8 @@ export default function NewsPopup() {
       try {
         const data = await getPopupNews();
         if (data && data.length > 0) {
-          const item = data[0];
-          // Only show if not dismissed in this session
-          const dismissedId = sessionStorage.getItem('dismissed_popup');
-          if (dismissedId !== item._id) {
-            setPopupItem(item);
-            // Small delay so page loads first
-            setTimeout(() => setVisible(true), 800);
-          }
+          setPopupItem(data[0]);
+          setVisible(true);
         }
       } catch (err) {
         // Silently fail — popup is non-critical
@@ -30,9 +24,6 @@ export default function NewsPopup() {
 
   const handleClose = () => {
     setVisible(false);
-    if (popupItem) {
-      sessionStorage.setItem('dismissed_popup', popupItem._id);
-    }
     setTimeout(() => setPopupItem(null), 300);
   };
 
