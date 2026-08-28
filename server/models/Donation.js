@@ -29,6 +29,10 @@ const donationSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  screenshotData: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
@@ -44,16 +48,6 @@ const donationSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
-});
-
-// Auto-generate tracking number before saving
-donationSchema.pre('save', async function (next) {
-  if (!this.trackingNumber) {
-    const count = await mongoose.model('Donation').countDocuments();
-    const year = new Date().getFullYear();
-    this.trackingNumber = `DON-${year}-${String(count + 1).padStart(4, '0')}`;
-  }
-  next();
 });
 
 module.exports = mongoose.model('Donation', donationSchema);

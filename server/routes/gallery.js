@@ -2,8 +2,6 @@ const express = require('express');
 const Gallery = require('../models/Gallery');
 const upload = require('../middleware/upload');
 const { protect, authorize } = require('../middleware/auth');
-const fs = require('fs');
-const path = require('path');
 
 const router = express.Router();
 
@@ -34,16 +32,19 @@ router.post('/', protect, authorize('master_admin'), upload.single('image'), asy
       return res.status(400).json({ message: 'تصویری فائل منتخب کریں' });
     }
 
+    // Convert file buffer to Base64 data URL
+    const imageDataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+
     const item = await Gallery.create({
       title,
       category: category || 'عمارت',
-      imagePath: req.file.filename,
+      imagePath: imageDataUrl,
     });
 
     res.status(201).json(item);
   } catch (error) {
     console.error('Gallery upload error:', error);
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message || 'تصویر اپلوڈ نہیں ہو سکی' });
   }
 });
 
@@ -54,14 +55,6 @@ router.delete('/:id', protect, authorize('master_admin'), async (req, res) => {
   try {
     const item = await Gallery.findById(req.params.id);
     if (!item) return res.status(404).json({ message: 'تصویر نہیں ملی' });
-
-    // Remove file from disk if exists
-    if (item.imagePath) {
-      const filePath = path.join(__dirname, '..', 'uploads', item.imagePath);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
 
     await Gallery.findByIdAndDelete(req.params.id);
     res.json({ message: 'تصویر کامیابی سے حذف ہو گئی' });

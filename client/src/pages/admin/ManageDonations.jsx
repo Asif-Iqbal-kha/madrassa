@@ -214,7 +214,28 @@ export default function ManageDonations() {
                   ادائیگی کا تصدیقی اسکرین شاٹ (Payment Proof)
                 </span>
 
-                {showDetail.screenshotPath ? (
+                {showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
+                  <div style={{
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '8px',
+                    textAlign: 'center',
+                    background: '#000',
+                  }}>
+                    <img
+                      src={showDetail.screenshotData || showDetail.screenshotPath}
+                      alt="ادائیگی کی رسید"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '260px',
+                        borderRadius: 'var(--radius-sm)',
+                        objectFit: 'contain',
+                        display: 'block',
+                        margin: '0 auto',
+                      }}
+                    />
+                  </div>
+                ) : showDetail.screenshotPath ? (
                   <div style={{
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius-md)',
@@ -235,15 +256,6 @@ export default function ManageDonations() {
                           margin: '0 auto',
                         }}
                       />
-                    </a>
-                    <a
-                      href={`/uploads/${showDetail.screenshotPath}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-outline btn-sm"
-                      style={{ marginTop: '8px', color: '#fff', borderColor: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}
-                    >
-                      🔍 اصل سائز میں دیکھیں (نئی ونڈو)
                     </a>
                   </div>
                 ) : showDetail.screenshotPreview ? (
