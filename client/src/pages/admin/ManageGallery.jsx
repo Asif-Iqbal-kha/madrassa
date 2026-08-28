@@ -106,7 +106,7 @@ export default function ManageGallery() {
             <div style={{ height: '160px', background: 'var(--color-bg-alt)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {item.imagePath ? (
                 <img
-                  src={`/uploads/${item.imagePath}`}
+                  src={item.imagePath.startsWith('data:') ? item.imagePath : `/uploads/${item.imagePath}`}
                   alt={item.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {

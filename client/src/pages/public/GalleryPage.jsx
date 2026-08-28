@@ -69,7 +69,7 @@ export default function GalleryPage() {
               >
                 {item.imagePath ? (
                   <img
-                    src={`/uploads/${item.imagePath}`}
+                    src={item.imagePath.startsWith('data:') ? item.imagePath : `/uploads/${item.imagePath}`}
                     alt={item.title}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                     onError={(e) => {
@@ -137,7 +137,7 @@ export default function GalleryPage() {
             <div style={{ textAlign: 'center', background: '#000', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
               {lightboxImage.imagePath ? (
                 <img
-                  src={`/uploads/${lightboxImage.imagePath}`}
+                  src={lightboxImage.imagePath.startsWith('data:') ? lightboxImage.imagePath : `/uploads/${lightboxImage.imagePath}`}
                   alt={lightboxImage.title}
                   style={{ maxHeight: '500px', maxWidth: '100%', objectFit: 'contain' }}
                 />

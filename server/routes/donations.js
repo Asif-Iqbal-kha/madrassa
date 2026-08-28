@@ -21,13 +21,22 @@ router.post('/', upload.single('screenshot'), async (req, res) => {
     const year = new Date().getFullYear();
     const trackingNumber = `DON-${year}-${String(count + 1).padStart(4, '0')}`;
 
+    // Convert uploaded image buffer to Base64 data URL
+    let screenshotData = '';
+    let screenshotFilename = '';
+    if (req.file) {
+      screenshotData = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      screenshotFilename = req.file.originalname || 'receipt.jpg';
+    }
+
     const donation = await Donation.create({
       trackingNumber,
       donorName,
       phone,
       amount: Number(amount),
       method,
-      screenshotPath: req.file ? req.file.filename : '',
+      screenshotPath: screenshotFilename,
+      screenshotData: screenshotData,
       status: 'pending',
       date: new Date().toISOString().split('T')[0],
     });
@@ -36,10 +45,11 @@ router.post('/', upload.single('screenshot'), async (req, res) => {
       success: true,
       trackingNumber: donation.trackingNumber,
       message: 'عطیہ کامیابی سے جمع ہو گیا',
+      donation,
     });
   } catch (error) {
-    console.error('Donation error:', error);
-    res.status(400).json({ message: error.message });
+    console.error('Donation submission error:', error);
+    res.status(400).json({ message: error.message || 'عطیہ محفوظ کرنے میں خرابی ہوئی' });
   }
 });
 
@@ -56,7 +66,7 @@ router.get('/track/:trackingNumber', async (req, res) => {
       return res.status(404).json({ message: 'کوئی ریکارڈ نہیں ملا' });
     }
 
-    // Return limited info for public
+    // Return info for public
     res.json({
       trackingNumber: donation.trackingNumber,
       donorName: donation.donorName,
@@ -80,7 +90,7 @@ router.get('/', protect, authorize('master_admin'), async (req, res) => {
     const filter = {};
     if (req.query.status) filter.status = req.query.status;
 
-    const donations = await Donation.find(filter).sort('-date');
+    const donations = await Donation.find(filter).sort('-createdAt');
     res.json(donations);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
