@@ -14,10 +14,22 @@ try {
 
 const app = express();
 
-// Middleware
+// Enable CORS for all origins and headers
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  next();
+});
+
 app.use(cors({ origin: true, credentials: true }));
-app.use(express.json({ limit: '20mb' }));
-app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Cached MongoDB Connection for Serverless
 let isConnected = false;
@@ -49,7 +61,7 @@ async function connectToDatabase() {
   }
 }
 
-// Ensure database connection middleware on all /api requests
+// Ensure database connection middleware on all requests
 app.use(async (req, res, next) => {
   try {
     await connectToDatabase();
@@ -59,34 +71,57 @@ app.use(async (req, res, next) => {
     res.status(503).json({
       error: 'Database connection failed',
       message: err.message,
-      suggestion: 'Please verify your MongoDB Atlas cluster and network access.',
     });
   }
 });
 
-// API Routes
-app.use('/api/auth', require('../server/routes/auth'));
-app.use('/api/classes', require('../server/routes/classes'));
-app.use('/api/students', require('../server/routes/students'));
-app.use('/api/teachers', require('../server/routes/teachers'));
-app.use('/api/news', require('../server/routes/news'));
-app.use('/api/attendance', require('../server/routes/attendance'));
-app.use('/api/exams', require('../server/routes/exams'));
-app.use('/api/results', require('../server/routes/results'));
-app.use('/api/donations', require('../server/routes/donations'));
-app.use('/api/admissions', require('../server/routes/admissions'));
-app.use('/api/gallery', require('../server/routes/gallery'));
-app.use('/api/stats', require('../server/routes/stats'));
+// Import route modules
+const authRoutes = require('../server/routes/auth');
+const classRoutes = require('../server/routes/classes');
+const studentRoutes = require('../server/routes/students');
+const teacherRoutes = require('../server/routes/teachers');
+const newsRoutes = require('../server/routes/news');
+const attendanceRoutes = require('../server/routes/attendance');
+const examRoutes = require('../server/routes/exams');
+const resultRoutes = require('../server/routes/results');
+const donationRoutes = require('../server/routes/donations');
+const admissionRoutes = require('../server/routes/admissions');
+const galleryRoutes = require('../server/routes/gallery');
+const statsRoutes = require('../server/routes/stats');
+
+// Mount routes for BOTH '/api/...' and '/...' so Vercel path rewrites always match 100%
+const routePairs = [
+  ['/auth', authRoutes],
+  ['/classes', classRoutes],
+  ['/students', studentRoutes],
+  ['/teachers', teacherRoutes],
+  ['/news', newsRoutes],
+  ['/attendance', attendanceRoutes],
+  ['/exams', examRoutes],
+  ['/results', resultRoutes],
+  ['/donations', donationRoutes],
+  ['/admissions', admissionRoutes],
+  ['/gallery', galleryRoutes],
+  ['/stats', statsRoutes],
+];
+
+routePairs.forEach(([path, handler]) => {
+  app.use(`/api${path}`, handler);
+  app.use(path, handler);
+});
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+const healthHandler = (req, res) => {
   res.json({
     status: 'OK',
     message: 'Madrassa API is running on Vercel Serverless',
     database: mongoose.connection.readyState === 1 ? 'Connected to MongoDB Atlas' : 'Connecting...',
     timestamp: new Date().toISOString(),
   });
-});
+};
+
+app.get('/api/health', healthHandler);
+app.get('/health', healthHandler);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

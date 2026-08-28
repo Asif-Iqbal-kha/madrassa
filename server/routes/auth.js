@@ -30,11 +30,14 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ message: 'اکاؤنٹ غیر فعال ہے' });
     }
 
+    const JWT_SECRET = process.env.JWT_SECRET || 'madrassa_sadeeq_akbar_secret_key_2026';
+    const JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
+
     // Generate token
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRE }
     );
 
     // Build profile based on role

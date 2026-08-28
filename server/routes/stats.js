@@ -11,8 +11,8 @@ const router = express.Router();
 
 // @route   GET /api/stats
 // @desc    Get dashboard statistics
-// @access  Admin
-router.get('/', protect, authorize('master_admin'), async (req, res) => {
+// @access  Public
+router.get('/', async (req, res) => {
   try {
     const totalStudents = await Student.countDocuments();
     const activeStudents = await Student.countDocuments({ status: 'active' });
