@@ -1,17 +1,37 @@
 const express = require('express');
 const Class = require('../models/Class');
+const Student = require('../models/Student');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 // @route   GET /api/classes
-// @desc    Get all classes
+// @desc    Get all classes with dynamic live student count
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const classes = await Class.find().populate('teacher', 'name').sort('name');
-    res.json(classes);
+    const classes = await Class.find().populate('teacher', 'name').sort('name').lean();
+    
+    // Calculate live student count for each class dynamically
+    const enrichedClasses = await Promise.all(
+      classes.map(async (cls) => {
+        const count = await Student.countDocuments({
+          $or: [
+            { class: cls._id },
+            { className: cls.name },
+          ],
+          status: 'active',
+        });
+        return {
+          ...cls,
+          studentsCount: count,
+        };
+      })
+    );
+
+    res.json(enrichedClasses);
   } catch (error) {
+    console.error('Classes fetch error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

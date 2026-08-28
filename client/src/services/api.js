@@ -115,6 +115,23 @@ export async function deleteStudent(id) {
   return { success: true };
 }
 
+export async function promoteStudents(studentIds, toClassName, toClassId) {
+  try {
+    const res = await fetch(`${API_BASE}/students/promote`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ studentIds, toClassName, toClassId }),
+    });
+    const data = await res.json();
+    if (res.ok) return data;
+    return { success: false, message: data.message || 'ترقی دینے میں خرابی ہوئی' };
+  } catch (err) {
+    console.warn('promoteStudents API failed:', err);
+    return { success: false, message: 'سرور سے رابطہ نہیں ہو سکا' };
+  }
+}
+
+
 // ----------------- TEACHERS API -----------------
 
 export async function getTeachers() {
