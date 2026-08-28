@@ -36,11 +36,6 @@ import MarkAttendance from './pages/teacher/MarkAttendance';
 import AttendanceHistory from './pages/teacher/AttendanceHistory';
 import UploadResults from './pages/teacher/UploadResults';
 
-// Student Pages
-import StudentDashboard from './pages/student/StudentDashboard';
-import MyResults from './pages/student/MyResults';
-import MyAttendance from './pages/student/MyAttendance';
-
 // Public layout wrapper
 function PublicLayout() {
   return (
@@ -108,20 +103,6 @@ function App() {
             <Route path="attendance" element={<MarkAttendance />} />
             <Route path="attendance-history" element={<AttendanceHistory />} />
             <Route path="results" element={<UploadResults />} />
-          </Route>
-
-          {/* Student Dashboard */}
-          <Route
-            path="/student"
-            element={
-              <ProtectedRoute roles={['student']}>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="dashboard" element={<StudentDashboard />} />
-            <Route path="results" element={<MyResults />} />
-            <Route path="attendance" element={<MyAttendance />} />
           </Route>
         </Routes>
       </Router>

@@ -16,7 +16,6 @@ export default function LoginPage() {
     const paths = {
       master_admin: '/admin/dashboard',
       teacher: '/teacher/dashboard',
-      student: '/student/dashboard',
     };
     navigate(paths[user.role] || '/');
   }
@@ -37,7 +36,6 @@ export default function LoginPage() {
         const paths = {
           master_admin: '/admin/dashboard',
           teacher: '/teacher/dashboard',
-          student: '/student/dashboard',
         };
         navigate(paths[result.role] || '/');
       } else {
@@ -99,10 +97,9 @@ export default function LoginPage() {
           </form>
 
           <div className="login-test-info">
-            <h4>ٹیسٹنگ کے لیے لاگ ان معلومات:</h4>
+            <h4>لاگ ان معلومات:</h4>
             <p>Admin: admin / admin123</p>
             <p>Teacher: teacher / teacher123</p>
-            <p>Student: student / student123</p>
           </div>
         </div>
       </div>

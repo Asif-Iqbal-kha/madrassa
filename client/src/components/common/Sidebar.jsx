@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiHome, FiUsers, FiBookOpen, FiFileText, FiImage, FiSettings, FiLogOut, FiCheckSquare, FiClipboard, FiBarChart2, FiUser, FiCalendar, FiArrowUpCircle, FiHeart, FiUserPlus } from 'react-icons/fi';
+import { FiHome, FiUsers, FiBookOpen, FiFileText, FiImage, FiSettings, FiLogOut, FiCheckSquare, FiClipboard, FiUser, FiCalendar, FiArrowUpCircle, FiHeart, FiUserPlus } from 'react-icons/fi';
 import './Sidebar.css';
 
 const menuItems = {
@@ -21,11 +21,6 @@ const menuItems = {
     { path: '/teacher/attendance-history', label: 'حاضری ریکارڈ', icon: FiCalendar },
     { path: '/teacher/results', label: 'نتائج اپلوڈ', icon: FiClipboard },
   ],
-  student: [
-    { path: '/student/dashboard', label: 'ڈیش بورڈ', icon: FiHome },
-    { path: '/student/results', label: 'نتائج', icon: FiBarChart2 },
-    { path: '/student/attendance', label: 'حاضری', icon: FiCalendar },
-  ],
 };
 
 export default function Sidebar() {
@@ -44,7 +39,6 @@ export default function Sidebar() {
   const roleLabels = {
     master_admin: 'ماسٹر ایڈمن',
     teacher: 'استاذ',
-    student: 'طالب علم',
   };
 
   return (
@@ -53,7 +47,7 @@ export default function Sidebar() {
         <img src="./logo.png" alt="لوگو" className="sidebar-madrassa-logo" />
         <div className="sidebar-user-info">
           <p className="sidebar-user-name">{user.name}</p>
-          <p className="sidebar-user-role">{roleLabels[user.role]}</p>
+          <p className="sidebar-user-role">{roleLabels[user.role] || user.role}</p>
         </div>
       </div>
 
