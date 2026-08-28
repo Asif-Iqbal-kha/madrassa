@@ -2,6 +2,38 @@
    News Popup - Public Announcement Modal
    ============================================ */
 
+/* Glow pulse on the card border-top */
+@keyframes popup-border-glow {
+  0%, 100% {
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.22),
+      0 0 0px rgba(15, 118, 110, 0);
+    border-top-color: #0f766e;
+  }
+  50% {
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.22),
+      0 0 28px 6px rgba(15, 118, 110, 0.55),
+      0 -2px 20px rgba(15, 118, 110, 0.4);
+    border-top-color: #14b8a6;
+  }
+}
+
+/* Bell icon pulse ring */
+@keyframes bell-ring {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0.5);
+  }
+  40% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 10px rgba(15, 118, 110, 0);
+  }
+  60% {
+    box-shadow: 0 0 0 0 rgba(15, 118, 110, 0);
+  }
+}
+
 .news-popup-overlay {
   position: fixed;
   inset: 0;
@@ -26,12 +58,12 @@
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
   overflow: hidden;
   transform: scale(0.92) translateY(20px);
   transition: transform 0.3s ease;
   direction: rtl;
-  border-top: 5px solid var(--color-primary, #0f766e);
+  border-top: 5px solid #0f766e;
+  animation: popup-border-glow 2s ease-in-out infinite;
 }
 
 .news-popup-overlay.visible .news-popup-card {
@@ -63,6 +95,7 @@
   justify-content: center;
   color: var(--color-primary, #0f766e);
   flex-shrink: 0;
+  animation: bell-ring 2s ease-in-out infinite;
 }
 
 .news-popup-category {
