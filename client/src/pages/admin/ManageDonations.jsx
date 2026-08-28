@@ -22,6 +22,8 @@ export default function ManageDonations() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [showDetail, setShowDetail] = useState(null);
   const [adminNote, setAdminNote] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const loadDonations = async () => {
     setLoading(true);
@@ -48,22 +50,28 @@ export default function ManageDonations() {
   const pendingCount = donations.filter((d) => d.status === 'pending').length;
 
   const handleStatusChange = async (id, newStatus) => {
+    setActionError('');
+    setSaving(true);
     try {
       await updateDonationStatus(id, newStatus, adminNote);
       setDonations((prev) =>
         prev.map((d) => (d._id === id ? { ...d, status: newStatus, adminNotes: adminNote || d.adminNotes } : d))
       );
+      setShowDetail(null);
+      setAdminNote('');
       loadDonations();
     } catch (err) {
       console.error('Update donation status error:', err);
+      setActionError(err.message || 'حالت تبدیل کرنے میں خرابی ہوئی');
+    } finally {
+      setSaving(false);
     }
-    setShowDetail(null);
-    setAdminNote('');
   };
 
   const openDetail = (donation) => {
     setShowDetail(donation);
     setAdminNote(donation.adminNotes || '');
+    setActionError('');
   };
 
   return (

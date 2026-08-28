@@ -24,6 +24,17 @@ function getAuthHeaders() {
   return headers;
 }
 
+// Helper: throw a proper error from a non-ok response
+async function handleResponse(res) {
+  if (res.ok) return res.json();
+  let msg = `HTTP ${res.status}`;
+  try {
+    const data = await res.json();
+    msg = data.message || msg;
+  } catch {}
+  throw new Error(msg);
+}
+
 // ----------------- AUTH API -----------------
 
 export async function loginUser(username, password) {
@@ -41,7 +52,7 @@ export async function loginUser(username, password) {
     }
     return { success: false, message: data.message || 'لاگ ان نا کام ہو گیا' };
   } catch (err) {
-    console.warn('Backend login offline, checking fallback:', err);
+    console.warn('Backend login offline:', err);
     return { success: false, message: 'سرور سے رابطہ نہیں ہو سکا' };
   }
 }
@@ -51,9 +62,7 @@ export async function getUserProfile() {
     const res = await fetch(`${API_BASE}/auth/profile`, {
       headers: getAuthHeaders(),
     });
-    if (res.ok) {
-      return await res.json();
-    }
+    if (res.ok) return await res.json();
   } catch (err) {
     console.warn('Profile fetch failed:', err);
   }
@@ -68,51 +77,40 @@ export async function getStudents(filter = {}) {
     const url = query ? `${API_BASE}/students?${query}` : `${API_BASE}/students`;
     const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
+    console.warn('getStudents non-ok response, using fallback');
   } catch (err) {
     console.warn('getStudents failed, using fallback:', err);
   }
   return MOCK_STUDENTS;
 }
 
+// Throws on failure — caller must handle and show error to user
 export async function createStudent(studentData) {
-  try {
-    const res = await fetch(`${API_BASE}/students`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(studentData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createStudent failed:', err);
-  }
-  return { _id: 's_' + Date.now(), ...studentData };
+  const res = await fetch(`${API_BASE}/students`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(studentData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure — caller must handle and show error to user
 export async function updateStudent(id, studentData) {
-  try {
-    const res = await fetch(`${API_BASE}/students/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(studentData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateStudent failed:', err);
-  }
-  return { _id: id, ...studentData };
+  const res = await fetch(`${API_BASE}/students/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(studentData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure — caller must handle and show error to user
 export async function deleteStudent(id) {
-  try {
-    const res = await fetch(`${API_BASE}/students/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('deleteStudent failed:', err);
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/students/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
 }
 
 export async function promoteStudents(studentIds, toClassName, toClassId) {
@@ -144,45 +142,33 @@ export async function getTeachers() {
   return MOCK_TEACHERS;
 }
 
+// Throws on failure
 export async function createTeacher(teacherData) {
-  try {
-    const res = await fetch(`${API_BASE}/teachers`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(teacherData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createTeacher failed:', err);
-  }
-  return { _id: 't_' + Date.now(), ...teacherData };
+  const res = await fetch(`${API_BASE}/teachers`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(teacherData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function updateTeacher(id, teacherData) {
-  try {
-    const res = await fetch(`${API_BASE}/teachers/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(teacherData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateTeacher failed:', err);
-  }
-  return { _id: id, ...teacherData };
+  const res = await fetch(`${API_BASE}/teachers/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(teacherData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function deleteTeacher(id) {
-  try {
-    const res = await fetch(`${API_BASE}/teachers/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('deleteTeacher failed:', err);
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/teachers/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
 }
 
 // ----------------- CLASSES API -----------------
@@ -197,53 +183,43 @@ export async function getClasses() {
   return MOCK_CLASSES;
 }
 
+// Throws on failure
 export async function createClass(classData) {
-  try {
-    const res = await fetch(`${API_BASE}/classes`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(classData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createClass failed:', err);
-  }
-  return { _id: 'c_' + Date.now(), ...classData };
+  const res = await fetch(`${API_BASE}/classes`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(classData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function updateClass(id, classData) {
-  try {
-    const res = await fetch(`${API_BASE}/classes/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(classData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateClass failed:', err);
-  }
-  return { _id: id, ...classData };
+  const res = await fetch(`${API_BASE}/classes/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(classData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function deleteClass(id) {
-  try {
-    const res = await fetch(`${API_BASE}/classes/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('deleteClass failed:', err);
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/classes/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
 }
 
 // ----------------- NEWS API -----------------
 
 export async function getNews(publishedOnly = true) {
   try {
+    // publishedOnly=true  → public page, only show published articles
+    // publishedOnly=false → admin page, show all articles
     const url = publishedOnly ? `${API_BASE}/news` : `${API_BASE}/news?published=all`;
-    const res = await fetch(url);
+    const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
   } catch (err) {
     console.warn('getNews failed:', err);
@@ -251,45 +227,33 @@ export async function getNews(publishedOnly = true) {
   return MOCK_NEWS;
 }
 
+// Throws on failure
 export async function createNews(newsData) {
-  try {
-    const res = await fetch(`${API_BASE}/news`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ ...newsData, isPublished: true, publishDate: new Date().toISOString().split('T')[0] }),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createNews failed:', err);
-  }
-  return { _id: 'n_' + Date.now(), ...newsData };
+  const res = await fetch(`${API_BASE}/news`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ ...newsData, isPublished: true, publishDate: new Date().toISOString().split('T')[0] }),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function updateNews(id, newsData) {
-  try {
-    const res = await fetch(`${API_BASE}/news/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(newsData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateNews failed:', err);
-  }
-  return { _id: id, ...newsData };
+  const res = await fetch(`${API_BASE}/news/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(newsData),
+  });
+  return handleResponse(res);
 }
 
+// Throws on failure
 export async function deleteNews(id) {
-  try {
-    const res = await fetch(`${API_BASE}/news/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('deleteNews failed:', err);
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/news/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
 }
 
 // ----------------- ATTENDANCE API -----------------
@@ -355,17 +319,12 @@ export async function getExams(classId, publishedOnly = false) {
 }
 
 export async function createExam(examData) {
-  try {
-    const res = await fetch(`${API_BASE}/exams`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(examData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createExam failed:', err);
-  }
-  return { _id: 'e_' + Date.now(), ...examData };
+  const res = await fetch(`${API_BASE}/exams`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(examData),
+  });
+  return handleResponse(res);
 }
 
 export async function getStudentResults(studentId) {
@@ -381,17 +340,12 @@ export async function getStudentResults(studentId) {
 }
 
 export async function uploadResult(resultData) {
-  try {
-    const res = await fetch(`${API_BASE}/results`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(resultData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('uploadResult failed:', err);
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/results`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(resultData),
+  });
+  return handleResponse(res);
 }
 
 // ----------------- STATS API -----------------
@@ -428,6 +382,8 @@ export async function submitDonation(donationData, screenshotFile) {
       const data = await res.json();
       return { success: true, trackingNumber: data.trackingNumber, message: data.message };
     }
+    const errData = await res.json().catch(() => ({}));
+    return { success: false, message: errData.message || 'عطیہ جمع کرنے میں خرابی' };
   } catch (err) {
     console.warn('submitDonation API error:', err);
   }
@@ -458,10 +414,10 @@ export async function submitDonation(donationData, screenshotFile) {
 
 export async function getDonations(statusFilter = 'all') {
   try {
-    const url = statusFilter !== 'all' ? `${API_BASE}/donations?status=${statusFilter}` : `${API_BASE}/donations`;
-    const res = await fetch(url, {
-      headers: getAuthHeaders(),
-    });
+    const url = statusFilter !== 'all'
+      ? `${API_BASE}/donations?status=${statusFilter}`
+      : `${API_BASE}/donations`;
+    const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
   } catch (err) {
     console.warn('getDonations API error:', err);
@@ -475,26 +431,14 @@ export async function getDonations(statusFilter = 'all') {
   return all;
 }
 
+// Throws on failure — caller must show error
 export async function updateDonationStatus(id, newStatus, adminNotes = '') {
-  try {
-    const res = await fetch(`${API_BASE}/donations/${id}/status`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ status: newStatus, adminNotes }),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateDonationStatus API error:', err);
-  }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-  const index = local.findIndex((d) => d._id === id);
-  if (index !== -1) {
-    local[index].status = newStatus;
-    local[index].adminNotes = adminNotes;
-    localStorage.setItem('madrassa_donations', JSON.stringify(local));
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/donations/${id}/status`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status: newStatus, adminNotes }),
+  });
+  return handleResponse(res);
 }
 
 export async function trackDonation(trackingNumber) {
@@ -525,6 +469,8 @@ export async function submitAdmission(admissionData) {
       const data = await res.json();
       return { success: true, trackingNumber: data.trackingNumber, queuePosition: data.queuePosition, message: data.message };
     }
+    const errData = await res.json().catch(() => ({}));
+    return { success: false, message: errData.message || 'درخواست جمع کرنے میں خرابی' };
   } catch (err) {
     console.warn('submitAdmission API error:', err);
   }
@@ -558,10 +504,10 @@ export async function submitAdmission(admissionData) {
 
 export async function getAdmissions(statusFilter = 'all') {
   try {
-    const url = statusFilter !== 'all' ? `${API_BASE}/admissions?status=${statusFilter}` : `${API_BASE}/admissions`;
-    const res = await fetch(url, {
-      headers: getAuthHeaders(),
-    });
+    const url = statusFilter !== 'all'
+      ? `${API_BASE}/admissions?status=${statusFilter}`
+      : `${API_BASE}/admissions`;
+    const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
   } catch (err) {
     console.warn('getAdmissions API error:', err);
@@ -575,26 +521,14 @@ export async function getAdmissions(statusFilter = 'all') {
   return all;
 }
 
+// Throws on failure — caller must show error
 export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
-  try {
-    const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ status: newStatus, adminNotes }),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('updateAdmissionStatus API error:', err);
-  }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  const index = local.findIndex((a) => a._id === id);
-  if (index !== -1) {
-    local[index].status = newStatus;
-    local[index].adminNotes = adminNotes;
-    localStorage.setItem('madrassa_admissions', JSON.stringify(local));
-  }
-  return { success: true };
+  const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status: newStatus, adminNotes }),
+  });
+  return handleResponse(res);
 }
 
 export async function trackAdmission(trackingNumber) {
@@ -671,20 +605,11 @@ export async function uploadGalleryItem(title, category, imageFile) {
   return newItem;
 }
 
+// Throws on failure
 export async function deleteGalleryItem(id) {
-  try {
-    const res = await fetch(`${API_BASE}/gallery/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('deleteGalleryItem error:', err);
-  }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_gallery') || '[]');
-  const filtered = local.filter((g) => g._id !== id);
-  localStorage.setItem('madrassa_gallery', JSON.stringify(filtered));
-  return { success: true };
+  const res = await fetch(`${API_BASE}/gallery/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
 }
-

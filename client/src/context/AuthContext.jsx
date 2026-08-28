@@ -44,16 +44,23 @@ export function AuthProvider({ children }) {
       return apiResult;
     }
 
-    // 2. Offline / local fallback
+    // 2. Offline / local fallback — only allowed when the backend is completely unreachable
+    // If the backend responded (even with an error), don't use mock credentials
+    if (apiResult.message !== 'سرور سے رابطہ نہیں ہو سکا') {
+      return { success: false, message: apiResult.message || 'صارف نام یا پاسورڈ غلط ہے' };
+    }
+
     const cred = Object.values(TEST_CREDENTIALS).find(
       (c) => c.username === username && c.password === password
     );
     if (!cred) {
-      return { success: false, message: apiResult.message || 'صارف نام یا پاسورڈ غلط ہے' };
+      return { success: false, message: 'سرور سے رابطہ نہیں ہو سکا اور مقامی اسناد بھی غلط ہیں' };
     }
     const profile = MOCK_USER_PROFILES[cred.role];
     const userData = { ...profile, role: cred.role };
     setUser(userData);
+    // Remove any stale token so protected API calls don't fire with a bad token
+    localStorage.removeItem('madrassa_token');
     localStorage.setItem('madrassa_user', JSON.stringify(userData));
     return { success: true, role: cred.role };
   };

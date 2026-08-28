@@ -14,6 +14,8 @@ export default function ManageStudents() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [newStudent, setNewStudent] = useState({ name: '', fatherName: '', className: '', phone: '', address: '' });
   const [editingStudent, setEditingStudent] = useState(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -42,17 +44,28 @@ export default function ManageStudents() {
     return matchesSearch && matchesClass;
   });
 
+  // Generate a unique roll number using timestamp to avoid duplicate-key errors
+  const generateRollNumber = () => {
+    const now = Date.now();
+    return String(now).slice(-6); // 6-digit unique number
+  };
+
   const handleAdd = async () => {
-    if (!newStudent.name || !newStudent.fatherName) return;
-    const rollNum = String(1000 + students.length + 1);
+    if (!newStudent.name || !newStudent.fatherName) {
+      setError('نام اور والد کا نام ضروری ہے');
+      return;
+    }
+    setError('');
+    setSaving(true);
+
     const selectedClassName = newStudent.className || (classes[0] ? classes[0].name : 'ناظرہ');
     const selectedCls = classes.find((c) => c.name === selectedClassName);
 
     try {
-      const created = await createStudent({
+      await createStudent({
         name: newStudent.name,
         fatherName: newStudent.fatherName,
-        rollNumber: rollNum,
+        rollNumber: generateRollNumber(),
         className: selectedClassName,
         class: selectedCls ? selectedCls._id : undefined,
         phone: newStudent.phone,
@@ -61,12 +74,13 @@ export default function ManageStudents() {
         enrollmentDate: new Date().toISOString().split('T')[0],
       });
 
-      setStudents([created, ...students]);
       setNewStudent({ name: '', fatherName: '', className: '', phone: '', address: '' });
       setShowModal(false);
-      loadData();
+      await loadData();
     } catch (err) {
-      console.error('Add student error:', err);
+      setError(err.message || 'طالب علم شامل کرنے میں خرابی ہوئی');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -75,11 +89,14 @@ export default function ManageStudents() {
       ...student,
       className: student.className || student.class?.name || student.class || '',
     });
+    setError('');
     setShowEditModal(true);
   };
 
   const handleSaveEdit = async () => {
     if (!editingStudent) return;
+    setError('');
+    setSaving(true);
     const selectedCls = classes.find((c) => c.name === editingStudent.className);
 
     try {
@@ -97,7 +114,9 @@ export default function ManageStudents() {
       setEditingStudent(null);
       await loadData();
     } catch (err) {
-      console.error('Update student error:', err);
+      setError(err.message || 'معلومات تبدیل کرنے میں خرابی ہوئی');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -107,7 +126,7 @@ export default function ManageStudents() {
       await deleteStudent(id);
       setStudents(students.filter((s) => s._id !== id));
     } catch (err) {
-      console.error('Delete student error:', err);
+      alert('حذف کرنے میں خرابی: ' + (err.message || 'سرور ایرر'));
     }
   };
 
@@ -119,7 +138,7 @@ export default function ManageStudents() {
           <Link to="/admin/promote" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <FiTrendingUp size={14} /> طلباء کو ترقی دیں
           </Link>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+          <button className="btn btn-primary btn-sm" onClick={() => { setError(''); setShowModal(true); }}>
             <FiPlus size={14} style={{ marginLeft: '4px' }} /> نیا طالب علم
           </button>
         </div>
@@ -135,7 +154,6 @@ export default function ManageStudents() {
           />
         </div>
 
-        {/* Filter by class */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FiFilter size={16} style={{ color: 'var(--color-text-muted)' }} />
           <select
@@ -176,6 +194,13 @@ export default function ManageStudents() {
             </tr>
           </thead>
           <tbody>
+            {loading && (
+              <tr>
+                <td colSpan="6" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                  لوڈ ہو رہا ہے...
+                </td>
+              </tr>
+            )}
             {filtered.map((student) => (
               <tr key={student._id}>
                 <td style={{ fontFamily: 'var(--font-english)' }}>{student.rollNumber}</td>
@@ -239,6 +264,19 @@ export default function ManageStudents() {
               <button className="modal-close" onClick={() => setShowModal(false)}>x</button>
             </div>
             <div className="modal-body">
+              {error && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  border: '1px solid var(--color-error)',
+                  color: 'var(--color-error)',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  marginBottom: '16px',
+                  fontSize: '0.875rem',
+                }}>
+                  {error}
+                </div>
+              )}
               <div className="form-group">
                 <label className="form-label">نام *</label>
                 <input type="text" className="form-input" value={newStudent.name}
@@ -272,22 +310,37 @@ export default function ManageStudents() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-primary btn-sm" onClick={handleAdd}>محفوظ کریں</button>
+              <button className="btn btn-primary btn-sm" onClick={handleAdd} disabled={saving}>
+                {saving ? 'محفوظ ہو رہا ہے...' : 'محفوظ کریں'}
+              </button>
               <button className="btn btn-outline btn-sm" onClick={() => setShowModal(false)}>منسوخ</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Edit Student / Change Class Modal */}
+      {/* Edit Student Modal */}
       {showEditModal && editingStudent && (
         <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>طالب علم کی معلومات تبدیل کریں / درجہ بدلیں</h3>
+              <h3>طالب علم کی معلومات تبدیل کریں</h3>
               <button className="modal-close" onClick={() => setShowEditModal(false)}>x</button>
             </div>
             <div className="modal-body">
+              {error && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  border: '1px solid var(--color-error)',
+                  color: 'var(--color-error)',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  marginBottom: '16px',
+                  fontSize: '0.875rem',
+                }}>
+                  {error}
+                </div>
+              )}
               <div className="form-group">
                 <label className="form-label">نام</label>
                 <input
@@ -308,7 +361,7 @@ export default function ManageStudents() {
               </div>
               <div className="form-group">
                 <label className="form-label" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
-                  موجودہ درجہ (Class) *
+                  درجہ *
                 </label>
                 <select
                   className="form-select"
@@ -320,6 +373,25 @@ export default function ManageStudents() {
                     <option key={c._id} value={c.name}>{c.name}</option>
                   ))}
                 </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">فون نمبر</label>
+                <input
+                  type="tel"
+                  className="form-input"
+                  value={editingStudent.phone || ''}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, phone: e.target.value })}
+                  style={{ direction: 'ltr', textAlign: 'right' }}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">پتہ</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editingStudent.address || ''}
+                  onChange={(e) => setEditingStudent({ ...editingStudent, address: e.target.value })}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">حالت</label>
@@ -334,7 +406,9 @@ export default function ManageStudents() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn btn-primary btn-sm" onClick={handleSaveEdit}>محفوظ کریں</button>
+              <button className="btn btn-primary btn-sm" onClick={handleSaveEdit} disabled={saving}>
+                {saving ? 'محفوظ ہو رہا ہے...' : 'محفوظ کریں'}
+              </button>
               <button className="btn btn-outline btn-sm" onClick={() => setShowEditModal(false)}>منسوخ</button>
             </div>
           </div>
