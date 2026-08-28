@@ -1,27 +1,54 @@
-import { useState } from 'react';
-import { MOCK_NEWS } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { getNews, createNews, deleteNews } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function ManageNews() {
-  const [news, setNews] = useState(MOCK_NEWS);
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [newItem, setNewItem] = useState({ title: '', content: '', category: 'news' });
 
-  const handleAdd = () => {
-    if (!newItem.title || !newItem.content) return;
-    setNews([{
-      _id: 'n' + (news.length + 1),
-      ...newItem,
-      isPublished: true,
-      publishDate: new Date().toISOString().split('T')[0],
-      image: null,
-    }, ...news]);
-    setNewItem({ title: '', content: '', category: 'news' });
-    setShowModal(false);
+  const loadNews = async () => {
+    setLoading(true);
+    try {
+      const data = await getNews(false); // all news
+      setNews(data || []);
+    } catch (err) {
+      console.error('Load news error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    setNews(news.filter((n) => n._id !== id));
+  useEffect(() => {
+    loadNews();
+  }, []);
+
+  const handleAdd = async () => {
+    if (!newItem.title || !newItem.content) return;
+    try {
+      const created = await createNews({
+        title: newItem.title,
+        content: newItem.content,
+        category: newItem.category,
+      });
+      setNews([created, ...news]);
+      setNewItem({ title: '', content: '', category: 'news' });
+      setShowModal(false);
+      loadNews();
+    } catch (err) {
+      console.error('Create news error:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('کیا آپ واقعی اس اعلان کو حذف کرنا چاہتے ہیں؟')) return;
+    try {
+      await deleteNews(id);
+      setNews(news.filter((n) => n._id !== id));
+    } catch (err) {
+      console.error('Delete news error:', err);
+    }
   };
 
   const categoryLabel = (cat) => {
@@ -55,12 +82,18 @@ export default function ManageNews() {
                 <td style={{ fontFamily: 'var(--font-english)' }}>{item.publishDate}</td>
                 <td>
                   <div className="action-btns">
-                    <button className="action-btn">ترمیم</button>
                     <button className="action-btn action-btn-danger" onClick={() => handleDelete(item._id)}>حذف</button>
                   </div>
                 </td>
               </tr>
             ))}
+            {news.length === 0 && !loading && (
+              <tr>
+                <td colSpan="4" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                  کوئی اعلان نہیں ملا
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -74,7 +107,7 @@ export default function ManageNews() {
             </div>
             <div className="modal-body">
               <div className="form-group">
-                <label className="form-label">عنوان</label>
+                <label className="form-label">عنوان *</label>
                 <input type="text" className="form-input" value={newItem.title}
                   onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} />
               </div>
@@ -88,8 +121,8 @@ export default function ManageNews() {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">مواد</label>
-                <textarea className="form-textarea" value={newItem.content}
+                <label className="form-label">مواد *</label>
+                <textarea className="form-textarea" rows="4" value={newItem.content}
                   onChange={(e) => setNewItem({ ...newItem, content: e.target.value })} />
               </div>
             </div>

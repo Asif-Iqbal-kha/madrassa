@@ -1,26 +1,57 @@
-import { useState } from 'react';
-import { MOCK_TEACHERS } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { getTeachers, createTeacher, deleteTeacher } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function ManageTeachers() {
-  const [teachers, setTeachers] = useState(MOCK_TEACHERS);
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [newTeacher, setNewTeacher] = useState({ name: '', subject: '', phone: '', qualification: '' });
 
-  const handleAdd = () => {
+  const loadTeachers = async () => {
+    setLoading(true);
+    try {
+      const data = await getTeachers();
+      setTeachers(data || []);
+    } catch (err) {
+      console.error('Load teachers error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTeachers();
+  }, []);
+
+  const handleAdd = async () => {
     if (!newTeacher.name) return;
-    const id = 't' + (teachers.length + 1);
-    setTeachers([...teachers, {
-      _id: id,
-      name: newTeacher.name,
-      subject: newTeacher.subject,
-      phone: newTeacher.phone,
-      qualification: newTeacher.qualification,
-      classes: [],
-      isActive: true,
-    }]);
-    setNewTeacher({ name: '', subject: '', phone: '', qualification: '' });
-    setShowModal(false);
+    try {
+      const created = await createTeacher({
+        name: newTeacher.name,
+        subject: newTeacher.subject,
+        phone: newTeacher.phone,
+        qualification: newTeacher.qualification,
+        classes: [],
+        isActive: true,
+      });
+      setTeachers([created, ...teachers]);
+      setNewTeacher({ name: '', subject: '', phone: '', qualification: '' });
+      setShowModal(false);
+      loadTeachers();
+    } catch (err) {
+      console.error('Create teacher error:', err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('کیا آپ واقعی اس استاذ کو حذف کرنا چاہتے ہیں؟')) return;
+    try {
+      await deleteTeacher(id);
+      setTeachers(teachers.filter((t) => t._id !== id));
+    } catch (err) {
+      console.error('Delete teacher error:', err);
+    }
   };
 
   return (
@@ -50,7 +81,11 @@ export default function ManageTeachers() {
                 <td>{teacher.subject}</td>
                 <td>{teacher.qualification}</td>
                 <td style={{ fontFamily: 'var(--font-english)', direction: 'ltr', textAlign: 'right' }}>{teacher.phone}</td>
-                <td>{teacher.classes.join('، ') || '-'}</td>
+                <td>
+                  {Array.isArray(teacher.classes)
+                    ? teacher.classes.map((c) => (typeof c === 'object' ? c.name : c)).join('، ') || '-'
+                    : (teacher.classNames ? teacher.classNames.join('، ') : '-')}
+                </td>
                 <td>
                   <span className={`badge ${teacher.isActive ? 'badge-success' : 'badge-warning'}`}>
                     {teacher.isActive ? 'فعال' : 'غیر فعال'}
@@ -58,11 +93,18 @@ export default function ManageTeachers() {
                 </td>
                 <td>
                   <div className="action-btns">
-                    <button className="action-btn">ترمیم</button>
+                    <button className="action-btn action-btn-danger" onClick={() => handleDelete(teacher._id)}>حذف</button>
                   </div>
                 </td>
               </tr>
             ))}
+            {teachers.length === 0 && !loading && (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                  کوئی استاذ نہیں ملا
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -76,7 +118,7 @@ export default function ManageTeachers() {
             </div>
             <div className="modal-body">
               <div className="form-group">
-                <label className="form-label">نام</label>
+                <label className="form-label">نام *</label>
                 <input type="text" className="form-input" value={newTeacher.name}
                   onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value })} />
               </div>

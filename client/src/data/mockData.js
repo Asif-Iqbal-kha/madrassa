@@ -225,6 +225,168 @@ export const MOCK_USER_PROFILES = {
   },
 };
 
+// Donations
+export const MOCK_DONATIONS = [
+  {
+    _id: 'don1',
+    trackingNumber: 'DON-2026-0001',
+    donorName: 'حاجی عبدالکریم',
+    phone: '03011234567',
+    amount: 50000,
+    method: 'JazzCash',
+    screenshotFile: 'jazzcash_receipt.jpg',
+    status: 'approved',
+    date: '2026-08-20',
+    adminNotes: 'رقم موصول ہوئی',
+  },
+  {
+    _id: 'don2',
+    trackingNumber: 'DON-2026-0002',
+    donorName: 'محمد اکبر خان',
+    phone: '03029876543',
+    amount: 25000,
+    method: 'EasyPaisa',
+    screenshotFile: 'easypaisa_receipt.jpg',
+    status: 'pending',
+    date: '2026-08-25',
+    adminNotes: '',
+  },
+  {
+    _id: 'don3',
+    trackingNumber: 'DON-2026-0003',
+    donorName: 'حافظ نور محمد',
+    phone: '03034567890',
+    amount: 100000,
+    method: 'بینک ٹرانسفر',
+    screenshotFile: 'bank_transfer.jpg',
+    status: 'approved',
+    date: '2026-08-22',
+    adminNotes: 'بینک سے تصدیق ہو گئی',
+  },
+  {
+    _id: 'don4',
+    trackingNumber: 'DON-2026-0004',
+    donorName: 'سید فضل الرحمٰن',
+    phone: '03045678901',
+    amount: 10000,
+    method: 'JazzCash',
+    screenshotFile: 'jazzcash2.jpg',
+    status: 'rejected',
+    date: '2026-08-26',
+    adminNotes: 'اسکرین شاٹ واضح نہیں ہے',
+  },
+  {
+    _id: 'don5',
+    trackingNumber: 'DON-2026-0005',
+    donorName: 'عبدالوہاب',
+    phone: '03056789012',
+    amount: 75000,
+    method: 'EasyPaisa',
+    screenshotFile: 'easypaisa2.jpg',
+    status: 'pending',
+    date: '2026-08-27',
+    adminNotes: '',
+  },
+];
+
+// Admission Applications
+export const MOCK_ADMISSION_APPLICATIONS = [
+  {
+    _id: 'adm1',
+    trackingNumber: 'ADM-2026-0001',
+    studentName: 'محمد یاسین',
+    fatherName: 'محمد صدیق',
+    cnic: '1234567890123',
+    phone: '03011112222',
+    desiredClass: 'ناظرہ',
+    previousEducation: 'پرائمری پاس',
+    address: 'محلہ قاضیان، مردان',
+    dateOfBirth: '2014-05-10',
+    status: 'admitted',
+    queuePosition: 1,
+    date: '2026-08-15',
+    adminNotes: 'داخلہ منظور',
+  },
+  {
+    _id: 'adm2',
+    trackingNumber: 'ADM-2026-0002',
+    studentName: 'عبداللہ بن عمر',
+    fatherName: 'عمر حیات',
+    cnic: '1234567890124',
+    phone: '03022223333',
+    desiredClass: 'حفظ',
+    previousEducation: 'ناظرہ مکمل',
+    address: 'تحصیل روڈ، مردان',
+    dateOfBirth: '2012-08-20',
+    status: 'under_review',
+    queuePosition: 2,
+    date: '2026-08-18',
+    adminNotes: 'ٹیسٹ باقی ہے',
+  },
+  {
+    _id: 'adm3',
+    trackingNumber: 'ADM-2026-0003',
+    studentName: 'حمزہ',
+    fatherName: 'خالد محمود',
+    cnic: '1234567890125',
+    phone: '03033334444',
+    desiredClass: 'درجہ اول',
+    previousEducation: 'حفظ مکمل',
+    address: 'شیر گڑھ، مردان',
+    dateOfBirth: '2011-03-15',
+    status: 'pending',
+    queuePosition: 3,
+    date: '2026-08-22',
+    adminNotes: '',
+  },
+  {
+    _id: 'adm4',
+    trackingNumber: 'ADM-2026-0004',
+    studentName: 'ابوبکر',
+    fatherName: 'عبدالستار',
+    cnic: '1234567890126',
+    phone: '03044445555',
+    desiredClass: 'ناظرہ',
+    previousEducation: 'کوئی نہیں',
+    address: 'پار حتی، مردان',
+    dateOfBirth: '2015-11-25',
+    status: 'pending',
+    queuePosition: 4,
+    date: '2026-08-25',
+    adminNotes: '',
+  },
+  {
+    _id: 'adm5',
+    trackingNumber: 'ADM-2026-0005',
+    studentName: 'عثمان غنی',
+    fatherName: 'غنی الرحمٰن',
+    cnic: '1234567890127',
+    phone: '03055556666',
+    desiredClass: 'درجہ سوم',
+    previousEducation: 'درجہ دوم پاس',
+    address: 'لنڈ خور، مردان',
+    dateOfBirth: '2012-07-08',
+    status: 'rejected',
+    queuePosition: 5,
+    date: '2026-08-20',
+    adminNotes: 'عمر کم ہے',
+  },
+];
+
+// Tracking number generators
+let donationCounter = MOCK_DONATIONS.length;
+let admissionCounter = MOCK_ADMISSION_APPLICATIONS.length;
+
+export function generateDonationTrackingNumber() {
+  donationCounter++;
+  return `DON-2026-${String(donationCounter).padStart(4, '0')}`;
+}
+
+export function generateAdmissionTrackingNumber() {
+  admissionCounter++;
+  return `ADM-2026-${String(admissionCounter).padStart(4, '0')}`;
+}
+
 // Dashboard statistics
 export const MOCK_STATS = {
   totalStudents: 206,
@@ -233,4 +395,6 @@ export const MOCK_STATS = {
   activeStudents: 198,
   todayAttendance: 182,
   attendancePercentage: 92,
+  pendingDonations: 2,
+  pendingAdmissions: 2,
 };

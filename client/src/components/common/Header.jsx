@@ -13,10 +13,12 @@ export default function Header() {
     { path: '/', label: 'صفحہ اول' },
     { path: '/about', label: 'تعارف' },
     { path: '/admission', label: 'داخلہ' },
+    { path: '/donation', label: 'عطیات' },
     { path: '/exams', label: 'امتحانات' },
     { path: '/news', label: 'اعلانات' },
     { path: '/gallery', label: 'تصاویر' },
     { path: '/contact', label: 'رابطہ' },
+    { path: '/track', label: 'ٹریکنگ' },
   ];
 
   const isActive = (path) => location.pathname === path;

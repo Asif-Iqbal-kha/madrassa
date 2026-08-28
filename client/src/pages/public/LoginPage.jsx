@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +21,7 @@ export default function LoginPage() {
     navigate(paths[user.role] || '/');
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -29,16 +30,23 @@ export default function LoginPage() {
       return;
     }
 
-    const result = login(username.trim(), password.trim());
-    if (result.success) {
-      const paths = {
-        master_admin: '/admin/dashboard',
-        teacher: '/teacher/dashboard',
-        student: '/student/dashboard',
-      };
-      navigate(paths[result.role] || '/');
-    } else {
-      setError(result.message);
+    setLoading(true);
+    try {
+      const result = await login(username.trim(), password.trim());
+      if (result.success) {
+        const paths = {
+          master_admin: '/admin/dashboard',
+          teacher: '/teacher/dashboard',
+          student: '/student/dashboard',
+        };
+        navigate(paths[result.role] || '/');
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError('لاگ ان میں خرابی پیش آگئی');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,6 +75,7 @@ export default function LoginPage() {
                 placeholder="صارف نام درج کریں"
                 autoComplete="username"
                 style={{ direction: 'ltr', textAlign: 'right' }}
+                disabled={loading}
               />
             </div>
 
@@ -80,11 +89,12 @@ export default function LoginPage() {
                 placeholder="پاسورڈ درج کریں"
                 autoComplete="current-password"
                 style={{ direction: 'ltr', textAlign: 'right' }}
+                disabled={loading}
               />
             </div>
 
-            <button type="submit" className="btn btn-primary login-submit">
-              لاگ ان
+            <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
+              {loading ? 'لاگ ان ہو رہا ہے...' : 'لاگ ان'}
             </button>
           </form>
 
