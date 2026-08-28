@@ -348,6 +348,25 @@ export async function uploadResult(resultData) {
   return handleResponse(res);
 }
 
+// Public search for student result by Roll Number
+export async function searchStudentResult(rollNumber) {
+  try {
+    const res = await fetch(`${API_BASE}/results/roll/${encodeURIComponent(rollNumber.trim())}`);
+    if (res.ok) {
+      return await res.json();
+    }
+    const data = await res.json().catch(() => ({}));
+    return { error: data.message || `رول نمبر ${rollNumber} کا رزلٹ نہیں ملا` };
+  } catch (err) {
+    console.warn('searchStudentResult API error:', err);
+  }
+
+  // Fallback to mock data for demo/offline
+  const found = MOCK_RESULTS.filter((r) => r.rollNumber === rollNumber.trim());
+  if (found.length > 0) return found;
+  return { error: `رول نمبر ${rollNumber} کا کوئی ریکارڈ نہیں ملا` };
+}
+
 // ----------------- STATS API -----------------
 
 export async function getStats() {
