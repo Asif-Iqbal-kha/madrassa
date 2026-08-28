@@ -31,19 +31,30 @@ export default function PromoteStudents() {
     loadData();
   }, []);
 
+  const getStudentClassName = (student) => {
+    if (student.className && typeof student.className === 'string') return student.className.trim();
+    if (student.class && typeof student.class === 'object' && student.class.name) return student.class.name.trim();
+    if (student.class && typeof student.class === 'string') {
+      const matched = classes.find((c) => c._id === student.class);
+      if (matched) return matched.name.trim();
+      return student.class.trim();
+    }
+    return '';
+  };
+
   // Filter students who are currently in the selected fromClass
   const classStudents = allStudents.filter((s) => {
     if (!fromClass) return false;
-    const currentClassName = s.className || s.class?.name || s.class;
-    return currentClassName === fromClass;
+    const currentClassName = getStudentClassName(s);
+    return currentClassName.toLowerCase() === fromClass.trim().toLowerCase() || s.class === fromClass;
   });
 
   // Calculate target class info
-  const targetClassObj = classes.find((c) => c.name === toClass);
+  const targetClassObj = classes.find((c) => c.name.trim().toLowerCase() === toClass.trim().toLowerCase() || c._id === toClass);
   const targetClassCurrentStudents = allStudents.filter((s) => {
     if (!toClass) return false;
-    const currentClassName = s.className || s.class?.name || s.class;
-    return currentClassName === toClass;
+    const currentClassName = getStudentClassName(s);
+    return currentClassName.toLowerCase() === toClass.trim().toLowerCase() || s.class === toClass;
   });
 
   const toggleStudent = (id) => {
