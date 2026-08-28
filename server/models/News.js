@@ -27,8 +27,13 @@ const newsSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  isPopup: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });
 
 module.exports = mongoose.model('News', newsSchema);
+

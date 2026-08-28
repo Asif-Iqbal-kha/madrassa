@@ -256,6 +256,28 @@ export async function deleteNews(id) {
   return handleResponse(res);
 }
 
+// Get active popup news (public, no auth)
+export async function getPopupNews() {
+  try {
+    const res = await fetch(`${API_BASE}/news/popup`);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getPopupNews failed:', err);
+  }
+  return [];
+}
+
+// Admin: toggle popup on/off for a news item
+export async function toggleNewsPopup(id, isPopup) {
+  const res = await fetch(`${API_BASE}/news/${id}/popup`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ isPopup }),
+  });
+  return handleResponse(res);
+}
+
+
 // ----------------- ATTENDANCE API -----------------
 
 export async function getAttendance(classId, date) {

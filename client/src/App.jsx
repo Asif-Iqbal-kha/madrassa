@@ -6,6 +6,7 @@ import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import DashboardLayout from './components/common/DashboardLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import NewsPopup from './components/common/NewsPopup';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -41,6 +42,7 @@ import UploadResults from './pages/teacher/UploadResults';
 function PublicLayout() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <NewsPopup />
       <Header />
       <main style={{ flex: 1 }}>
         <Outlet />
