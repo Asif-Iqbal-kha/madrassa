@@ -15,6 +15,7 @@ export default function Header() {
     { path: '/admission', label: 'داخلہ' },
     { path: '/donation', label: 'عطیات' },
     { path: '/exams', label: 'امتحانات' },
+    { path: '/results', label: 'امتحانی نتائج' },
     { path: '/news', label: 'اعلانات' },
     { path: '/gallery', label: 'تصاویر' },
     { path: '/contact', label: 'رابطہ' },

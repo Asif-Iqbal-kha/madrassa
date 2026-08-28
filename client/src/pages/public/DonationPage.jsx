@@ -102,9 +102,9 @@ export default function DonationPage() {
   };
 
   const paymentMethods = [
-    { value: 'JazzCash', label: 'JazzCash', icon: '📱' },
-    { value: 'EasyPaisa', label: 'EasyPaisa', icon: '📲' },
-    { value: 'بینک ٹرانسفر', label: 'بینک ٹرانسفر', icon: '🏦' },
+    { value: 'JazzCash', label: 'JazzCash' },
+    { value: 'EasyPaisa', label: 'EasyPaisa' },
+    { value: 'بینک ٹرانسفر', label: 'بینک ٹرانسفر' },
   ];
 
   return (
@@ -137,22 +137,19 @@ export default function DonationPage() {
             <h2>ادائیگی کی تفصیلات</h2>
             <div className="payment-details-grid">
               <div className="payment-detail-card">
-                <span className="payment-detail-icon">📱</span>
                 <h4>JazzCash</h4>
                 <p className="payment-number">0300-1234567</p>
                 <p className="payment-name">مدرسہ سیدنا صدیق اکبرؓ</p>
               </div>
               <div className="payment-detail-card">
-                <span className="payment-detail-icon">📲</span>
                 <h4>EasyPaisa</h4>
                 <p className="payment-number">0300-7654321</p>
                 <p className="payment-name">مدرسہ سیدنا صدیق اکبرؓ</p>
               </div>
               <div className="payment-detail-card">
-                <span className="payment-detail-icon">🏦</span>
                 <h4>بینک ٹرانسفر</h4>
                 <p className="payment-number">PK12MEZN0012345678</p>
-                <p className="payment-name">مضان بینک — مدرسہ اکاؤنٹ</p>
+                <p className="payment-name">میزان بینک — مدرسہ اکاؤنٹ</p>
               </div>
             </div>
           </div>

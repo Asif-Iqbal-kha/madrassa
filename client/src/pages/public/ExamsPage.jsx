@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { FiSearch, FiFileText } from 'react-icons/fi';
 import './PublicPages.css';
 
 export default function ExamsPage() {
@@ -6,21 +8,29 @@ export default function ExamsPage() {
       <div className="page-header">
         <div className="container">
           <h1>امتحانات</h1>
-          <p>امتحانات کا شیڈول اور معلومات</p>
+          <p>امتحانات کا شیڈول اور تعلیمی معلومات</p>
         </div>
       </div>
 
       <div className="content-page">
         <div className="container">
           {/* Quick Result Check Banner */}
-          <div className="donation-info-banner" style={{ marginBottom: '28px', background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(184, 150, 12, 0.08))', border: '1px solid rgba(15, 118, 110, 0.2)' }}>
+          <div
+            className="donation-info-banner"
+            style={{
+              marginBottom: '28px',
+              background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(184, 150, 12, 0.08))',
+              border: '1px solid rgba(15, 118, 110, 0.2)',
+              borderRadius: '12px',
+            }}
+          >
             <div className="donation-info-text">
               <h3 style={{ color: 'var(--color-primary-dark)' }}>آن لائن امتحانی رزلٹ کارڈ معلوم کریں</h3>
               <p>طلباء اپنے رول نمبر کے ذریعے اپنے سالانہ اور ششماہی امتحانات کا تفصیلی رزلٹ کارڈ براہ راست آن لائن دیکھ اور پرنٹ کر سکتے ہیں۔</p>
             </div>
-            <a href="/#result-search-section" className="btn btn-primary" style={{ whiteSpace: 'nowrap', alignSelf: 'center' }}>
-              رزلٹ کارڈ دیکھیں
-            </a>
+            <Link to="/results" className="btn btn-primary" style={{ whiteSpace: 'nowrap', alignSelf: 'center', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <FiSearch size={16} /> رزلٹ کارڈ دیکھیں
+            </Link>
           </div>
 
           <div className="content-block">

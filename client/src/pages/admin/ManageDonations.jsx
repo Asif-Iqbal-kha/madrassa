@@ -313,7 +313,7 @@ export default function ManageDonations() {
                     color: 'var(--color-text-muted)',
                     background: 'var(--color-bg-alt)',
                   }}>
-                    📷 {showDetail.screenshotFile || 'کوئی اسکرین شاٹ منسلک نہیں ہے'}
+                    {showDetail.screenshotFile ? `فائل: ${showDetail.screenshotFile}` : 'کوئی اسکرین شاٹ منسلک نہیں ہے'}
                   </div>
                 )}
               </div>
