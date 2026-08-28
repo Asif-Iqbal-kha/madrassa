@@ -4,7 +4,7 @@
   "private": true,
   "description": "Fullstack Madrassa Management System with React + Express + MongoDB Atlas",
   "scripts": {
-    "build": "cd client && npm install && npm run build",
+    "build": "node build.js",
     "start": "node server/server.js",
     "server": "node server/server.js",
     "client": "npm run dev --prefix client",
