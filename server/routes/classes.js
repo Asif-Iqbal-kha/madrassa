@@ -6,8 +6,8 @@ const router = express.Router();
 
 // @route   GET /api/classes
 // @desc    Get all classes
-// @access  Private
-router.get('/', protect, async (req, res) => {
+// @access  Public
+router.get('/', async (req, res) => {
   try {
     const classes = await Class.find().populate('teacher', 'name').sort('name');
     res.json(classes);

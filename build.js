@@ -10,9 +10,14 @@ const npmCmd = isWin ? 'npm.cmd' : 'npm';
 if (fs.existsSync(path.join(__dirname, 'client'))) {
   console.log('1. Detected repository root. Setting up client subfolder...');
   const clientDir = path.join(__dirname, 'client');
+  const viteBin = path.join(clientDir, 'node_modules', 'vite');
   
-  console.log('2. Installing client dependencies (Vite, React, Icons)...');
-  execSync(`${npmCmd} install`, { cwd: clientDir, stdio: 'inherit' });
+  if (!fs.existsSync(viteBin)) {
+    console.log('2. Installing client dependencies (Vite, React, Icons)...');
+    execSync(`${npmCmd} install`, { cwd: clientDir, stdio: 'inherit' });
+  } else {
+    console.log('2. Client dependencies already present, proceeding to build...');
+  }
   
   console.log('3. Running Vite production bundle build...');
   execSync(`${npmCmd} run build`, { cwd: clientDir, stdio: 'inherit' });
@@ -27,7 +32,6 @@ if (fs.existsSync(path.join(__dirname, 'client'))) {
   }
 } else {
   console.log('1. Building directly in current directory...');
-  execSync(`${npmCmd} install`, { stdio: 'inherit' });
   execSync(`${npmCmd} run build`, { stdio: 'inherit' });
   console.log('--- ✅ Build Completed Successfully! ---');
 }
