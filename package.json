@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "Fullstack Madrassa Management System with React + Express + MongoDB Atlas",
+  "workspaces": [
+    "client"
+  ],
   "scripts": {
     "build": "node build.js",
     "start": "node server/server.js",
