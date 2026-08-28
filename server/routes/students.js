@@ -1,14 +1,37 @@
 const express = require('express');
 const Student = require('../models/Student');
+const Class = require('../models/Class');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+const defaultStudents = [
+  { name: 'محمد احمد', fatherName: 'محمد اکرم', rollNumber: '1001', className: 'درجہ سوم', status: 'active', phone: '03001111111', address: 'محلہ نو، مردان', enrollmentDate: '2024-04-01' },
+  { name: 'عبداللہ', fatherName: 'عمر فاروق', rollNumber: '1002', className: 'درجہ سوم', status: 'active', phone: '03002222222', address: 'کچہری روڈ، مردان', enrollmentDate: '2024-04-01' },
+  { name: 'علی حسن', fatherName: 'حسن علی', rollNumber: '1003', className: 'حفظ', status: 'active', phone: '03003333333', address: 'لنڈ خور، مردان', enrollmentDate: '2024-04-01' },
+  { name: 'اسامہ خان', fatherName: 'خان محمد', rollNumber: '1004', className: 'ناظرہ', status: 'active', phone: '03004444444', address: 'شیر گڑھ، مردان', enrollmentDate: '2024-04-01' },
+  { name: 'بلال احمد', fatherName: 'احمد شاہ', rollNumber: '1005', className: 'درجہ اول', status: 'active', phone: '03005555555', address: 'پار حتی، مردان', enrollmentDate: '2024-04-01' },
+];
 
 // @route   GET /api/students
 // @desc    Get all students (optional filter by classId/status)
 // @access  Public/Auth
 router.get('/', async (req, res) => {
   try {
+    const count = await Student.countDocuments();
+    if (count === 0) {
+      try {
+        const classes = await Class.find();
+        const enriched = defaultStudents.map(s => {
+          const matched = classes.find(c => c.name === s.className);
+          return matched ? { ...s, class: matched._id } : s;
+        });
+        await Student.insertMany(enriched);
+      } catch (seedErr) {
+        console.warn('Auto seed students warning:', seedErr.message);
+      }
+    }
+
     const filter = {};
     if (req.query.classId) filter.class = req.query.classId;
     if (req.query.status) filter.status = req.query.status;
@@ -24,7 +47,6 @@ router.get('/', async (req, res) => {
 // @route   POST /api/students/promote
 // @desc    Promote students to next class
 // @access  Admin
-// NOTE: Must be registered BEFORE /:id to prevent Express treating "promote" as an id param
 router.post('/promote', protect, authorize('master_admin'), async (req, res) => {
   try {
     const { studentIds, toClassName, toClassId } = req.body;
@@ -33,7 +55,6 @@ router.post('/promote', protect, authorize('master_admin'), async (req, res) => 
       return res.status(400).json({ message: 'طلباء اور اگلا درجہ منتخب کرنا ضروری ہے' });
     }
 
-    const Class = require('../models/Class');
     let targetClass = null;
     if (toClassId) {
       targetClass = await Class.findById(toClassId);

@@ -49,20 +49,28 @@ export default function ManageDonations() {
 
   const pendingCount = donations.filter((d) => d.status === 'pending').length;
 
-  const handleStatusChange = async (id, newStatus) => {
+  const handleStatusChange = async (targetId, newStatus) => {
     setActionError('');
     setSaving(true);
     try {
-      await updateDonationStatus(id, newStatus, adminNote);
+      await updateDonationStatus(targetId, newStatus, adminNote);
       setDonations((prev) =>
-        prev.map((d) => (d._id === id ? { ...d, status: newStatus, adminNotes: adminNote || d.adminNotes } : d))
+        prev.map((d) =>
+          d._id === targetId || d.trackingNumber === targetId
+            ? { ...d, status: newStatus, adminNotes: adminNote || d.adminNotes }
+            : d
+        )
       );
       setShowDetail(null);
       setAdminNote('');
-      loadDonations();
+      await loadDonations();
     } catch (err) {
       console.error('Update donation status error:', err);
-      setActionError(err.message || 'حالت تبدیل کرنے میں خرابی ہوئی');
+      const errMsg = err.message || 'حالت تبدیل کرنے میں خرابی ہوئی';
+      setActionError(errMsg);
+      if (!showDetail) {
+        alert('خرابی: ' + errMsg);
+      }
     } finally {
       setSaving(false);
     }
@@ -126,16 +134,23 @@ export default function ManageDonations() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((don) => (
-              <tr key={don._id}>
+            {loading && (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                  لوڈ ہو رہا ہے...
+                </td>
+              </tr>
+            )}
+            {!loading && filtered.map((don) => (
+              <tr key={don._id || don.trackingNumber}>
                 <td style={{ fontFamily: 'var(--font-english)', fontWeight: 600 }}>{don.trackingNumber}</td>
                 <td>{don.donorName}</td>
-                <td style={{ fontFamily: 'var(--font-english)', fontWeight: 600 }}>Rs. {don.amount.toLocaleString()}</td>
+                <td style={{ fontFamily: 'var(--font-english)', fontWeight: 600 }}>Rs. {Number(don.amount || 0).toLocaleString()}</td>
                 <td>{don.method}</td>
                 <td style={{ fontFamily: 'var(--font-english)' }}>{don.date}</td>
                 <td>
                   <span className={`badge ${STATUS_BADGE[don.status]}`}>
-                    {STATUS_LABELS[don.status]}
+                    {STATUS_LABELS[don.status] || don.status}
                   </span>
                 </td>
                 <td>
@@ -149,17 +164,19 @@ export default function ManageDonations() {
                         <button
                           className="action-btn"
                           style={{ color: 'var(--color-success)', borderColor: 'var(--color-success)' }}
-                          onClick={() => handleStatusChange(don._id, 'approved')}
+                          onClick={() => handleStatusChange(don._id || don.trackingNumber, 'approved')}
+                          disabled={saving}
                         >
                           <FiCheckCircle size={14} style={{ marginLeft: '4px' }} />
-                          منظور
+                          {saving ? '...' : 'منظور'}
                         </button>
                         <button
                           className="action-btn action-btn-danger"
-                          onClick={() => handleStatusChange(don._id, 'rejected')}
+                          onClick={() => handleStatusChange(don._id || don.trackingNumber, 'rejected')}
+                          disabled={saving}
                         >
                           <FiXCircle size={14} style={{ marginLeft: '4px' }} />
-                          مسترد
+                          {saving ? '...' : 'مسترد'}
                         </button>
                       </>
                     )}
@@ -167,7 +184,7 @@ export default function ManageDonations() {
                 </td>
               </tr>
             ))}
-            {filtered.length === 0 && (
+            {filtered.length === 0 && !loading && (
               <tr>
                 <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
                   کوئی عطیہ نہیں ملا
@@ -198,7 +215,7 @@ export default function ManageDonations() {
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>رقم</span>
-                  <p style={{ margin: '4px 0 0', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-english)' }}>Rs. {showDetail.amount.toLocaleString()}</p>
+                  <p style={{ margin: '4px 0 0', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-english)' }}>Rs. {Number(showDetail.amount || 0).toLocaleString()}</p>
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>طریقہ</span>
@@ -211,7 +228,7 @@ export default function ManageDonations() {
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>حالت</span>
                   <p style={{ margin: '4px 0 0' }}>
-                    <span className={`badge ${STATUS_BADGE[showDetail.status]}`}>{STATUS_LABELS[showDetail.status]}</span>
+                    <span className={`badge ${STATUS_BADGE[showDetail.status]}`}>{STATUS_LABELS[showDetail.status] || showDetail.status}</span>
                   </p>
                 </div>
               </div>
@@ -313,26 +330,42 @@ export default function ManageDonations() {
                   style={{ minHeight: '60px' }}
                 />
               </div>
+
+              {actionError && (
+                <div style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  border: '1px solid var(--color-error)',
+                  color: 'var(--color-error)',
+                  borderRadius: '8px',
+                  padding: '10px 14px',
+                  marginTop: '12px',
+                  fontSize: '0.875rem',
+                }}>
+                  {actionError}
+                </div>
+              )}
             </div>
             {showDetail.status === 'pending' && (
               <div className="modal-footer">
                 <button
                   className="btn btn-primary btn-sm"
                   style={{ background: 'var(--color-success)', borderColor: 'var(--color-success)' }}
-                  onClick={() => handleStatusChange(showDetail._id, 'approved')}
+                  onClick={() => handleStatusChange(showDetail._id || showDetail.trackingNumber, 'approved')}
+                  disabled={saving}
                 >
                   <FiCheckCircle size={14} style={{ marginLeft: '4px' }} />
-                  منظور کریں
+                  {saving ? '...' : 'منظور کریں'}
                 </button>
                 <button
                   className="btn btn-sm"
                   style={{ background: 'var(--color-error)', borderColor: 'var(--color-error)', color: '#fff' }}
-                  onClick={() => handleStatusChange(showDetail._id, 'rejected')}
+                  onClick={() => handleStatusChange(showDetail._id || showDetail.trackingNumber, 'rejected')}
+                  disabled={saving}
                 >
                   <FiXCircle size={14} style={{ marginLeft: '4px' }} />
-                  مسترد کریں
+                  {saving ? '...' : 'مسترد کریں'}
                 </button>
-                <button className="btn btn-outline btn-sm" onClick={() => setShowDetail(null)}>بند کریں</button>
+                <button className="btn btn-outline btn-sm" onClick={() => setShowDetail(null)} disabled={saving}>بند کریں</button>
               </div>
             )}
             {showDetail.status !== 'pending' && (
