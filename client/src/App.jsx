@@ -42,7 +42,7 @@ import UploadResults from './pages/teacher/UploadResults';
 // Public layout wrapper
 function PublicLayout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
       <NewsPopup />
       <Header />
       <main style={{ flex: 1, width: '100%', overflowX: 'hidden' }}>
