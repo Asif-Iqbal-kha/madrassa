@@ -60,6 +60,58 @@ const admissionApplicationSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  identificationMark: {
+    type: String,
+    default: '',
+  },
+  maritalStatus: {
+    type: String,
+    default: 'مجرد',
+  },
+  permanentAddress: {
+    type: String,
+    default: '',
+  },
+  currentAddress: {
+    type: String,
+    default: '',
+  },
+  guardianName: {
+    type: String,
+    default: '',
+  },
+  guardianFatherName: {
+    type: String,
+    default: '',
+  },
+  guardianRelation: {
+    type: String,
+    default: 'والد',
+  },
+  guardianPhone: {
+    type: String,
+    default: '',
+  },
+  guardianCnic: {
+    type: String,
+    default: '',
+  },
+  guardianPermanentAddress: {
+    type: String,
+    default: '',
+  },
+  guardianCurrentAddress: {
+    type: String,
+    default: '',
+  },
+  mardanRelative: {
+    type: String,
+    default: '',
+  },
+  studentPhotoData: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
     enum: ['pending', 'under_review', 'admitted', 'rejected'],
