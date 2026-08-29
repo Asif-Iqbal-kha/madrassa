@@ -1,13 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiMenu, FiX } from 'react-icons/fi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Header.css';
 
 export default function Header() {
   const { user } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close mobile menu whenever location changes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   const navLinks = [
     { path: '/', label: 'صفحہ اول' },
@@ -66,8 +71,13 @@ export default function Header() {
       {/* Navigation */}
       <nav className="header-nav">
         <div className="container header-nav-inner">
-          <button className="nav-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-            {menuOpen ? <FiX size={22} /> : <FiMenu size={22} />}
+          <button
+            className="nav-toggle"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label={menuOpen ? 'مینو بند کریں' : 'مینو کھولیں'}
+            title={menuOpen ? 'مینو بند کریں' : 'مینو کھولیں'}
+          >
+            {menuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
           <ul className={`nav-links ${menuOpen ? 'nav-open' : ''}`}>
             {navLinks.map((link) => (
@@ -84,6 +94,15 @@ export default function Header() {
           </ul>
         </div>
       </nav>
+
+      {/* Mobile Backdrop to close menu when tapping outside */}
+      {menuOpen && (
+        <div
+          className="nav-backdrop"
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </header>
   );
 }
