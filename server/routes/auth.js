@@ -45,6 +45,10 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ message: 'اکاؤنٹ غیر فعال ہے' });
     }
 
+    if (user.role === 'student') {
+      return res.status(403).json({ message: 'طلباء کے لیے لاگ ان پورٹل دستیاب نہیں ہے' });
+    }
+
     const JWT_SECRET = process.env.JWT_SECRET || 'madrassa_sadeeq_akbar_secret_key_2026';
     const JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
 
@@ -72,19 +76,6 @@ router.post('/login', async (req, res) => {
         profile.subject = teacherData.subject;
         profile.qualification = teacherData.qualification;
         profile.classes = teacherData.classes || [];
-      }
-    }
-
-    if (user.role === 'student' && user.studentProfile) {
-      const Student = require('../models/Student');
-      const studentData = await Student.findById(user.studentProfile);
-      if (studentData) {
-        profile.rollNumber = studentData.rollNumber;
-        profile.fatherName = studentData.fatherName;
-        profile.className = studentData.className;
-        profile.classId = studentData.class;
-        profile.address = studentData.address;
-        profile.enrollmentDate = studentData.enrollmentDate;
       }
     }
 
@@ -124,19 +115,6 @@ router.get('/profile', protect, async (req, res) => {
         profile.subject = teacherData.subject;
         profile.qualification = teacherData.qualification;
         profile.classes = teacherData.classes || [];
-      }
-    }
-
-    if (user.role === 'student' && user.studentProfile) {
-      const Student = require('../models/Student');
-      const studentData = await Student.findById(user.studentProfile);
-      if (studentData) {
-        profile.rollNumber = studentData.rollNumber;
-        profile.fatherName = studentData.fatherName;
-        profile.className = studentData.className;
-        profile.classId = studentData.class;
-        profile.address = studentData.address;
-        profile.enrollmentDate = studentData.enrollmentDate;
       }
     }
 

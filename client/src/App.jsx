@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
 // Common
@@ -110,6 +110,10 @@ function App() {
             <Route path="attendance-history" element={<AttendanceHistory />} />
             <Route path="results" element={<UploadResults />} />
           </Route>
+
+          {/* Catch-all: redirect any student or unknown paths to home to prevent blank white screens */}
+          <Route path="/student/*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

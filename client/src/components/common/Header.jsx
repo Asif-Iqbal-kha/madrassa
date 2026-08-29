@@ -40,8 +40,8 @@ export default function Header() {
             <span><a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>📍 مردان، خیبر پختونخوا (گوگل میپ)</a></span>
           </div>
           <div className="header-top-actions">
-            {user ? (
-              <Link to={`/${user.role === 'master_admin' ? 'admin' : user.role}/dashboard`} className="header-login-link">
+            {user && (user.role === 'master_admin' || user.role === 'teacher') ? (
+              <Link to={`/${user.role === 'master_admin' ? 'admin' : 'teacher'}/dashboard`} className="header-login-link">
                 ڈیش بورڈ
               </Link>
             ) : (

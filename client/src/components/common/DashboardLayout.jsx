@@ -12,7 +12,6 @@ export default function DashboardLayout() {
   const roleLabels = {
     master_admin: 'لوحہ ایڈمن',
     teacher: 'لوحہ استاذ',
-    student: 'لوحہ طالب علم',
   };
 
   const handleLogout = () => {
