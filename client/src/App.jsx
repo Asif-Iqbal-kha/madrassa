@@ -7,6 +7,7 @@ import Footer from './components/common/Footer';
 import DashboardLayout from './components/common/DashboardLayout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import NewsPopup from './components/common/NewsPopup';
+import ScrollToTop from './components/common/ScrollToTop';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -56,6 +57,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToTop />
         <Routes>
           {/* Public Pages */}
           <Route element={<PublicLayout />}>
