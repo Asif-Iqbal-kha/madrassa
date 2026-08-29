@@ -7,9 +7,9 @@
   right: 0;
   width: 100%;
   max-width: 100vw;
-  z-index: 100;
+  z-index: 1000;
   background: var(--color-bg);
-  overflow-x: hidden;
+  overflow: visible !important;
 }
 
 /* Top Bar */
@@ -168,7 +168,11 @@
   .site-header {
     position: sticky;
     top: 0;
-    z-index: 250;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+    overflow: visible !important;
   }
 
   .header-top-bar {
@@ -190,16 +194,30 @@
 
   .header-nav {
     position: relative;
+    overflow: visible !important;
+    z-index: 1001;
+  }
+
+  .header-nav-inner {
+    position: static;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .nav-toggle {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
     padding: 10px 14px;
+    background: transparent;
+    border: none;
+    color: #FFFFFF !important;
     border-radius: var(--radius-sm);
-    transition: background-color var(--transition-fast);
-    z-index: 220;
+    cursor: pointer !important;
+    z-index: 1005;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+    touch-action: manipulation;
   }
 
   .nav-toggle:active,
@@ -212,7 +230,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.55);
-    z-index: 180;
+    z-index: 1002;
     backdrop-filter: blur(2px);
     animation: fadeInBackdrop 0.2s ease-out;
   }
@@ -229,12 +247,13 @@
     top: 100%;
     right: 0;
     left: 0;
+    width: 100%;
     background-color: var(--color-primary-dark);
-    z-index: 200;
+    z-index: 1004;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-    max-height: calc(100vh - 130px);
-    max-height: calc(100dvh - 130px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    max-height: calc(100vh - 120px);
+    max-height: calc(100dvh - 120px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     animation: slideDownMenu 0.22s ease-out;
@@ -252,7 +271,9 @@
   }
 
   .nav-links.nav-open {
-    display: flex;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .nav-link {
@@ -262,6 +283,7 @@
     font-size: 1.05rem;
     display: flex;
     align-items: center;
+    color: #FFFFFF !important;
   }
 
   .nav-link:active {
