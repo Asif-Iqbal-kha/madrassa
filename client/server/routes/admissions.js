@@ -1,13 +1,21 @@
 const express = require('express');
 const AdmissionApplication = require('../models/AdmissionApplication');
+const upload = require('../middleware/upload');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 // @route   POST /api/admissions
-// @desc    Submit admission application
+// @desc    Submit admission application with fee & proof
 // @access  Public
-router.post('/', async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('screenshot')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'فائل اپلوڈ میں خرابی' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { studentName, fatherName, phone, desiredClass } = req.body;
 
@@ -20,6 +28,13 @@ router.post('/', async (req, res) => {
     const year = new Date().getFullYear();
     const trackingNumber = `ADM-${year}-${String(count + 1).padStart(4, '0')}`;
 
+    let screenshotData = req.body.screenshotData || '';
+    let screenshotFilename = req.body.screenshotFilename || '';
+    if (req.file) {
+      screenshotData = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      screenshotFilename = req.file.originalname || 'payment_proof.jpg';
+    }
+
     const application = await AdmissionApplication.create({
       trackingNumber,
       studentName: req.body.studentName,
@@ -30,6 +45,11 @@ router.post('/', async (req, res) => {
       previousEducation: req.body.previousEducation || '',
       address: req.body.address || '',
       dateOfBirth: req.body.dateOfBirth || '',
+      admissionFee: Number(req.body.admissionFee) || 1000,
+      paymentMethod: req.body.paymentMethod || 'JazzCash',
+      transactionId: req.body.transactionId || '',
+      screenshotPath: screenshotFilename,
+      screenshotData,
       status: 'pending',
       queuePosition: count + 1,
       date: new Date().toISOString().split('T')[0],
@@ -39,6 +59,7 @@ router.post('/', async (req, res) => {
       success: true,
       trackingNumber: application.trackingNumber,
       queuePosition: application.queuePosition,
+      admissionFee: application.admissionFee,
       message: 'درخواست کامیابی سے جمع ہو گئی',
     });
   } catch (error) {
@@ -68,6 +89,11 @@ router.get('/track/:trackingNumber', async (req, res) => {
       status: application.status,
       queuePosition: application.queuePosition,
       date: application.date,
+      admissionFee: application.admissionFee || 1000,
+      paymentMethod: application.paymentMethod || 'JazzCash',
+      transactionId: application.transactionId || '',
+      screenshotData: application.screenshotData || '',
+      screenshotPath: application.screenshotPath || '',
       adminNotes: application.adminNotes,
     });
   } catch (error) {

@@ -40,6 +40,26 @@ const admissionApplicationSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  admissionFee: {
+    type: Number,
+    default: 1000,
+  },
+  paymentMethod: {
+    type: String,
+    default: 'JazzCash',
+  },
+  transactionId: {
+    type: String,
+    default: '',
+  },
+  screenshotPath: {
+    type: String,
+    default: '',
+  },
+  screenshotData: {
+    type: String,
+    default: '',
+  },
   status: {
     type: String,
     enum: ['pending', 'under_review', 'admitted', 'rejected'],

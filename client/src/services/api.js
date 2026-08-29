@@ -521,13 +521,28 @@ export async function trackDonation(trackingNumber) {
 
 // ----------------- ADMISSIONS API -----------------
 
-export async function submitAdmission(admissionData) {
+export async function submitAdmission(admissionData, paymentProofFile = null) {
   try {
-    const res = await fetch(`${API_BASE}/admissions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(admissionData),
-    });
+    let res;
+    if (paymentProofFile) {
+      const formData = new FormData();
+      Object.keys(admissionData).forEach((key) => {
+        if (admissionData[key] !== undefined && admissionData[key] !== null) {
+          formData.append(key, admissionData[key]);
+        }
+      });
+      formData.append('screenshot', paymentProofFile);
+      res = await fetch(`${API_BASE}/admissions`, {
+        method: 'POST',
+        body: formData,
+      });
+    } else {
+      res = await fetch(`${API_BASE}/admissions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(admissionData),
+      });
+    }
 
     if (res.ok) {
       const data = await res.json();
@@ -555,6 +570,11 @@ export async function submitAdmission(admissionData) {
     previousEducation: admissionData.previousEducation || '',
     address: admissionData.address || '',
     dateOfBirth: admissionData.dateOfBirth || '',
+    admissionFee: Number(admissionData.admissionFee) || 1000,
+    paymentMethod: admissionData.paymentMethod || 'JazzCash',
+    transactionId: admissionData.transactionId || '',
+    screenshotPath: paymentProofFile?.name || '',
+    screenshotData: admissionData.screenshotData || '',
     status: 'pending',
     queuePosition: count,
     date: new Date().toISOString().split('T')[0],

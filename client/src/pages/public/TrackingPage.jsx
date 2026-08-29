@@ -185,6 +185,13 @@ export default function TrackingPage() {
                   <span className="tracking-detail-value">{result.desiredClass}</span>
                 </div>
                 <div className="tracking-detail-row">
+                  <FiDollarSign size={16} />
+                  <span className="tracking-detail-label">داخلہ فیس:</span>
+                  <span className="tracking-detail-value tracking-amount" style={{ color: 'var(--color-primary-dark)', fontWeight: 700 }}>
+                    Rs. {(result.admissionFee || 1000).toLocaleString()} ({result.paymentMethod || 'ادا شدہ'})
+                  </span>
+                </div>
+                <div className="tracking-detail-row">
                   <FiCalendar size={16} />
                   <span className="tracking-detail-label">تاریخ:</span>
                   <span className="tracking-detail-value" style={{ fontFamily: 'var(--font-english)' }}>{result.date}</span>

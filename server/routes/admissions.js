@@ -1,22 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const AdmissionApplication = require('../models/AdmissionApplication');
+const upload = require('../middleware/upload');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 const defaultAdmissions = [
-  { trackingNumber: 'ADM-2026-0001', studentName: 'محمد یاسین', fatherName: 'محمد صدیق', cnic: '1234567890123', phone: '03011112222', desiredClass: 'ناظرہ', previousEducation: 'پرائمری پاس', address: 'محلہ قاضیان، مردان', dateOfBirth: '2014-05-10', status: 'admitted', queuePosition: 1, date: '2026-08-15', adminNotes: 'داخلہ منظور' },
-  { trackingNumber: 'ADM-2026-0002', studentName: 'عبداللہ بن عمر', fatherName: 'عمر حیات', cnic: '1234567890124', phone: '03022223333', desiredClass: 'حفظ', previousEducation: 'ناظرہ مکمل', address: 'تحصیل روڈ، مردان', dateOfBirth: '2012-08-20', status: 'under_review', queuePosition: 2, date: '2026-08-18', adminNotes: 'ٹیسٹ باقی ہے' },
-  { trackingNumber: 'ADM-2026-0003', studentName: 'حمزہ', fatherName: 'خالد محمود', cnic: '1234567890125', phone: '03033334444', desiredClass: 'درجہ اول', previousEducation: 'حفظ مکمل', address: 'شیر گڑھ، مردان', dateOfBirth: '2011-03-15', status: 'pending', queuePosition: 3, date: '2026-08-22' },
-  { trackingNumber: 'ADM-2026-0004', studentName: 'ابوبکر', fatherName: 'عبدالستار', cnic: '1234567890126', phone: '03044445555', desiredClass: 'ناظرہ', previousEducation: 'کوئی نہیں', address: 'پار حتی، مردان', dateOfBirth: '2015-11-25', status: 'pending', queuePosition: 4, date: '2026-08-25' },
-  { trackingNumber: 'ADM-2026-0005', studentName: 'عثمان غنی', fatherName: 'غنی الرحمٰن', cnic: '1234567890127', phone: '03055556666', desiredClass: 'درجہ سوم', previousEducation: 'درجہ دوم پاس', address: 'لنڈ خور، مردان', dateOfBirth: '2012-07-08', status: 'rejected', queuePosition: 5, date: '2026-08-20', adminNotes: 'عمر کم ہے' },
+  { trackingNumber: 'ADM-2026-0001', studentName: 'محمد یاسین', fatherName: 'محمد صدیق', cnic: '1234567890123', phone: '03011112222', desiredClass: 'ناظرہ', previousEducation: 'پرائمری پاس', address: 'محلہ قاضیان، مردان', dateOfBirth: '2014-05-10', admissionFee: 1000, paymentMethod: 'JazzCash', transactionId: 'TXN-98214', status: 'admitted', queuePosition: 1, date: '2026-08-15', adminNotes: 'داخلہ منظور، فیس موصول' },
+  { trackingNumber: 'ADM-2026-0002', studentName: 'عبداللہ بن عمر', fatherName: 'عمر حیات', cnic: '1234567890124', phone: '03022223333', desiredClass: 'حفظ', previousEducation: 'ناظرہ مکمل', address: 'تحصیل روڈ، مردان', dateOfBirth: '2012-08-20', admissionFee: 1000, paymentMethod: 'EasyPaisa', transactionId: 'EP-54321', status: 'under_review', queuePosition: 2, date: '2026-08-18', adminNotes: 'ٹیسٹ باقی ہے، فیس تصدیق شدہ' },
+  { trackingNumber: 'ADM-2026-0003', studentName: 'حمزہ', fatherName: 'خالد محمود', cnic: '1234567890125', phone: '03033334444', desiredClass: 'درجہ اول', previousEducation: 'حفظ مکمل', address: 'شیر گڑھ، مردان', dateOfBirth: '2011-03-15', admissionFee: 1000, paymentMethod: 'بینک ٹرانسفر', transactionId: 'MEZN-8812', status: 'pending', queuePosition: 3, date: '2026-08-22' },
+  { trackingNumber: 'ADM-2026-0004', studentName: 'ابوبکر', fatherName: 'عبدالستار', cnic: '1234567890126', phone: '03044445555', desiredClass: 'ناظرہ', previousEducation: 'کوئی نہیں', address: 'پار حتی، مردان', dateOfBirth: '2015-11-25', admissionFee: 1000, paymentMethod: 'JazzCash', transactionId: 'JC-11223', status: 'pending', queuePosition: 4, date: '2026-08-25' },
+  { trackingNumber: 'ADM-2026-0005', studentName: 'عثمان غنی', fatherName: 'غنی الرحمٰن', cnic: '1234567890127', phone: '03055556666', desiredClass: 'درجہ سوم', previousEducation: 'درجہ دوم پاس', address: 'لنڈ خور، مردان', dateOfBirth: '2012-07-08', admissionFee: 1000, paymentMethod: 'EasyPaisa', transactionId: 'EP-99881', status: 'rejected', queuePosition: 5, date: '2026-08-20', adminNotes: 'عمر کم ہے' },
 ];
 
 // @route   POST /api/admissions
-// @desc    Submit admission application
+// @desc    Submit admission application with fee & payment proof
 // @access  Public
-router.post('/', async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('screenshot')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message || 'فائل اپلوڈ میں خرابی' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const { studentName, fatherName, phone, desiredClass } = req.body;
 
@@ -28,6 +36,13 @@ router.post('/', async (req, res) => {
     const year = new Date().getFullYear();
     const trackingNumber = `ADM-${year}-${String(count + 1).padStart(4, '0')}`;
 
+    let screenshotData = req.body.screenshotData || '';
+    let screenshotFilename = req.body.screenshotFilename || '';
+    if (req.file) {
+      screenshotData = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+      screenshotFilename = req.file.originalname || 'payment_proof.jpg';
+    }
+
     const application = await AdmissionApplication.create({
       trackingNumber,
       studentName: req.body.studentName,
@@ -38,6 +53,11 @@ router.post('/', async (req, res) => {
       previousEducation: req.body.previousEducation || '',
       address: req.body.address || '',
       dateOfBirth: req.body.dateOfBirth || '',
+      admissionFee: Number(req.body.admissionFee) || 1000,
+      paymentMethod: req.body.paymentMethod || 'JazzCash',
+      transactionId: req.body.transactionId || '',
+      screenshotPath: screenshotFilename,
+      screenshotData,
       status: 'pending',
       queuePosition: count + 1,
       date: new Date().toISOString().split('T')[0],
@@ -47,6 +67,7 @@ router.post('/', async (req, res) => {
       success: true,
       trackingNumber: application.trackingNumber,
       queuePosition: application.queuePosition,
+      admissionFee: application.admissionFee,
       message: 'درخواست کامیابی سے جمع ہو گئی',
     });
   } catch (error) {
@@ -76,6 +97,11 @@ router.get('/track/:trackingNumber', async (req, res) => {
       status: application.status,
       queuePosition: application.queuePosition,
       date: application.date,
+      admissionFee: application.admissionFee || 1000,
+      paymentMethod: application.paymentMethod || 'JazzCash',
+      transactionId: application.transactionId || '',
+      screenshotData: application.screenshotData || '',
+      screenshotPath: application.screenshotPath || '',
       adminNotes: application.adminNotes,
     });
   } catch (error) {

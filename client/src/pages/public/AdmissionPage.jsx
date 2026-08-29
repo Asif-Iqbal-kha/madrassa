@@ -1,7 +1,18 @@
 import { useState } from 'react';
 import { MOCK_CLASSES } from '../../data/mockData';
 import { submitAdmission } from '../../services/api';
-import { FiCheckCircle, FiCopy, FiSend } from 'react-icons/fi';
+import {
+  FiCheckCircle,
+  FiCopy,
+  FiSend,
+  FiUploadCloud,
+  FiCreditCard,
+  FiCheck,
+  FiX,
+  FiFileText,
+  FiInfo,
+  FiDollarSign,
+} from 'react-icons/fi';
 import './PublicPages.css';
 
 export default function AdmissionPage() {
@@ -15,7 +26,12 @@ export default function AdmissionPage() {
     previousEducation: '',
     address: '',
     dateOfBirth: '',
+    admissionFee: 1000,
+    paymentMethod: 'JazzCash',
+    transactionId: '',
   });
+  const [paymentProof, setPaymentProof] = useState(null);
+  const [proofPreview, setProofPreview] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState('');
   const [copied, setCopied] = useState(false);
@@ -29,13 +45,37 @@ export default function AdmissionPage() {
     }
   };
 
+  const handleFileChange = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setErrors((prev) => ({ ...prev, paymentProof: 'صرف تصویری فائل (JPG, PNG) منتخب کریں' }));
+      return;
+    }
+    setPaymentProof(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProofPreview(reader.result);
+      setErrors((prev) => ({ ...prev, paymentProof: '' }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileChange(e.dataTransfer.files[0]);
+    }
+  };
+
   const validate = () => {
     const newErrors = {};
-    if (!form.studentName.trim()) newErrors.studentName = 'نام ضروری ہے';
+    if (!form.studentName.trim()) newErrors.studentName = 'طالب علم کا نام ضروری ہے';
     if (!form.fatherName.trim()) newErrors.fatherName = 'والد کا نام ضروری ہے';
     if (!form.phone.trim()) newErrors.phone = 'فون نمبر ضروری ہے';
-    if (!form.desiredClass) newErrors.desiredClass = 'درجہ منتخب کریں';
-    if (!form.dateOfBirth) newErrors.dateOfBirth = 'تاریخ پیدائش ضروری ہے';
+    if (!form.desiredClass) newErrors.desiredClass = 'مطلوبہ درجہ منتخب کریں';
+    if (!form.dateOfBirth) newErrors.dateOfBirth = 'تاریخ پیدائش درج کریں';
+    if (!form.paymentMethod) newErrors.paymentMethod = 'ادائیگی کا طریقہ منتخب کریں';
+    if (!paymentProof) newErrors.paymentProof = 'رقم منتقلی کا ثبوت (رسید / اسکرین شاٹ) اپلوڈ کرنا لازمی ہے';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,10 +86,17 @@ export default function AdmissionPage() {
 
     setSubmitting(true);
     try {
-      const res = await submitAdmission(form);
+      const payload = {
+        ...form,
+        admissionFee: 1000,
+        screenshotData: proofPreview || '',
+      };
+      const res = await submitAdmission(payload, paymentProof);
       if (res.success) {
         setTrackingNumber(res.trackingNumber);
         setShowSuccess(true);
+      } else {
+        alert(res.message || 'درخواست جمع کرنے میں خرابی ہوئی');
       }
     } catch (err) {
       console.error('Admission submit error:', err);
@@ -74,41 +121,132 @@ export default function AdmissionPage() {
       previousEducation: '',
       address: '',
       dateOfBirth: '',
+      admissionFee: 1000,
+      paymentMethod: 'JazzCash',
+      transactionId: '',
     });
+    setPaymentProof(null);
+    setProofPreview(null);
     setShowSuccess(false);
     setShowForm(false);
     setTrackingNumber('');
     setErrors({});
   };
 
+  const paymentAccounts = [
+    { name: 'JazzCash', number: '0315-3044992', title: 'مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ' },
+    { name: 'EasyPaisa', number: '0315-3044992', title: 'مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ' },
+    { name: 'بینک ٹرانسفر (Meezan Bank)', number: 'PK12MEZN0012345678', title: 'جامعہ عربیہ صدیق اکبر فنڈ' },
+  ];
+
   return (
     <div>
       <div className="page-header">
         <div className="container">
-          <h1>داخلہ</h1>
-          <p>نئے طلباء کے لیے داخلہ کی معلومات اور آن لائن درخواست</p>
+          <h1>داخلہ اور رجسٹریشن</h1>
+          <p>نئے طلباء کے لیے داخلہ کی شرائط، فیس کی معلومات اور آن لائن داخلہ فارم</p>
         </div>
       </div>
 
       <div className="content-page">
         <div className="container">
+          {/* Admission Fee Announcement Card */}
+          <div
+            className="content-block"
+            style={{
+              background: 'linear-gradient(135deg, rgba(20, 50, 35, 0.05) 0%, rgba(184, 150, 12, 0.12) 100%)',
+              border: '2px solid var(--color-accent)',
+              borderRadius: 'var(--radius-lg, 12px)',
+              padding: '24px 28px',
+              marginBottom: '28px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div
+                  style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    background: 'var(--color-primary)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.5rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  <FiCreditCard size={28} />
+                </div>
+                <div>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem', color: 'var(--color-primary-dark)' }}>
+                    داخلہ رجسٹریشن فیس: <span style={{ color: 'var(--color-accent-dark)', fontFamily: 'var(--font-english)' }}>1,000</span> روپے
+                  </h2>
+                  <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.95rem' }}>
+                    تمام نئے داخلہ لینے والے طلباء کے لیے رجسٹریشن و پروسیسنگ فیس مبلغ <strong>1,000 روپے</strong> لازمی ہے۔ فارم جمع کراتے وقت فیس ادائیگی کی رسید / اسکرین شاٹ منسلک کرنا ضروری ہے۔
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  background: '#fff',
+                  border: '1px dashed var(--color-accent)',
+                  borderRadius: '8px',
+                  padding: '10px 20px',
+                  textAlign: 'center',
+                }}
+              >
+                <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', display: 'block' }}>مقررہ داخلہ فیس</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-primary-dark)', fontFamily: 'var(--font-english)' }}>
+                  Rs. 1,000
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="content-block">
-            <h2>داخلہ کی شرائط</h2>
+            <h2>داخلہ کی شرائط و ضوابط</h2>
             <p>
               مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ میں داخلہ کے لیے درج ذیل شرائط کا پورا کرنا ضروری ہے:
             </p>
             <ul style={{ listStyle: 'disc', paddingRight: '24px', marginTop: '8px' }}>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>طالب علم مسلمان ہو</li>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>ناظرہ کے لیے عمر 5 سال سے زیادہ ہو</li>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>حفظ کے لیے ناظرہ مکمل ہو</li>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>درجات میں داخلے کے لیے پچھلے درجے کا امتحان پاس ہو</li>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>والد یا سرپرست کی شناختی کارڈ کی کاپی</li>
-              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>طالب علم کی تصاویر (2 عدد)</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>طالب علم مسلمان اور صحیح العقیدہ ہو</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>ناظرہ کے لیے کم از کم عمر 5 سال ہو</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>حفظ کے لیے ناظرہ قرآن کریم تجوید کے ساتھ مکمل ہو</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>درجات نظامیہ میں داخلے کے لیے پچھلے درجے کا پاس شدہ نتیجہ لازم ہے</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-primary-dark)', fontWeight: 700 }}>
+                داخلہ رجسٹریشن فیس: مبلغ 1,000 روپے (ناقابل واپسی) جو فارم کے ساتھ منتقلی کے ثبوت سمیت ادا کی جائے گی
+              </li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>والد یا سرپرست کی شناختی کارڈ (CNIC / ب فارم) کی تفصیلات</li>
+              <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>داخلہ ٹیسٹ و انٹرویو میں کامیابی</li>
             </ul>
           </div>
 
+          {/* Payment Details Section */}
           <div className="content-block">
-            <h2>داخلہ کی تاریخیں</h2>
+            <h2>فیس جمع کروانے کے لیے مدرسہ کے اکاؤنٹس</h2>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '16px' }}>
+              آپ داخلہ فیس (1,000 روپے) درج ذیل میں سے کسی بھی طریقے سے منتقل کر کے اسکرین شاٹ فارم میں لگائیں:
+            </p>
+            <div className="payment-details-grid">
+              {paymentAccounts.map((acc, i) => (
+                <div key={i} className="payment-detail-card" style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <h4 style={{ margin: 0 }}>{acc.name}</h4>
+                    <span style={{ fontSize: '0.75rem', background: 'rgba(184, 150, 12, 0.1)', color: 'var(--color-accent-dark)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                      فیس: 1,000 روپے
+                    </span>
+                  </div>
+                  <p className="payment-number">{acc.number}</p>
+                  <p className="payment-name">{acc.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="content-block">
+            <h2>داخلہ کی اہم تاریخیں</h2>
             <div className="table-container">
               <table>
                 <thead>
@@ -127,7 +265,7 @@ export default function AdmissionPage() {
                     <td>15 شوال 1447 ھ</td>
                   </tr>
                   <tr>
-                    <td>داخلہ ٹیسٹ</td>
+                    <td>داخلہ ٹیسٹ و انٹرویو</td>
                     <td>20 شوال 1447 ھ</td>
                   </tr>
                   <tr>
@@ -135,7 +273,7 @@ export default function AdmissionPage() {
                     <td>25 شوال 1447 ھ</td>
                   </tr>
                   <tr>
-                    <td>کلاسز کا آغاز</td>
+                    <td>باقاعدہ تعلیمی آغاز</td>
                     <td>یکم ذوالقعدہ 1447 ھ</td>
                   </tr>
                 </tbody>
@@ -143,16 +281,16 @@ export default function AdmissionPage() {
             </div>
           </div>
 
-          {/* Apply Button */}
+          {/* Apply Button Banner */}
           {!showForm && !showSuccess && (
             <div className="admission-apply-banner">
               <div className="admission-apply-content">
-                <h3>آن لائن داخلہ درخواست</h3>
-                <p>ابھی آن لائن درخواست دیں اور ٹریکنگ نمبر حاصل کریں</p>
+                <h3>آن لائن داخلہ درخواست فارم</h3>
+                <p>داخلہ فیس 1,000 روپے منتقل کرنے کا ثبوت (اسکرین شاٹ) منسلک کریں اور فوری ٹریکنگ نمبر حاصل کریں</p>
               </div>
               <button className="btn btn-accent btn-lg" onClick={() => setShowForm(true)}>
                 <FiSend size={18} />
-                داخلہ فارم بھریں
+                داخلہ فارم بھریں (فیس: 1,000 روپے)
               </button>
             </div>
           )}
@@ -263,14 +401,138 @@ export default function AdmissionPage() {
                         style={{ minHeight: '60px' }}
                       />
                     </div>
+
+                    {/* Payment Fee & Proof Section */}
+                    <div
+                      style={{
+                        gridColumn: '1 / -1',
+                        marginTop: '10px',
+                        padding: '20px',
+                        background: 'rgba(184, 150, 12, 0.05)',
+                        border: '1.5px dashed var(--color-accent)',
+                        borderRadius: 'var(--radius-md, 10px)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                        <h4 style={{ margin: 0, color: 'var(--color-primary-dark)', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <FiCreditCard /> داخلہ فیس و رقم کی منتقلی کا ثبوت
+                        </h4>
+                        <span style={{ fontSize: '0.85rem', background: 'var(--color-accent)', color: '#fff', padding: '3px 10px', borderRadius: '20px', fontWeight: 700, fontFamily: 'var(--font-english)' }}>
+                          فیس: Rs. 1,000 (فکسڈ)
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label">مقررہ داخلہ فیس</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value="1,000 روپے (لازمی)"
+                            readOnly
+                            disabled
+                            style={{ background: '#fff', fontWeight: 700, color: 'var(--color-primary-dark)' }}
+                          />
+                        </div>
+
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label">ادائیگی کا طریقہ *</label>
+                          <select
+                            className={`form-select ${errors.paymentMethod ? 'form-input-error' : ''}`}
+                            value={form.paymentMethod}
+                            onChange={(e) => handleChange('paymentMethod', e.target.value)}
+                          >
+                            <option value="JazzCash">JazzCash (0315-3044992)</option>
+                            <option value="EasyPaisa">EasyPaisa (0315-3044992)</option>
+                            <option value="بینک ٹرانسفر">بینک ٹرانسفر (میزان بینک)</option>
+                          </select>
+                          {errors.paymentMethod && <span className="form-error-text">{errors.paymentMethod}</span>}
+                        </div>
+
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label">ٹرانزیکشن ID / TID نمبر (اختیاری)</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            placeholder="مثلاً: TID-98214732"
+                            value={form.transactionId}
+                            onChange={(e) => handleChange('transactionId', e.target.value)}
+                            style={{ direction: 'ltr', textAlign: 'right', fontFamily: 'var(--font-english)' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Proof of Transfer Upload Box */}
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label">
+                          رقم منتقلی کا ثبوت (تصدیقی اسکرین شاٹ / رسید کی تصویر) *
+                        </label>
+                        <div
+                          className={`file-upload-area ${errors.paymentProof ? 'file-upload-error' : ''} ${proofPreview ? 'file-upload-has-file' : ''}`}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={handleDrop}
+                          onClick={() => document.getElementById('proof-input').click()}
+                          style={{ minHeight: '130px', cursor: 'pointer' }}
+                        >
+                          {proofPreview ? (
+                            <div className="file-upload-preview" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                              <img
+                                src={proofPreview}
+                                alt="رسید اسکرین شاٹ"
+                                style={{ maxHeight: '160px', maxWidth: '100%', borderRadius: '6px', objectFit: 'contain' }}
+                              />
+                              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--color-success)', fontWeight: 600 }}>
+                                  ✓ تصویر کامیابی سے منتخب ہو گئی ({paymentProof?.name})
+                                </span>
+                                <button
+                                  type="button"
+                                  className="btn btn-outline btn-sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPaymentProof(null);
+                                    setProofPreview(null);
+                                  }}
+                                  style={{ padding: '2px 8px', fontSize: '0.75rem', color: 'var(--color-error)' }}
+                                >
+                                  تبدیل کریں
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="file-upload-placeholder" style={{ textAlign: 'center', padding: '16px' }}>
+                              <FiUploadCloud size={36} style={{ color: 'var(--color-accent)', marginBottom: '8px' }} />
+                              <p style={{ margin: '0 0 4px', fontWeight: 600 }}>
+                                رسید یا اسکرین شاٹ یہاں ڈریگ کریں یا منتخب کرنے کے لیے کلک کریں
+                              </p>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                                معاون فارمیٹس: JPG, PNG, WebP (زیادہ سے زیادہ 10MB)
+                              </span>
+                            </div>
+                          )}
+                          <input
+                            id="proof-input"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleFileChange(e.target.files[0])}
+                            style={{ display: 'none' }}
+                          />
+                        </div>
+                        {errors.paymentProof && (
+                          <span className="form-error-text" style={{ display: 'block', marginTop: '6px' }}>
+                            {errors.paymentProof}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <button type="submit" className="btn btn-primary btn-lg" style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                    <button type="submit" className="btn btn-primary btn-lg" style={{ flex: 1 }} disabled={submitting}>
                       <FiSend size={18} />
-                      درخواست جمع کروائیں
+                      {submitting ? 'درخواست جمع ہو رہی ہے...' : 'داخلہ درخواست جمع کروائیں (1,000 روپے)'}
                     </button>
-                    <button type="button" className="btn btn-outline btn-lg" onClick={() => setShowForm(false)}>
+                    <button type="button" className="btn btn-outline btn-lg" onClick={() => setShowForm(false)} disabled={submitting}>
                       منسوخ
                     </button>
                   </div>
@@ -299,8 +561,10 @@ export default function AdmissionPage() {
             <div className="tracking-success-icon" style={{ color: 'var(--color-success)' }}>
               <FiCheckCircle size={56} />
             </div>
-            <h3>درخواست کامیابی سے جمع ہو گئی!</h3>
-            <p>آپ کی داخلہ درخواست موصول ہو گئی ہے۔ ایڈمن جائزہ لینے کے بعد فیصلہ کرے گا۔</p>
+            <h3>داخلہ درخواست بمعہ فیس رسید موصول ہو گئی!</h3>
+            <p>
+              آپ کی داخلہ درخواست اور داخلہ فیس (<strong>1,000 روپے</strong>) کی رسید کامیابی سے جمع ہو چکی ہے۔ مدرسہ انتظامیہ جائزہ لے کر ٹیسٹ و انٹرویو کی تاریخ سے آگاہ کرے گی۔
+            </p>
 
             <div className="tracking-number-display">
               <span className="tracking-label">ٹریکنگ نمبر</span>
@@ -314,11 +578,11 @@ export default function AdmissionPage() {
             </div>
 
             <div className="tracking-note">
-              <strong>اہم:</strong> یہ ٹریکنگ نمبر محفوظ رکھیں۔ "ٹریکنگ" صفحے پر جا کر اپنی درخواست کی حالت اور قطار میں نمبر چیک کر سکتے ہیں۔
+              <strong>اہم:</strong> یہ ٹریکنگ نمبر محفوظ رکھیں۔ ویب سائٹ کے "ٹریکنگ" صفحے پر جا کر آپ کسی بھی وقت اپنی داخلہ فیس اور درخواست کی پیش رفت چیک کر سکتے ہیں۔
             </div>
 
             <button className="btn btn-primary" onClick={resetForm} style={{ width: '100%', marginTop: '16px' }}>
-              بند کریں
+              مکمل اور بند کریں
             </button>
           </div>
         </div>
