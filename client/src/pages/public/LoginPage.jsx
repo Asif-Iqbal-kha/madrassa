@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { FiArrowRight, FiHome } from 'react-icons/fi';
 import './PublicPages.css';
 
 export default function LoginPage() {
@@ -50,56 +51,70 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <div className="login-logo-wrapper">
-            <img src="./logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
+      <div className="login-container">
+        <Link to="/" className="login-return-btn" title="مین ویب سائٹ پر واپس جائیں">
+          <FiArrowRight size={18} />
+          <span>مین ویب سائٹ پر واپس جائیں</span>
+        </Link>
+
+        <div className="login-card">
+          <div className="login-header">
+            <div className="login-logo-wrapper">
+              <img src="./logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
+            </div>
+            <h2>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
+            <p>پورٹل لاگ ان</p>
           </div>
-          <h2>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
-          <p>پورٹل لاگ ان</p>
-        </div>
 
-        <div className="login-body">
-          {error && <div className="login-error">{error}</div>}
+          <div className="login-body">
+            {error && <div className="login-error">{error}</div>}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">صارف نام</label>
-              <input
-                type="text"
-                className="form-input"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="صارف نام درج کریں"
-                autoComplete="username"
-                style={{ direction: 'ltr', textAlign: 'right' }}
-                disabled={loading}
-              />
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="form-label">صارف نام</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="صارف نام درج کریں"
+                  autoComplete="username"
+                  style={{ direction: 'ltr', textAlign: 'right' }}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">پاسورڈ</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="پاسورڈ درج کریں"
+                  autoComplete="current-password"
+                  style={{ direction: 'ltr', textAlign: 'right' }}
+                  disabled={loading}
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
+                {loading ? 'لاگ ان ہو رہا ہے...' : 'لاگ ان'}
+              </button>
+            </form>
+
+            <div className="login-test-info">
+              <h4>لاگ ان معلومات:</h4>
+              <p>Admin: admin / admin123</p>
+              <p>Teacher: teacher / teacher123</p>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">پاسورڈ</label>
-              <input
-                type="password"
-                className="form-input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="پاسورڈ درج کریں"
-                autoComplete="current-password"
-                style={{ direction: 'ltr', textAlign: 'right' }}
-                disabled={loading}
-              />
+            <div className="login-footer-return">
+              <Link to="/" className="login-footer-link">
+                <FiHome size={16} />
+                <span>مرکزی ویب سائٹ (ہوم پیج)</span>
+              </Link>
             </div>
-
-            <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
-              {loading ? 'لاگ ان ہو رہا ہے...' : 'لاگ ان'}
-            </button>
-          </form>
-
-          <div className="login-test-info">
-            <h4>لاگ ان معلومات:</h4>
-            <p>Admin: admin / admin123</p>
-            <p>Teacher: teacher / teacher123</p>
           </div>
         </div>
       </div>
