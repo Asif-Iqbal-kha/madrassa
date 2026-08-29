@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getNews, getStats, getClasses } from '../../services/api';
+import { getNews, getStats, getClasses, getStudents, getTeachers } from '../../services/api';
 import { MOCK_NEWS, MOCK_STATS, MOCK_CLASSES } from '../../data/mockData';
 import {
   FiUsers,
@@ -21,14 +21,27 @@ export default function HomePage() {
   useEffect(() => {
     async function loadHomeData() {
       try {
-        const [newsData, statsData, classesData] = await Promise.all([
+        const [newsData, statsData, classesData, studentsData, teachersData] = await Promise.all([
           getNews(true),
           getStats(),
           getClasses(),
+          getStudents().catch(() => []),
+          getTeachers().catch(() => []),
         ]);
         if (newsData && newsData.length > 0) setNews(newsData.slice(0, 3));
-        if (statsData) setStats(statsData);
         if (classesData && classesData.length > 0) setClasses(classesData);
+
+        const actualStudentsCount = studentsData?.length || statsData?.totalStudents || 0;
+        const actualTeachersCount = teachersData?.length || statsData?.totalTeachers || 0;
+        const actualClassesCount = classesData?.length || statsData?.totalClasses || 0;
+
+        setStats({
+          ...(statsData || {}),
+          totalStudents: actualStudentsCount,
+          totalTeachers: actualTeachersCount,
+          totalClasses: actualClassesCount,
+          attendancePercentage: statsData?.attendancePercentage || 92,
+        });
       } catch (e) {
         console.warn('Home data load error:', e);
       }

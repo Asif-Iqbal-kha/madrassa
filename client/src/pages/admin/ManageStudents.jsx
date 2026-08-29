@@ -324,6 +324,18 @@ export default function ManageStudents() {
       {selectedStudent && (
         <div className="modal-overlay" onClick={() => setSelectedStudent(null)}>
           <div className="student-detail-modal-dialog" onClick={(e) => e.stopPropagation()}>
+            {/* Official Madrassa Header for Print Only */}
+            <div className="student-modal-print-header">
+              <img src="/logo.png" alt="مدرسہ لوگو" className="student-modal-print-logo" />
+              <div className="student-modal-print-info">
+                <h3>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
+                <p>توحید کالونی، چارسدہ روڈ، مردان — طالب علم کا دفتری و تعلیمی ریکارڈ فائل</p>
+              </div>
+              <div className="student-modal-print-date">
+                تاریخِ پرنٹ: {new Date().toISOString().split('T')[0]}
+              </div>
+            </div>
+
             {/* Header Banner with Student Photo / Avatar */}
             <div className="student-profile-header-banner">
               <div className="student-profile-identity">
@@ -529,10 +541,27 @@ export default function ManageStudents() {
                   </div>
                 )}
               </div>
+
+              {/* Official Signatures for Print Only */}
+              <div className="student-modal-print-signatures">
+                <div className="print-sig-box">
+                  <div className="print-sig-line"></div>
+                  <span>دستخط ناظمِ داخلہ و تعلیمات</span>
+                </div>
+                <div className="print-sig-box stamp-box">
+                  <div className="print-stamp-badge">
+                    <span>تصدیق شدہ دفتری ریکارڈ</span>
+                  </div>
+                </div>
+                <div className="print-sig-box">
+                  <div className="print-sig-line"></div>
+                  <span>دستخط و مہر مہتمم صاحب مدظلہ</span>
+                </div>
+              </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="modal-footer" style={{ borderTop: '1px solid var(--color-border-light)' }}>
+            <div className="modal-footer no-print" style={{ borderTop: '1px solid var(--color-border-light)' }}>
               <button
                 type="button"
                 className="btn btn-outline btn-sm"
