@@ -2090,3 +2090,135 @@
   }
 }
 
+/* ===================================================
+   TRADITIONAL DIGNIFIED ADMISSION PAGE STYLES
+=================================================== */
+
+.madrassa-admission-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 30px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .madrassa-admission-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admission-form-paper {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-light);
+  border-top: 4px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 30px 32px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 600px) {
+  .admission-form-paper {
+    padding: 20px 16px;
+  }
+}
+
+.admission-form-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.admission-form-bismillah {
+  font-family: var(--font-heading, 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif);
+  font-size: 1.25rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 6px;
+}
+
+.admission-form-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 6px;
+}
+
+.admission-form-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.admission-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+}
+
+.admission-section-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  white-space: nowrap;
+}
+
+.admission-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--color-border-light);
+}
+
+.admission-payment-modest-box {
+  background: #FAFAF7;
+  border: 1px solid #E5E7EB;
+  border-right: 3px solid var(--color-primary);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.admission-sidebar-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.admission-sidebar-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.admission-rules-list {
+  padding-right: 18px;
+  margin: 0;
+  list-style: disc;
+}
+
+.admission-rules-list li {
+  margin-bottom: 8px;
+  font-size: 0.86rem;
+  color: var(--color-text);
+  line-height: 1.8;
+}
+
+.admission-account-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--color-border-light);
+  font-size: 0.86rem;
+}
+
+.admission-account-row:last-child {
+  border-bottom: none;
+}
+
