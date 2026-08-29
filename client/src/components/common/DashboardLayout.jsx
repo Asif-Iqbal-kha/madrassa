@@ -15,6 +15,11 @@ export default function DashboardLayout() {
     student: 'لوحہ طالب علم',
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="dashboard-layout">
       <Sidebar />
@@ -24,6 +29,15 @@ export default function DashboardLayout() {
             <h2 className="dashboard-topbar-title">{roleLabels[user?.role] || 'ڈیش بورڈ'}</h2>
             <div className="dashboard-topbar-info">
               <span className="dashboard-topbar-name">{user?.name}</span>
+              <button
+                className="dashboard-topbar-logout"
+                onClick={handleLogout}
+                title="لاگ آؤٹ"
+                aria-label="لاگ آؤٹ"
+              >
+                <FiLogOut size={16} />
+                <span>لاگ آؤٹ</span>
+              </button>
             </div>
           </div>
         </header>
