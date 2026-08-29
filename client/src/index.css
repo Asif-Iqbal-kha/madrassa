@@ -1,7 +1,30 @@
 /* ============================================
-   مدرسہ سیدنا صدیق اکبرؓ - Design System
-   Inspired by US Government Websites
+   مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ - Design System
    ============================================ */
+
+/* Jameel Noori Nastaleeq Webfont */
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  src: local('Jameel Noori Nastaleeq'),
+       local('Jameel Noori Nastaliq'),
+       local('JameelNooriNastaliq'),
+       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2'),
+       url('https://unpkg.com/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Jameel Noori Nastaleeq';
+  src: local('Jameel Noori Nastaleeq Bold'),
+       local('Jameel Noori Nastaleeq'),
+       local('Jameel Noori Nastaliq'),
+       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* CSS Custom Properties */
 :root {
@@ -27,8 +50,9 @@
   --color-info: #1565C0;
 
   /* Typography */
-  --font-heading: 'Noto Nastaliq Urdu', serif;
-  --font-body: 'Noto Naskh Arabic', 'Arial', sans-serif;
+  --font-urdu: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
+  --font-heading: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
+  --font-body: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Naskh Arabic', 'Arial', sans-serif;
   --font-english: 'Inter', sans-serif;
 
   /* Spacing */
