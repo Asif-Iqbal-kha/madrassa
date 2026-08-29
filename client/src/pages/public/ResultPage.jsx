@@ -314,6 +314,7 @@ export default function ResultPage() {
                     {/* Official Signatures & Verification Seal */}
                     <div className="result-card-signatures">
                       <div className="sig-block">
+                        <div className="sig-space-holder"></div>
                         <div className="sig-line"></div>
                         <span className="sig-title">دستخط ممتحن / ناظم امتحانات</span>
                       </div>
@@ -323,9 +324,17 @@ export default function ResultPage() {
                           <span>تصدیق شدہ امتحانی ریکارڈ</span>
                         </div>
                       </div>
-                      <div className="sig-block">
+                      <div className="sig-block sig-block-muhtamim">
+                        <div className="sig-img-wrapper">
+                          <img
+                            src="./muhtamim-signature.png"
+                            alt="دستخط مہتمم مولانا مفتی عمر صاحب"
+                            className="sig-muhtamim-img"
+                          />
+                        </div>
                         <div className="sig-line"></div>
                         <span className="sig-title">دستخط مہتمم / صدر مدرس</span>
+                        <span className="sig-name">(حضرت مولانا مفتی عمر صاحب مدظلہ)</span>
                       </div>
                     </div>
 
