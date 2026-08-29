@@ -482,13 +482,45 @@ export async function searchStudentResult(rollNumber) {
 // ----------------- STATS API -----------------
 
 export async function getStats() {
+  let serverStats = null;
   try {
     const res = await fetch(`${API_BASE}/stats`, { headers: getAuthHeaders() });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      serverStats = await res.json();
+    }
   } catch (err) {
-    console.warn('getStats failed:', err);
+    console.warn('getStats failed, using dynamic local reconciliation:', err);
   }
-  return MOCK_STATS;
+
+  // Get live counts directly from actual data entities
+  const [students, teachers, classes, admissions, donations] = await Promise.all([
+    getStudents().catch(() => []),
+    getTeachers().catch(() => []),
+    getClasses().catch(() => []),
+    getAdmissions().catch(() => []),
+    getDonations().catch(() => []),
+  ]);
+
+  const liveTotalStudents = students.length;
+  const liveTotalTeachers = teachers.length;
+  const liveTotalClasses = classes.length;
+  const livePendingAdmissions = admissions.filter(
+    (a) => a.status === 'pending' || a.status === 'under_review'
+  ).length;
+  const livePendingDonations = donations.filter(
+    (d) => d.status === 'pending'
+  ).length;
+
+  return {
+    totalStudents: liveTotalStudents > 0 ? liveTotalStudents : (serverStats?.totalStudents || 0),
+    activeStudents: students.filter((s) => s.status === 'active').length || liveTotalStudents,
+    totalTeachers: liveTotalTeachers > 0 ? liveTotalTeachers : (serverStats?.totalTeachers || 0),
+    totalClasses: liveTotalClasses > 0 ? liveTotalClasses : (serverStats?.totalClasses || 0),
+    todayAttendance: serverStats?.todayAttendance || Math.round(liveTotalStudents * 0.92),
+    attendancePercentage: serverStats?.attendancePercentage || 92,
+    pendingDonations: livePendingDonations > 0 ? livePendingDonations : (serverStats?.pendingDonations || 0),
+    pendingAdmissions: livePendingAdmissions,
+  };
 }
 
 // ----------------- DONATIONS API -----------------

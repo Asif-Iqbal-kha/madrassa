@@ -628,3 +628,267 @@
   color: #1f2937;
   font-weight: 500;
 }
+
+/* Hidden by default on screen */
+.student-modal-print-header,
+.student-modal-print-signatures {
+  display: none;
+}
+
+/* ===================================================
+   PRINT STYLING FOR STUDENT RECORD PROFILE
+=================================================== */
+@media print {
+  /* Hide all dashboard layout elements */
+  .dash-sidebar,
+  .dash-header,
+  .dash-content > h2,
+  .dash-content > p,
+  .dash-stats,
+  .stats-grid,
+  .filter-bar,
+  .table-actions,
+  .table-container,
+  .pagination,
+  .modal-close,
+  .modal-footer,
+  .btn,
+  .no-print {
+    display: none !important;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .dash-layout,
+  .dash-main,
+  .dash-content,
+  .modal-overlay {
+    position: static !important;
+    display: block !important;
+    background: transparent !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: none !important;
+  }
+
+  .student-detail-modal-dialog {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 18px 24px !important;
+    border: 2px solid #143223 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    background: #FFFFFF !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Official Madrassa Header in Print */
+  .student-modal-print-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 2px solid #143223 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .student-modal-print-logo {
+    max-height: 60px !important;
+    max-width: 60px !important;
+    object-fit: contain !important;
+  }
+
+  .student-modal-print-info {
+    text-align: center !important;
+    flex-grow: 1 !important;
+  }
+
+  .student-modal-print-info h3 {
+    margin: 0 0 4px !important;
+    font-size: 1.25rem !important;
+    color: #143223 !important;
+  }
+
+  .student-modal-print-info p {
+    margin: 0 !important;
+    font-size: 0.82rem !important;
+    color: #475569 !important;
+  }
+
+  .student-modal-print-date {
+    font-size: 0.76rem !important;
+    color: #64748b !important;
+  }
+
+  /* Student Identity Banner in Print */
+  .student-profile-header-banner {
+    display: flex !important;
+    background: #143223 !important;
+    color: #FFFFFF !important;
+    padding: 12px 18px !important;
+    border-radius: 4px !important;
+    margin-bottom: 14px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .student-profile-identity {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+  }
+
+  .student-profile-avatar {
+    width: 65px !important;
+    height: 65px !important;
+    border: 2px solid #b8960c !important;
+    border-radius: 4px !important;
+  }
+
+  .student-profile-avatar img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  .student-profile-titles h3 {
+    font-size: 1.25rem !important;
+    color: #FFFFFF !important;
+    margin: 0 0 4px !important;
+  }
+
+  .student-profile-badges {
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .student-pill-badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    font-size: 0.78rem !important;
+    padding: 2px 8px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .student-pill-badge-gold {
+    background: #b8960c !important;
+    color: #143223 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Details Sections */
+  .student-detail-section {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-right: 4px solid #143223 !important;
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .student-detail-section-title {
+    color: #143223 !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    border-bottom: 1.5px solid #143223 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .student-detail-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px 14px !important;
+  }
+
+  .student-info-item {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    padding: 3px 0 !important;
+  }
+
+  .student-info-label {
+    font-size: 0.76rem !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+  }
+
+  .student-info-value {
+    font-size: 0.84rem !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  /* Signatures for Print */
+  .student-modal-print-signatures {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    margin-top: 24px !important;
+    padding-top: 14px !important;
+    border-top: 1.5px dashed #64748b !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-sig-box {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    min-width: 160px !important;
+    text-align: center !important;
+  }
+
+  .print-sig-line {
+    width: 100% !important;
+    height: 1.5px !important;
+    background: #000000 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .print-sig-box span {
+    font-size: 0.78rem !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+
+  .print-stamp-badge {
+    border: 2px dashed #b8960c !important;
+    border-radius: 40px !important;
+    padding: 6px 14px !important;
+    background: #fefce8 !important;
+    color: #854d0e !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
