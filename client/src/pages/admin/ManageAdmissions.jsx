@@ -319,42 +319,93 @@ export default function ManageAdmissions() {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+              {/* Student Photo & Identity if present */}
+              {showDetail.studentPhotoData && (
+                <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                  <img
+                    src={showDetail.studentPhotoData}
+                    alt={showDetail.studentName}
+                    style={{ width: '90px', height: '110px', objectFit: 'cover', borderRadius: '6px', border: '2px solid var(--color-primary)' }}
+                  />
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>طالب علم کی تازہ تصویر</div>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px', fontSize: '0.88rem' }}>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>طالب علم کا نام</span>
-                  <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{showDetail.studentName}</p>
+                  <p style={{ margin: '2px 0 0', fontWeight: 700, color: 'var(--color-primary-dark)' }}>{showDetail.studentName}</p>
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>والد کا نام</span>
-                  <p style={{ margin: '4px 0 0', fontWeight: 600 }}>{showDetail.fatherName}</p>
+                  <p style={{ margin: '2px 0 0', fontWeight: 600 }}>{showDetail.fatherName}</p>
                 </div>
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>CNIC</span>
-                  <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.cnic}</p>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ب فارم / شناختی کارڈ</span>
+                  <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.cnic || 'درج نہیں'}</p>
                 </div>
                 <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>فون</span>
-                  <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.phone}</p>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>رابطہ فون</span>
+                  <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.phone}</p>
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>مطلوبہ درجہ</span>
-                  <p style={{ margin: '4px 0 0' }}>{showDetail.desiredClass}</p>
-                </div>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>پچھلی تعلیم</span>
-                  <p style={{ margin: '4px 0 0' }}>{showDetail.previousEducation}</p>
+                  <p style={{ margin: '2px 0 0', fontWeight: 600, color: 'var(--color-primary)' }}>{showDetail.desiredClass}</p>
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>تاریخ پیدائش</span>
-                  <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.dateOfBirth}</p>
+                  <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.dateOfBirth || 'درج نہیں'}</p>
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>شناختی علامت</span>
+                  <p style={{ margin: '2px 0 0' }}>{showDetail.identificationMark || 'کوئی نہیں'}</p>
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ازدواجی حیثیت</span>
+                  <p style={{ margin: '2px 0 0' }}>{showDetail.maritalStatus || 'مجرد'}</p>
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>سابقہ تعلیم</span>
+                  <p style={{ margin: '2px 0 0' }}>{showDetail.previousEducation || 'درج نہیں'}</p>
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>تاریخ درخواست</span>
-                  <p style={{ margin: '4px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.date}</p>
+                  <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.date}</p>
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>پتہ</span>
-                  <p style={{ margin: '4px 0 0' }}>{showDetail.address}</p>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>مستقل پتہ</span>
+                  <p style={{ margin: '2px 0 0' }}>{showDetail.permanentAddress || showDetail.address || 'درج نہیں'}</p>
+                </div>
+              </div>
+
+              {/* Guardian Info Card */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '12px 14px', marginBottom: '16px' }}>
+                <h5 style={{ margin: '0 0 8px', color: 'var(--color-primary-dark)', fontSize: '0.88rem' }}>والد و سرپرست کی معلومات</h5>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.82rem' }}>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>سرپرست کا نام:</span>
+                    <p style={{ margin: '2px 0 0', fontWeight: 600 }}>{showDetail.guardianName || showDetail.fatherName}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>سرپرست کی ولدیت:</span>
+                    <p style={{ margin: '2px 0 0' }}>{showDetail.guardianFatherName || 'درج نہیں'}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>امیدوار سے رشتہ:</span>
+                    <p style={{ margin: '2px 0 0' }}>{showDetail.guardianRelation || 'والد'}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>سرپرست کا فون:</span>
+                    <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.guardianPhone || showDetail.phone}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>سرپرست کا شناختی کارڈ:</span>
+                    <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)' }}>{showDetail.guardianCnic || 'درج نہیں'}</p>
+                  </div>
+                  <div>
+                    <span style={{ color: 'var(--color-text-muted)' }}>مردان میں رشتہ دار:</span>
+                    <p style={{ margin: '2px 0 0' }}>{showDetail.mardanRelative || 'کوئی درج نہیں'}</p>
+                  </div>
                 </div>
               </div>
 
