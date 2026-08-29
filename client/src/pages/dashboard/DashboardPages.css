@@ -506,3 +506,125 @@
     border-radius: var(--radius-md);
   }
 }
+
+/* ===== Student Detailed Profile Modal Styles ===== */
+.student-detail-modal-dialog {
+  max-width: 850px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.student-profile-header-banner {
+  background: linear-gradient(135deg, #143223 0%, #1c4b34 100%);
+  color: #FFFFFF;
+  padding: 24px 28px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.student-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.student-profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 3px solid var(--color-accent, #B8960C);
+  background: #FFFFFF;
+  color: #143223;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.student-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.student-profile-titles h3 {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+  color: #FFFFFF;
+}
+
+.student-profile-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.student-pill-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  padding: 3px 12px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+}
+
+.student-pill-badge-gold {
+  background: var(--color-accent, #B8960C);
+  color: #143223;
+  font-weight: 700;
+}
+
+.student-detail-section {
+  background: #FAFAF7;
+  border: 1px solid var(--color-border-light, #E5E7EB);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+}
+
+.student-detail-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #143223;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-accent, #B8960C);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px 20px;
+}
+
+.student-info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-info-label {
+  font-size: 0.76rem;
+  color: #6b7280;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.student-info-value {
+  font-size: 0.92rem;
+  color: #1f2937;
+  font-weight: 500;
+}
