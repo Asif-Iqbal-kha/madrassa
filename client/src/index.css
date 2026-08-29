@@ -101,6 +101,9 @@
 html {
   font-size: 18px;
   direction: rtl;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 body {
@@ -111,6 +114,10 @@ body {
   line-height: 2.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
 }
 
 /* Typography */
