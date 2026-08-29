@@ -44,11 +44,17 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <img src="./logo.png" alt="لوگو" className="sidebar-madrassa-logo" />
-        <div className="sidebar-user-info">
-          <p className="sidebar-user-name">{user.name}</p>
-          <p className="sidebar-user-role">{roleLabels[user.role] || user.role}</p>
+        <div className="sidebar-header-brand">
+          <img src="./logo.png" alt="لوگو" className="sidebar-madrassa-logo" />
+          <div className="sidebar-user-info">
+            <p className="sidebar-user-name">{user.name}</p>
+            <p className="sidebar-user-role">{roleLabels[user.role] || user.role}</p>
+          </div>
         </div>
+        <button className="sidebar-header-logout" onClick={handleLogout} title="لاگ آؤٹ" aria-label="لاگ آؤٹ">
+          <FiLogOut size={16} />
+          <span>لاگ آؤٹ</span>
+        </button>
       </div>
 
       <nav className="sidebar-nav">
