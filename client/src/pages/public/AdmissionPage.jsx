@@ -1,5 +1,4 @@
 import { useState, useRef } from 'react';
-import { MOCK_CLASSES } from '../../data/mockData';
 import { submitAdmission } from '../../services/api';
 import {
   FiCheckCircle,
@@ -242,12 +241,7 @@ export default function AdmissionPage() {
                       }}
                     >
                       <option value="حفظ قرآن کریم" style={{ color: '#000' }}>حفظ قرآن کریم</option>
-                      <option value="ناظرہ قرآن کریم" style={{ color: '#000' }}>ناظرہ قرآن کریم</option>
-                      <option value="درجہ اولیٰ" style={{ color: '#000' }}>درجہ اولیٰ (عامہ سال اول)</option>
-                      <option value="درجہ ثانیہ" style={{ color: '#000' }}>درجہ ثانیہ (عامہ سال دوم)</option>
-                      <option value="درجہ ثالثہ" style={{ color: '#000' }}>درجہ ثالثہ (خاصہ سال اول)</option>
-                      <option value="درجہ رابعہ" style={{ color: '#000' }}>درجہ رابعہ (خاصہ سال دوم)</option>
-                      <option value="تجوید و قرأت" style={{ color: '#000' }}>تجوید و قرأت</option>
+                      <option value="ناظرہ" style={{ color: '#000' }}>ناظرہ</option>
                     </select>
                   </div>
                 </div>
@@ -869,7 +863,6 @@ export default function AdmissionPage() {
                   <li>طالب علم کا مسلمان اور صحیح العقیدہ ہونا لازمی ہے۔</li>
                   <li>شعبہ ناظرہ کے لیے کم از کم عمر 5 سال ہونی چاہیے۔</li>
                   <li>شعبہ حفظ کے لیے ناظرہ قرآن مع تجوید مکمل ہونا ضروری ہے۔</li>
-                  <li>درجاتِ کتب کے لیے پچھلے درجے کی سند یا کشف الدرجات لازم ہے۔</li>
                   <li>داخلہ فارم کے ہمراہ فیس 1,000 روپے کی رسید منسلک فرمائیں۔</li>
                   <li>ٹیسٹ و انٹرویو کے وقت 2 عدد تازہ تصاویر اور شناختی کارڈ کی کاپی ہمراہ لائیں۔</li>
                 </ul>
