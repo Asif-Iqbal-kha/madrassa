@@ -8,6 +8,8 @@ import {
   FiUser,
   FiCheckSquare,
   FiArrowLeft,
+  FiShield,
+  FiAward,
 } from 'react-icons/fi';
 import './PublicPages.css';
 
@@ -41,14 +43,14 @@ export default function HomePage() {
         <div className="hero-overlay"></div>
         <div className="container hero-content">
           <div className="hero-logo-wrapper">
-            <img src="./logo.png" alt="مدرسہ سیدنا صدیق اکبر رضی اللہ عنہ" className="hero-logo-img" />
+            <img src="./logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ" className="hero-logo-img" />
           </div>
-          <h1 className="hero-title">مدرسہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
-          <p className="hero-subtitle-en">Madrassa Syedina Sadeeq-e-Akbar (RA)</p>
+          <h1 className="hero-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
+          <p className="hero-subtitle-en">Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
           <p className="hero-desc">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا — تعلیم القرآن و حفظ اور دینی علوم کا مرکز</p>
           <div className="hero-actions">
             <Link to="/admission" className="btn btn-accent btn-lg">داخلہ معلومات</Link>
-            <Link to="/about" className="btn btn-outline btn-lg hero-btn-outline">مدرسہ کا تعارف</Link>
+            <Link to="/about" className="btn btn-outline btn-lg hero-btn-outline">مدرسہ کا تعارف و منہاج</Link>
           </div>
         </div>
       </section>
@@ -77,6 +79,73 @@ export default function HomePage() {
               <div className="stat-number">{stats.attendancePercentage}%</div>
               <div className="stat-label">حاضری شرح</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Objectives Section */}
+      <section className="section" style={{ backgroundColor: '#ffffff' }}>
+        <div className="container">
+          <h2 className="section-title">دینی مدارس کا بنیادی مقصد اور اہم مقاصد</h2>
+          <div className="objectives-lead-card" style={{ marginBottom: '28px' }}>
+            دینی مدارس کا بنیادی مقصد قرآن و سنت کی روشنی میں طلبا کو اسلامی تعلیمات سے روشناس کرانا اور معاشرے کے لیے ایسے صالح اور باعمل افراد تیار کرنا ہے جو دین کی صحیح فہم و فراست رکھتے ہوں۔
+          </div>
+
+          <div className="objectives-grid">
+            <div className="objective-item-card">
+              <div className="objective-card-header">
+                <div className="objective-card-icon">
+                  <FiBookOpen size={22} />
+                </div>
+                <h3 className="objective-card-title">دینی علوم کا تحفظ</h3>
+              </div>
+              <p className="objective-card-desc">
+                وحی الٰہی یعنی قرآن و سنت کے علوم کو محفوظ کرنا اور انہیں سینہ بسینہ اگلی نسلوں تک منتقل کرنا۔
+              </p>
+            </div>
+
+            <div className="objective-item-card">
+              <div className="objective-card-header">
+                <div className="objective-card-icon">
+                  <FiAward size={22} />
+                </div>
+                <h3 className="objective-card-title">کردار اور اخلاقی تربیت</h3>
+              </div>
+              <p className="objective-card-desc">
+                طلبا کی اخلاقی و روحانی تربیت کرنا تاکہ وہ عملی زندگی میں اسلامی اصولوں کے مطابق زندگی بسر کر سکیں۔
+              </p>
+            </div>
+
+            <div className="objective-item-card">
+              <div className="objective-card-header">
+                <div className="objective-card-icon">
+                  <FiUsers size={22} />
+                </div>
+                <h3 className="objective-card-title">دینی قیادت کی فراہمی</h3>
+              </div>
+              <p className="objective-card-desc">
+                معاشرے کو مسجد و محراب کے لیے امام، خطیب، مفتی اور معلم مہیا کرنا جو دینی مسائل میں عوام کی رہنمائی کر سکیں۔
+              </p>
+            </div>
+
+            <div className="objective-item-card">
+              <div className="objective-card-header">
+                <div className="objective-card-icon">
+                  <FiShield size={22} />
+                </div>
+                <h3 className="objective-card-title">اسلامی اقدار کا دفاع</h3>
+              </div>
+              <p className="objective-card-desc">
+                اسلامی عقائد، ثقافت اور اقدار کا تحفظ کرنا اور وقت کے فکری و نظری چیلنجز کا علمی انداز میں مقابلہ کرنا۔
+              </p>
+            </div>
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '28px' }}>
+            <Link to="/about" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span>دینی درس گاہوں کے منہاج و مقاصد کی مکمل تفصیلات پڑھیں</span>
+              <FiArrowLeft size={16} />
+            </Link>
           </div>
         </div>
       </section>

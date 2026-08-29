@@ -112,7 +112,7 @@ export default function DonationPage() {
       <div className="page-header">
         <div className="container">
           <h1>عطیات</h1>
-          <p>مدرسہ سیدنا صدیق اکبرؓ کے لیے عطیہ دیں</p>
+          <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ کے لیے عطیہ دیں</p>
         </div>
       </div>
 
@@ -139,12 +139,12 @@ export default function DonationPage() {
               <div className="payment-detail-card">
                 <h4>JazzCash</h4>
                 <p className="payment-number">0300-1234567</p>
-                <p className="payment-name">مدرسہ سیدنا صدیق اکبرؓ</p>
+                <p className="payment-name">مدرسہ عربیہ سیدنا صدیق اکبرؓ</p>
               </div>
               <div className="payment-detail-card">
                 <h4>EasyPaisa</h4>
                 <p className="payment-number">0300-7654321</p>
-                <p className="payment-name">مدرسہ سیدنا صدیق اکبرؓ</p>
+                <p className="payment-name">مدرسہ عربیہ سیدنا صدیق اکبرؓ</p>
               </div>
               <div className="payment-detail-card">
                 <h4>بینک ٹرانسفر</h4>

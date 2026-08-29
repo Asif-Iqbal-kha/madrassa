@@ -95,7 +95,7 @@ export default function AdmissionPage() {
           <div className="content-block">
             <h2>داخلہ کی شرائط</h2>
             <p>
-              مدرسہ سیدنا صدیق اکبرؓ میں داخلہ کے لیے درج ذیل شرائط کا پورا کرنا ضروری ہے:
+              مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ میں داخلہ کے لیے درج ذیل شرائط کا پورا کرنا ضروری ہے:
             </p>
             <ul style={{ listStyle: 'disc', paddingRight: '24px', marginTop: '8px' }}>
               <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>طالب علم مسلمان ہو</li>
