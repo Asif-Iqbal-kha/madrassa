@@ -50,10 +50,10 @@ export default function Header() {
       <div className="header-main">
         <div className="container header-main-inner">
           <Link to="/" className="header-brand">
-            <img src="./logo.png" alt="لوگو مدرسہ سیدنا صدیق اکبرؓ" className="header-logo-img" />
+            <img src="./logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبرؓ" className="header-logo-img" />
             <div className="header-title-group">
-              <h1 className="header-title">مدرسہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
-              <p className="header-subtitle">توحید کالونی، چارسدہ روڈ، مردان | Madrassa Syedina Sadeeq-e-Akbar (RA)</p>
+              <h1 className="header-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
+              <p className="header-subtitle">توحید کالونی، چارسدہ روڈ، مردان | Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
             </div>
           </Link>
         </div>

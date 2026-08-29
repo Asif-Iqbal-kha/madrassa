@@ -1762,3 +1762,147 @@
   }
 }
 
+/* ===== Objectives & Ideology / Manifesto Styles ===== */
+.objectives-lead-card {
+  background: linear-gradient(135deg, rgba(20, 50, 35, 0.04) 0%, rgba(184, 150, 12, 0.08) 100%);
+  border-right: 4px solid var(--color-accent);
+  padding: 24px 30px;
+  border-radius: var(--radius-md);
+  margin-bottom: 30px;
+  font-size: 1.15rem;
+  line-height: 2.2;
+  color: var(--color-primary-dark);
+  font-weight: 500;
+}
+
+.objectives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.objective-item-card {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+  border-radius: var(--radius-lg, 12px);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.objective-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-accent);
+}
+
+.objective-item-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+}
+
+.objective-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.objective-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(20, 50, 35, 0.08);
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.objective-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin: 0;
+}
+
+.objective-card-desc {
+  color: var(--color-text-secondary);
+  line-height: 1.9;
+  font-size: 0.98rem;
+  margin: 0;
+}
+
+/* Manifesto / Scholarly Treatise Section */
+.manifesto-container {
+  background: #ffffff;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-sm);
+}
+
+.manifesto-paragraph {
+  line-height: 2.3;
+  font-size: 1.06rem;
+  color: var(--color-text-primary, #1e293b);
+  margin-bottom: 22px;
+  text-align: justify;
+}
+
+.urdu-poetry-box {
+  background: linear-gradient(135deg, #143223 0%, #1e4530 100%);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin: 36px 0 20px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(20, 50, 35, 0.2);
+  border: 2px solid var(--color-accent);
+  position: relative;
+}
+
+.urdu-poetry-label {
+  display: inline-block;
+  background: var(--color-accent);
+  color: #143223;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.urdu-poetry-lines {
+  font-family: var(--font-heading, 'Noto Nastaliq Urdu', serif);
+  font-size: 1.45rem;
+  line-height: 2.4;
+  color: #fef08a;
+  margin: 0;
+  direction: rtl;
+}
+
+.urdu-poetry-line {
+  margin: 6px 0;
+}
+
+@media (max-width: 768px) {
+  .manifesto-container {
+    padding: 20px 18px;
+  }
+  .urdu-poetry-lines {
+    font-size: 1.2rem;
+    line-height: 2.1;
+  }
+}
+

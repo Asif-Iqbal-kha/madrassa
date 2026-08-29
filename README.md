@@ -1,6 +1,6 @@
-# مدرسہ سیدنا صدیق اکبرؓ - ویب ایپلیکیشن
+# مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ - ویب ایپلیکیشن
 
-Madrassa Syedina Sadeeq-e-Akbar (RA) - Mardan
+Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA) - Mardan
 
 ## تکنیکی اسٹیک
 
