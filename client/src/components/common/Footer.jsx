@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="footer-col">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <img src="./logo.png" alt="لوگو" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', padding: '2px', border: '1px solid var(--color-accent)' }} />
-                <h4 className="footer-heading" style={{ margin: 0, paddingBottom: '4px' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h4>
+                <h4 className="footer-heading" style={{ margin: 0, paddingBottom: '4px' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h4>
               </div>
               <p className="footer-text">
                 توحید کالونی، چارسدہ روڈ، مردان میں واقع ایک معتبر دینی تعلیمی ادارہ جو ناظرہ، حفظ القرآن اور
@@ -49,7 +49,7 @@ export default function Footer() {
                     📍 توحید کالونی، چارسدہ روڈ، مردان (گوگل میپ)
                   </a>
                 </p>
-                <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}>0315 3044992</a></p>
+                <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
                 <p>ای میل: info@madrassasadeeq.pk</p>
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
-          <p>جملہ حقوق محفوظ ہیں &copy; {new Date().getFullYear()} مدرسہ عربیہ سیدنا صدیق اکبرؓ، مردان</p>
+          <p>جملہ حقوق محفوظ ہیں &copy; {new Date().getFullYear()} مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ، مردان</p>
         </div>
       </div>
     </footer>

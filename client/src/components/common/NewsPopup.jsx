@@ -69,7 +69,7 @@ export default function NewsPopup() {
 
         {/* Footer */}
         <div className="news-popup-footer">
-          <span className="news-popup-madrassa">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</span>
+          <span className="news-popup-madrassa">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</span>
           <button className="btn btn-outline btn-sm news-popup-dismiss" onClick={handleClose}>
             بند کریں
           </button>

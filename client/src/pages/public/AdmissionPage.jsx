@@ -95,7 +95,7 @@ export default function AdmissionPage() {
           <div className="content-block">
             <h2>داخلہ کی شرائط</h2>
             <p>
-              مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ میں داخلہ کے لیے درج ذیل شرائط کا پورا کرنا ضروری ہے:
+              مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ میں داخلہ کے لیے درج ذیل شرائط کا پورا کرنا ضروری ہے:
             </p>
             <ul style={{ listStyle: 'disc', paddingRight: '24px', marginTop: '8px' }}>
               <li style={{ marginBottom: '8px', color: 'var(--color-text-secondary)' }}>طالب علم مسلمان ہو</li>
@@ -284,7 +284,7 @@ export default function AdmissionPage() {
             <p>
               مزید معلومات کے لیے مدرسہ کے دفتر سے رابطہ کریں:
               <br />
-              فون / واٹس ایپ: <a href="tel:03153044992">0315 3044992</a>
+              فون / واٹس ایپ: <a href="tel:03153044992"><span dir="ltr" className="ltr-text">0315 3044992</span></a>
               <br />
               پتہ: <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-dark)', textDecoration: 'underline' }}>توحید کالونی، چارسدہ روڈ، مردان (گوگل میپ)</a>
             </p>
