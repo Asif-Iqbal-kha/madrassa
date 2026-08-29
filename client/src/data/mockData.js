@@ -9,24 +9,24 @@ export const TEST_CREDENTIALS = {
 
 // Classes
 export const MOCK_CLASSES = [
-  { _id: 'c1', name: 'ناظرہ', year: '1446', teacher: 't1', studentsCount: 25, isActive: true },
-  { _id: 'c2', name: 'حفظ', year: '1446', teacher: 't2', studentsCount: 18, isActive: true },
-  { _id: 'c3', name: 'درجہ اول', year: '1446', teacher: 't3', studentsCount: 30, isActive: true },
-  { _id: 'c4', name: 'درجہ دوم', year: '1446', teacher: 't1', studentsCount: 22, isActive: true },
-  { _id: 'c5', name: 'درجہ سوم', year: '1446', teacher: 't2', studentsCount: 28, isActive: true },
-  { _id: 'c6', name: 'درجہ چہارم', year: '1446', teacher: 't3', studentsCount: 20, isActive: true },
-  { _id: 'c7', name: 'درجہ پنجم', year: '1446', teacher: 't1', studentsCount: 15, isActive: true },
-  { _id: 'c8', name: 'درجہ ششم', year: '1446', teacher: 't2', studentsCount: 19, isActive: true },
-  { _id: 'c9', name: 'درجہ ہفتم', year: '1446', teacher: 't3', studentsCount: 17, isActive: true },
-  { _id: 'c10', name: 'درجہ ہشتم', year: '1446', teacher: 't1', studentsCount: 12, isActive: true },
+  { _id: 'c1', name: 'ناظرہ', year: '1447', teacher: 't4', studentsCount: 25, isActive: true },
+  { _id: 'c2', name: 'حفظ قرآن کریم', year: '1447', teacher: 't2', studentsCount: 18, isActive: true },
+  { _id: 'c3', name: 'درجہ اول', year: '1447', teacher: 't3', studentsCount: 30, isActive: true },
+  { _id: 'c4', name: 'درجہ دوم', year: '1447', teacher: 't1', studentsCount: 22, isActive: true },
+  { _id: 'c5', name: 'درجہ سوم', year: '1447', teacher: 't2', studentsCount: 28, isActive: true },
+  { _id: 'c6', name: 'درجہ چہارم', year: '1447', teacher: 't3', studentsCount: 20, isActive: true },
+  { _id: 'c7', name: 'درجہ پنجم', year: '1447', teacher: 't1', studentsCount: 15, isActive: true },
+  { _id: 'c8', name: 'درجہ ششم', year: '1447', teacher: 't2', studentsCount: 19, isActive: true },
+  { _id: 'c9', name: 'درجہ ہفتم', year: '1447', teacher: 't3', studentsCount: 17, isActive: true },
+  { _id: 'c10', name: 'درجہ ہشتم', year: '1447', teacher: 't1', studentsCount: 12, isActive: true },
 ];
 
 // Teachers
 export const MOCK_TEACHERS = [
-  { _id: 't1', name: 'مولانا عبدالرحمٰن', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classes: ['ناظرہ', 'درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
-  { _id: 't2', name: 'قاری محمد یوسف', subject: 'حفظ القرآن', phone: '03009876543', qualification: 'سند حفظ و قراءت', classes: ['حفظ', 'درجہ سوم', 'درجہ ششم'], isActive: true },
+  { _id: 't1', name: 'مولانا عبدالرحمٰن', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classes: ['درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
+  { _id: 't2', name: 'قاری محمد یوسف', subject: 'حفظ القرآن', phone: '03009876543', qualification: 'سند حفظ و قراءت', classes: ['حفظ قرآن کریم', 'درجہ سوم', 'درجہ ششم'], isActive: true },
   { _id: 't3', name: 'مولانا سعید احمد', subject: 'فقہ و عربی', phone: '03004567890', qualification: 'فضیلت', classes: ['درجہ اول', 'درجہ چہارم', 'درجہ ہفتم'], isActive: true },
-  { _id: 't4', name: 'حافظ عمر فاروق', subject: 'ناظرہ و تجوید', phone: '03007654321', qualification: 'سند تجوید', classes: [], isActive: true },
+  { _id: 't4', name: 'حافظ عمر فاروق', subject: 'ناظرہ و تجوید', phone: '03007654321', qualification: 'سند تجوید', classes: ['ناظرہ'], isActive: true },
   { _id: 't5', name: 'مولانا خالد محمود', subject: 'عربی ادب', phone: '03002345678', qualification: 'شہادۃ العالمیہ', classes: [], isActive: false },
 ];
 

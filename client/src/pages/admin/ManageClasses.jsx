@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { getClasses, createClass, deleteClass, getTeachers } from '../../services/api';
+import { getClasses, createClass, deleteClass, getTeachers, getStudents } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function ManageClasses() {
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [newClass, setNewClass] = useState({ name: '', year: '1447', teacher: '' });
@@ -12,9 +13,10 @@ export default function ManageClasses() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [clsData, tchData] = await Promise.all([getClasses(), getTeachers()]);
+      const [clsData, tchData, stuData] = await Promise.all([getClasses(), getTeachers(), getStudents()]);
       setClasses(clsData || []);
       setTeachers(tchData || []);
+      setStudents(stuData || []);
     } catch (err) {
       console.error('Load classes error:', err);
     } finally {
@@ -31,6 +33,16 @@ export default function ManageClasses() {
     if (typeof teacherField === 'object' && teacherField.name) return teacherField.name;
     const t = teachers.find((tch) => tch._id === teacherField);
     return t ? t.name : '-';
+  };
+
+  const getStudentsCountForClass = (cls) => {
+    const matchingStudents = students.filter((s) => {
+      const sCls = s.className || s.class?.name || s.class;
+      return sCls === cls.name ||
+        (cls.name === 'حفظ قرآن کریم' && (sCls === 'حفظ' || sCls === 'حفظ قرآن کریم')) ||
+        (cls.name === 'ناظرہ' && (sCls === 'ناظرہ' || sCls === 'ناظرہ قرآن کریم'));
+    });
+    return Math.max(cls.studentsCount || 0, matchingStudents.length);
   };
 
   const handleAdd = async () => {
@@ -87,7 +99,7 @@ export default function ManageClasses() {
                 <td>{cls.name}</td>
                 <td style={{ fontFamily: 'var(--font-english)' }}>{cls.year}</td>
                 <td>{getTeacherName(cls.teacher)}</td>
-                <td style={{ fontFamily: 'var(--font-english)' }}>{cls.studentsCount || 0}</td>
+                <td style={{ fontFamily: 'var(--font-english)', fontWeight: 600 }}>{getStudentsCountForClass(cls)}</td>
                 <td>
                   <span className={`badge ${cls.isActive ? 'badge-success' : 'badge-warning'}`}>
                     {cls.isActive ? 'فعال' : 'غیر فعال'}

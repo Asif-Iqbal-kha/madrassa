@@ -164,7 +164,17 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
           const studentCount = await Student.countDocuments();
           const rollNumber = String(1000 + studentCount + 1);
 
-          let targetClass = await Class.findOne({ name: application.desiredClass });
+          let targetClass = await Class.findOne({
+            $or: [
+              { name: application.desiredClass },
+              { name: application.desiredClass === 'حفظ قرآن کریم' ? 'حفظ' : 'حفظ قرآن کریم' },
+              { name: application.desiredClass === 'ناظرہ' ? 'ناظرہ قرآن کریم' : 'ناظرہ' },
+            ],
+          });
+
+          if (targetClass) {
+            await Class.findByIdAndUpdate(targetClass._id, { $inc: { studentsCount: 1 } });
+          }
 
           await Student.create({
             name: application.studentName,
