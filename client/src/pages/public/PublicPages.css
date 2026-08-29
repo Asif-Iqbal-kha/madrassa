@@ -1910,39 +1910,289 @@
 =================================================== */
 
 @media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .print-target,
-  .print-target * {
-    visibility: visible;
-  }
-
-  .print-target {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20px;
-    border: 3px double #000 !important;
-    box-shadow: none !important;
-  }
-
-  .no-print {
-    display: none !important;
-  }
-
+  /* Hide site navigation, headers, footers, and interactive action controls */
+  .no-print,
   .site-header,
   .site-footer,
-  .hero,
-  .stats-bar,
+  .page-header,
   .result-search-box-wrapper,
-  .result-section-header,
-  .classes-grid,
-  .news-card {
+  .result-card-action-bar,
+  .admission-sidebar,
+  .nav-backdrop,
+  button {
     display: none !important;
+  }
+
+  /* Reset document for clean full-page printing */
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .content-page,
+  .container,
+  .results-page,
+  .result-card-container,
+  .madrassa-admission-container,
+  .admission-sheet-scroll-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+  }
+
+  /* ================= RESULT CARD PRINTING ================= */
+  .official-result-card {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 24px 28px !important;
+    border: 3px double #143223 !important;
+    background: #FFFFFF !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .official-result-card * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .result-watermark {
+    opacity: 0.05 !important;
+    visibility: visible !important;
+  }
+
+  .result-card-header-ornament {
+    visibility: visible !important;
+  }
+
+  .result-madrassa-header {
+    display: flex !important;
+    visibility: visible !important;
+  }
+
+  /* Student Information Meta Box */
+  .result-student-meta-box {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    background: #f8fafc !important;
+    border: 1.5px solid #cbd5e1 !important;
+    padding: 10px 14px !important;
+    margin-bottom: 16px !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .meta-item {
+    display: flex !important;
+    flex-direction: column !important;
+    visibility: visible !important;
+  }
+
+  .meta-label {
+    font-size: 0.72rem !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    visibility: visible !important;
+  }
+
+  .meta-val {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    visibility: visible !important;
+  }
+
+  /* Marks Table */
+  .result-marks-table-wrapper {
+    overflow: visible !important;
+    visibility: visible !important;
+  }
+
+  .result-marks-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1.5px solid #143223 !important;
+    margin-bottom: 14px !important;
+    visibility: visible !important;
+  }
+
+  .result-marks-table th,
+  .result-marks-table td {
+    border: 1px solid #64748b !important;
+    padding: 6px 8px !important;
+    color: #000000 !important;
+    visibility: visible !important;
+  }
+
+  .result-marks-table th {
+    background: #f1f5f9 !important;
+    font-weight: 700 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Summary Cards */
+  .result-summary-cards {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+    visibility: visible !important;
+    page-break-inside: avoid !important;
+  }
+
+  .summary-badge-card {
+    border: 1px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+    padding: 6px 8px !important;
+    text-align: center !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .badge-card-label {
+    font-size: 0.72rem !important;
+    color: #475569 !important;
+    visibility: visible !important;
+  }
+
+  .badge-card-value {
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    visibility: visible !important;
+  }
+
+  /* Signatures, Stamp & Muhtamim Signature */
+  .result-card-signatures {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    margin-top: 24px !important;
+    padding-top: 14px !important;
+    border-top: 1.5px dashed #475569 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    visibility: visible !important;
+  }
+
+  .sig-block {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    min-width: 170px !important;
+    text-align: center !important;
+    visibility: visible !important;
+  }
+
+  .sig-stamp-box {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+  }
+
+  .stamp-circle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 6px 14px !important;
+    border: 2px dashed #b8960c !important;
+    border-radius: 50px !important;
+    background: #fefce8 !important;
+    color: #854d0e !important;
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sig-space-holder,
+  .sig-img-wrapper {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    height: 65px !important;
+    width: 100% !important;
+    visibility: visible !important;
+  }
+
+  .sig-muhtamim-img {
+    display: block !important;
+    max-height: 62px !important;
+    max-width: 155px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .sig-line {
+    width: 100% !important;
+    height: 1.5px !important;
+    background: #000000 !important;
+    margin-bottom: 4px !important;
+    visibility: visible !important;
+  }
+
+  .sig-title {
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    visibility: visible !important;
+  }
+
+  .sig-name {
+    font-size: 0.74rem !important;
+    color: #000000 !important;
+    visibility: visible !important;
+  }
+
+  /* ================= ADMISSION SHEET PRINTING ================= */
+  .official-admission-sheet {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 20px 24px !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .official-admission-sheet * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 
@@ -2613,34 +2863,5 @@
   }
 }
 
-/* Print Styling for the Admission Form Sheet */
-@media print {
-  body * {
-    visibility: hidden;
-  }
 
-  .official-admission-sheet,
-  .official-admission-sheet * {
-    visibility: visible;
-  }
-
-  .official-admission-sheet {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20px;
-    border: 2px solid #000 !important;
-    box-shadow: none !important;
-  }
-
-  .no-print,
-  .admission-sidebar,
-  .page-header,
-  .site-header,
-  .site-footer {
-    display: none !important;
-  }
-}
 
