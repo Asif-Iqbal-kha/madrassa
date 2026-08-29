@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { searchStudentResult } from '../../services/api';
+import { searchStudentResult, getStudents } from '../../services/api';
 import {
   FiSearch,
   FiPrinter,
@@ -37,6 +37,23 @@ export default function ResultPage() {
     try {
       const data = await searchStudentResult(targetRoll);
       if (data && !data.error && Array.isArray(data) && data.length > 0) {
+        // Enrich with fatherName and student details if missing
+        try {
+          const allStudents = await getStudents();
+          const matchedStudent = allStudents.find(
+            (s) => String(s.rollNumber).trim() === String(targetRoll).trim()
+          );
+          if (matchedStudent) {
+            data.forEach((item) => {
+              if (!item.fatherName) item.fatherName = matchedStudent.fatherName || '';
+              if (!item.studentName) item.studentName = matchedStudent.name || '';
+              if (!item.className && matchedStudent.className) item.className = matchedStudent.className;
+            });
+          }
+        } catch (enrichErr) {
+          console.warn('Student enrichment error:', enrichErr);
+        }
+
         setResultsData(data);
         setTimeout(() => {
           if (resultCardRef.current) {
@@ -170,7 +187,7 @@ export default function ResultPage() {
                   <div key={resItem._id || idx} className="official-result-card print-target">
                     {/* Background Watermark */}
                     <div className="result-watermark">
-                      <img src="./logo.png" alt="مدرسہ واٹرمارک" />
+                      <img src="/logo.png" alt="مدرسہ واٹرمارک" />
                     </div>
 
                     {/* Bismillah & Calligraphic Ornament */}
@@ -182,7 +199,7 @@ export default function ResultPage() {
 
                     {/* Official Madrassa Header */}
                     <div className="result-madrassa-header">
-                      <img src="./logo.png" alt="لوگو مدرسہ" className="result-madrassa-logo" />
+                      <img src="/logo.png" alt="لوگو مدرسہ" className="result-madrassa-logo" />
                       <div className="result-madrassa-info">
                         <h3 className="result-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
                         <p className="result-madrassa-sub">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا</p>
@@ -195,16 +212,12 @@ export default function ResultPage() {
                     {/* Student Metadata Box */}
                     <div className="result-student-meta-box">
                       <div className="meta-item">
-                        <span className="meta-label">امتحان کا نام</span>
-                        <span className="meta-val highlight">{resItem.examName || 'سالانہ امتحان'}</span>
-                      </div>
-                      <div className="meta-item">
-                        <span className="meta-label">تعلیمی سال</span>
-                        <span className="meta-val eng">{resItem.year || '1446ھ'}</span>
-                      </div>
-                      <div className="meta-item">
                         <span className="meta-label">طالب علم کا نام</span>
-                        <span className="meta-val strong">{resItem.studentName}</span>
+                        <span className="meta-val strong">{resItem.studentName || '-'}</span>
+                      </div>
+                      <div className="meta-item">
+                        <span className="meta-label">ولدیت (والد کا نام)</span>
+                        <span className="meta-val">{resItem.fatherName || '-'}</span>
                       </div>
                       <div className="meta-item">
                         <span className="meta-label">رول نمبر</span>
@@ -215,8 +228,12 @@ export default function ResultPage() {
                         <span className="meta-val">{resItem.className}</span>
                       </div>
                       <div className="meta-item">
-                        <span className="meta-label">تاریخ اجراء</span>
-                        <span className="meta-val eng">{new Date().toISOString().split('T')[0]}</span>
+                        <span className="meta-label">امتحان کا نام</span>
+                        <span className="meta-val highlight">{resItem.examName || 'سالانہ امتحان'}</span>
+                      </div>
+                      <div className="meta-item">
+                        <span className="meta-label">تعلیمی سال</span>
+                        <span className="meta-val eng">{resItem.year || '1446ھ'}</span>
                       </div>
                     </div>
 
@@ -327,7 +344,7 @@ export default function ResultPage() {
                       <div className="sig-block sig-block-muhtamim">
                         <div className="sig-img-wrapper">
                           <img
-                            src="./muhtamim-signature.png"
+                            src="/muhtamim-signature.png"
                             alt="دستخط مہتمم مولانا مفتی عمر صاحب"
                             className="sig-muhtamim-img"
                           />
