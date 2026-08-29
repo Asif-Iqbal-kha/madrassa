@@ -190,8 +190,9 @@ export default function AdmissionPage() {
       <div className="content-page">
         <div className="container">
           <div className="madrassa-admission-container">
-            {/* MAIN COLUMN: EXACT REPLICA OF THE OFFICIAL PHYSICAL ADMISSION FORM */}
-            <div className="official-admission-sheet">
+            {/* MAIN COLUMN: Scroll wrapper so only the form can scroll horizontally if desired without shifting header and footer */}
+            <div className="admission-sheet-scroll-wrapper">
+              <div className="official-admission-sheet">
               {/* Form Top Header */}
               <div className="sheet-top-header">
                 {/* Photo Upload Box (Left) */}
@@ -852,6 +853,7 @@ export default function AdmissionPage() {
                   </button>
                 </div>
               </form>
+            </div>
             </div>
 
             {/* SIDEBAR: Concise guidelines & accounts info */}
