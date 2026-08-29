@@ -72,18 +72,92 @@ export async function getUserProfile() {
 // ----------------- STUDENTS API -----------------
 
 export async function getStudents(filter = {}) {
+  let serverStudents = null;
   try {
     const query = new URLSearchParams(filter).toString();
     const url = query ? `${API_BASE}/students?${query}` : `${API_BASE}/students`;
     const res = await fetch(url, { headers: getAuthHeaders() });
-    if (res.ok) return await res.json();
-    console.warn('getStudents non-ok response, using fallback');
+    if (res.ok) {
+      serverStudents = await res.json();
+    } else {
+      console.warn('getStudents non-ok response, using fallback');
+    }
   } catch (err) {
     console.warn('getStudents failed, using fallback:', err);
   }
 
-  const stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
-  const mockFiltered = MOCK_STUDENTS.filter(m => !stored.some(s => s._id === m._id || s.rollNumber === m.rollNumber));
+  // Load students stored in local storage
+  let stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
+
+  // Check all admitted applications from localStorage and mock data to guarantee every admitted student exists
+  const localAdmissions = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
+  const allAdmissions = [...localAdmissions, ...MOCK_ADMISSION_APPLICATIONS];
+  const admittedApps = allAdmissions.filter((a) => a.status === 'admitted');
+
+  admittedApps.forEach((app) => {
+    const name = app.studentName || app.name || '';
+    const father = app.fatherName || '';
+    const cnic = app.cnic || '';
+
+    const alreadyInStored = stored.some(
+      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
+    );
+    const alreadyInMock = MOCK_STUDENTS.some(
+      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
+    );
+    const alreadyInServer = serverStudents && serverStudents.some(
+      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
+    );
+
+    if (!alreadyInStored && !alreadyInMock && !alreadyInServer) {
+      const rollNumber = String(1050 + stored.length + 1);
+      const studentFromApp = {
+        _id: 'stu_adm_' + (app._id || Date.now()),
+        name,
+        fatherName: father,
+        rollNumber,
+        className: app.desiredClass || 'حفظ قرآن کریم',
+        dateOfBirth: app.dateOfBirth || '',
+        cnic,
+        identificationMark: app.identificationMark || '',
+        maritalStatus: app.maritalStatus || 'مجرد',
+        phone: app.phone || '',
+        address: app.address || app.currentAddress || app.permanentAddress || '',
+        permanentAddress: app.permanentAddress || '',
+        currentAddress: app.currentAddress || '',
+        previousEducation: app.previousEducation || '',
+        guardianName: app.guardianName || father,
+        guardianFatherName: app.guardianFatherName || '',
+        guardianRelation: app.guardianRelation || 'والد',
+        guardianPhone: app.guardianPhone || app.phone || '',
+        guardianCnic: app.guardianCnic || '',
+        guardianPermanentAddress: app.guardianPermanentAddress || '',
+        guardianCurrentAddress: app.guardianCurrentAddress || '',
+        mardanRelative: app.mardanRelative || '',
+        studentPhotoData: app.studentPhotoData || '',
+        admissionFee: app.admissionFee || 1000,
+        paymentMethod: app.paymentMethod || 'JazzCash',
+        transactionId: app.transactionId || '',
+        screenshotData: app.screenshotData || '',
+        status: 'active',
+        enrollmentDate: app.date || new Date().toISOString().split('T')[0],
+      };
+      stored.unshift(studentFromApp);
+      localStorage.setItem('madrassa_students', JSON.stringify(stored));
+    }
+  });
+
+  if (serverStudents && Array.isArray(serverStudents) && serverStudents.length > 0) {
+    // Merge any stored students that server doesn't have yet
+    const nonServerStored = stored.filter(
+      (st) => !serverStudents.some((sv) => (sv.cnic && sv.cnic === st.cnic) || (sv.name === st.name && sv.fatherName === st.fatherName))
+    );
+    return [...nonServerStored, ...serverStudents];
+  }
+
+  const mockFiltered = MOCK_STUDENTS.filter(
+    (m) => !stored.some((s) => s._id === m._id || s.rollNumber === m.rollNumber || (s.name === m.name && s.fatherName === m.fatherName))
+  );
   return [...stored, ...mockFiltered];
 }
 
@@ -615,7 +689,7 @@ export async function getAdmissions(statusFilter = 'all') {
 }
 
 // Throws on failure — caller must show error
-export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
+export async function updateAdmissionStatus(id, newStatus, adminNotes = '', appData = null) {
   let serverData = null;
   try {
     const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
@@ -632,12 +706,12 @@ export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
 
   // Update admission in local storage
   const storedAdmissions = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  let applicationObj = serverData;
+  let applicationObj = serverData || appData;
   const idx = storedAdmissions.findIndex((a) => a._id === id || a.trackingNumber === id);
   if (idx !== -1) {
     storedAdmissions[idx].status = newStatus;
     if (adminNotes) storedAdmissions[idx].adminNotes = adminNotes;
-    if (!applicationObj) applicationObj = storedAdmissions[idx];
+    applicationObj = { ...storedAdmissions[idx], ...(applicationObj || {}) };
     localStorage.setItem('madrassa_admissions', JSON.stringify(storedAdmissions));
   } else if (!applicationObj) {
     const mockFound = MOCK_ADMISSION_APPLICATIONS.find((a) => a._id === id || a.trackingNumber === id);
@@ -648,34 +722,38 @@ export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
 
   // When admission is confirmed (admitted), automatically create the Student record with all details
   if (newStatus === 'admitted' && applicationObj) {
+    const name = applicationObj.studentName || applicationObj.name || '';
+    const father = applicationObj.fatherName || '';
+    const cnic = applicationObj.cnic || '';
+
     const storedStudents = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
     const alreadyExists = storedStudents.some(
-      (s) => (s.cnic && s.cnic === applicationObj.cnic) || (s.name === applicationObj.studentName && s.fatherName === applicationObj.fatherName)
+      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
     ) || MOCK_STUDENTS.some(
-      (s) => (s.cnic && s.cnic === applicationObj.cnic) || (s.name === applicationObj.studentName && s.fatherName === applicationObj.fatherName)
+      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
     );
 
     if (!alreadyExists) {
       const rollNumber = String(1000 + storedStudents.length + MOCK_STUDENTS.length + 1);
       const newStudent = {
         _id: 'stu_' + Date.now(),
-        name: applicationObj.studentName,
-        fatherName: applicationObj.fatherName,
+        name,
+        fatherName: father,
         rollNumber,
-        className: applicationObj.desiredClass,
+        className: applicationObj.desiredClass || 'حفظ قرآن کریم',
         dateOfBirth: applicationObj.dateOfBirth || '',
-        cnic: applicationObj.cnic || '',
+        cnic,
         identificationMark: applicationObj.identificationMark || '',
         maritalStatus: applicationObj.maritalStatus || 'مجرد',
-        phone: applicationObj.phone,
+        phone: applicationObj.phone || '',
         address: applicationObj.address || applicationObj.currentAddress || applicationObj.permanentAddress || '',
         permanentAddress: applicationObj.permanentAddress || '',
         currentAddress: applicationObj.currentAddress || '',
         previousEducation: applicationObj.previousEducation || '',
-        guardianName: applicationObj.guardianName || applicationObj.fatherName,
+        guardianName: applicationObj.guardianName || father,
         guardianFatherName: applicationObj.guardianFatherName || '',
         guardianRelation: applicationObj.guardianRelation || 'والد',
-        guardianPhone: applicationObj.guardianPhone || applicationObj.phone,
+        guardianPhone: applicationObj.guardianPhone || applicationObj.phone || '',
         guardianCnic: applicationObj.guardianCnic || '',
         guardianPermanentAddress: applicationObj.guardianPermanentAddress || '',
         guardianCurrentAddress: applicationObj.guardianCurrentAddress || '',
@@ -690,6 +768,17 @@ export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
       };
       storedStudents.unshift(newStudent);
       localStorage.setItem('madrassa_students', JSON.stringify(storedStudents));
+
+      // Also attempt to push to backend server via POST /api/students
+      try {
+        await fetch(`${API_BASE}/students`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(newStudent),
+        });
+      } catch (err) {
+        console.warn('Backend student sync error:', err);
+      }
     }
   }
 

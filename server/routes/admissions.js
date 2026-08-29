@@ -185,7 +185,7 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
 
     if (!application) {
       const mockItem = defaultAdmissions.find(
-        (a) => a.trackingNumber === targetId || a.trackingNumber === targetId.toUpperCase()
+        (a) => a._id === targetId || a.trackingNumber === targetId || a.trackingNumber === targetId.toUpperCase()
       );
       if (mockItem) {
         application = await AdmissionApplication.create({
