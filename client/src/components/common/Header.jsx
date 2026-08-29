@@ -68,10 +68,20 @@ export default function Header() {
         </div>
       </div>
 
+      {/* Mobile Backdrop to close menu when tapping outside (behind header-nav) */}
+      {menuOpen && (
+        <div
+          className="nav-backdrop"
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Navigation */}
       <nav className="header-nav">
         <div className="container header-nav-inner">
           <button
+            type="button"
             className="nav-toggle"
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-label={menuOpen ? 'مینو بند کریں' : 'مینو کھولیں'}
@@ -94,15 +104,6 @@ export default function Header() {
           </ul>
         </div>
       </nav>
-
-      {/* Mobile Backdrop to close menu when tapping outside */}
-      {menuOpen && (
-        <div
-          className="nav-backdrop"
-          onClick={() => setMenuOpen(false)}
-          aria-hidden="true"
-        />
-      )}
     </header>
   );
 }
