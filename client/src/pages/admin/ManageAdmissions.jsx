@@ -59,6 +59,9 @@ export default function ManageAdmissions() {
       setApplications((prev) =>
         prev.map((a) => (a._id === id ? { ...a, status: newStatus, adminNotes: adminNote || a.adminNotes } : a))
       );
+      if (newStatus === 'admitted') {
+        alert('داخلہ کامیابی سے منظور ہو گیا ہے! طالب علم تمام کوائف کے ساتھ خودکار طور پر طلباء کے رجسٹر (Students Page) میں شامل کر دیا گیا ہے۔');
+      }
       setShowDetail(null);
       setAdminNote('');
       loadAdmissions();

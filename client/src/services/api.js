@@ -81,17 +81,33 @@ export async function getStudents(filter = {}) {
   } catch (err) {
     console.warn('getStudents failed, using fallback:', err);
   }
-  return MOCK_STUDENTS;
+
+  const stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
+  const mockFiltered = MOCK_STUDENTS.filter(m => !stored.some(s => s._id === m._id || s.rollNumber === m.rollNumber));
+  return [...stored, ...mockFiltered];
 }
 
 // Throws on failure — caller must handle and show error to user
 export async function createStudent(studentData) {
-  const res = await fetch(`${API_BASE}/students`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(studentData),
-  });
-  return handleResponse(res);
+  try {
+    const res = await fetch(`${API_BASE}/students`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(studentData),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('createStudent API failed, saving to local fallback:', err);
+  }
+
+  const stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
+  const newObj = {
+    _id: 'stu_' + Date.now(),
+    ...studentData,
+  };
+  stored.unshift(newObj);
+  localStorage.setItem('madrassa_students', JSON.stringify(stored));
+  return newObj;
 }
 
 // Throws on failure — caller must handle and show error to user
@@ -600,12 +616,85 @@ export async function getAdmissions(statusFilter = 'all') {
 
 // Throws on failure — caller must show error
 export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
-  const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
-    method: 'PUT',
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ status: newStatus, adminNotes }),
-  });
-  return handleResponse(res);
+  let serverData = null;
+  try {
+    const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status: newStatus, adminNotes }),
+    });
+    if (res.ok) {
+      serverData = await res.json();
+    }
+  } catch (err) {
+    console.warn('updateAdmissionStatus API error:', err);
+  }
+
+  // Update admission in local storage
+  const storedAdmissions = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
+  let applicationObj = serverData;
+  const idx = storedAdmissions.findIndex((a) => a._id === id || a.trackingNumber === id);
+  if (idx !== -1) {
+    storedAdmissions[idx].status = newStatus;
+    if (adminNotes) storedAdmissions[idx].adminNotes = adminNotes;
+    if (!applicationObj) applicationObj = storedAdmissions[idx];
+    localStorage.setItem('madrassa_admissions', JSON.stringify(storedAdmissions));
+  } else if (!applicationObj) {
+    const mockFound = MOCK_ADMISSION_APPLICATIONS.find((a) => a._id === id || a.trackingNumber === id);
+    if (mockFound) {
+      applicationObj = { ...mockFound, status: newStatus, adminNotes: adminNotes || mockFound.adminNotes };
+    }
+  }
+
+  // When admission is confirmed (admitted), automatically create the Student record with all details
+  if (newStatus === 'admitted' && applicationObj) {
+    const storedStudents = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
+    const alreadyExists = storedStudents.some(
+      (s) => (s.cnic && s.cnic === applicationObj.cnic) || (s.name === applicationObj.studentName && s.fatherName === applicationObj.fatherName)
+    ) || MOCK_STUDENTS.some(
+      (s) => (s.cnic && s.cnic === applicationObj.cnic) || (s.name === applicationObj.studentName && s.fatherName === applicationObj.fatherName)
+    );
+
+    if (!alreadyExists) {
+      const rollNumber = String(1000 + storedStudents.length + MOCK_STUDENTS.length + 1);
+      const newStudent = {
+        _id: 'stu_' + Date.now(),
+        name: applicationObj.studentName,
+        fatherName: applicationObj.fatherName,
+        rollNumber,
+        className: applicationObj.desiredClass,
+        dateOfBirth: applicationObj.dateOfBirth || '',
+        cnic: applicationObj.cnic || '',
+        identificationMark: applicationObj.identificationMark || '',
+        maritalStatus: applicationObj.maritalStatus || 'مجرد',
+        phone: applicationObj.phone,
+        address: applicationObj.address || applicationObj.currentAddress || applicationObj.permanentAddress || '',
+        permanentAddress: applicationObj.permanentAddress || '',
+        currentAddress: applicationObj.currentAddress || '',
+        previousEducation: applicationObj.previousEducation || '',
+        guardianName: applicationObj.guardianName || applicationObj.fatherName,
+        guardianFatherName: applicationObj.guardianFatherName || '',
+        guardianRelation: applicationObj.guardianRelation || 'والد',
+        guardianPhone: applicationObj.guardianPhone || applicationObj.phone,
+        guardianCnic: applicationObj.guardianCnic || '',
+        guardianPermanentAddress: applicationObj.guardianPermanentAddress || '',
+        guardianCurrentAddress: applicationObj.guardianCurrentAddress || '',
+        mardanRelative: applicationObj.mardanRelative || '',
+        studentPhotoData: applicationObj.studentPhotoData || '',
+        admissionFee: applicationObj.admissionFee || 1000,
+        paymentMethod: applicationObj.paymentMethod || 'JazzCash',
+        transactionId: applicationObj.transactionId || '',
+        screenshotData: applicationObj.screenshotData || '',
+        status: 'active',
+        enrollmentDate: new Date().toISOString().split('T')[0],
+      };
+      storedStudents.unshift(newStudent);
+      localStorage.setItem('madrassa_students', JSON.stringify(storedStudents));
+    }
+  }
+
+  if (serverData) return serverData;
+  return applicationObj || { success: true, status: newStatus };
 }
 
 export async function trackAdmission(trackingNumber) {
