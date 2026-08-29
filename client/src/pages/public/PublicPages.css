@@ -2433,6 +2433,162 @@
   border-bottom: none;
 }
 
+/* ===================================================
+   MOBILE RESPONSIVE STYLES FOR OFFICIAL ADMISSION FORM
+=================================================== */
+
+@media (max-width: 768px) {
+  .madrassa-admission-container {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .official-admission-sheet {
+    padding: 16px 12px !important;
+    border-width: 1.5px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  /* Header mobile rearrangement: Logo & Photo & Title gracefully aligned */
+  .sheet-top-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 10px !important;
+    padding-bottom: 14px !important;
+  }
+
+  .sheet-logo-box {
+    width: auto !important;
+    order: 1;
+    margin: 0 auto;
+  }
+
+  .sheet-logo-box img {
+    max-width: 70px !important;
+    max-height: 70px !important;
+  }
+
+  .sheet-header-center {
+    width: 100% !important;
+    order: 2;
+  }
+
+  .sheet-title-main {
+    font-size: 1.6rem !important;
+    line-height: 1.2 !important;
+    margin-bottom: 2px !important;
+  }
+
+  .sheet-madrassa-name {
+    font-size: 0.95rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .sheet-madrassa-location {
+    font-size: 0.76rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .sheet-class-badge {
+    font-size: 0.8rem !important;
+    padding: 4px 14px !important;
+  }
+
+  .sheet-photo-box {
+    order: 3;
+    width: 95px !important;
+    height: 115px !important;
+    margin: 4px auto 0 !important;
+  }
+
+  /* Section Pill */
+  .sheet-section-pill {
+    font-size: 0.84rem !important;
+    padding: 3px 14px !important;
+    margin: 14px 0 8px !important;
+  }
+
+  /* Form Rows & Inputs: Stack cleanly on mobile */
+  .sheet-form-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .sheet-field-half,
+  .sheet-field-full {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
+  }
+
+  .sheet-label {
+    font-size: 0.8rem !important;
+    white-space: normal !important;
+    color: #374151 !important;
+    font-weight: 700 !important;
+  }
+
+  .sheet-input-dotted {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 5px 4px !important;
+    font-size: 0.88rem !important;
+    border-bottom: 1px solid #9ca3af !important;
+    border-radius: 0 !important;
+  }
+
+  /* Examiners Table on Mobile */
+  .examiners-table {
+    font-size: 0.76rem !important;
+  }
+
+  .examiners-table th,
+  .examiners-table td {
+    padding: 5px 3px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .examiners-signatures-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* Fee Box & Upload Area */
+  .sheet-fee-box {
+    padding: 12px 12px !important;
+    margin: 10px 0 !important;
+  }
+
+  .pledge-card {
+    padding: 12px 12px !important;
+    margin: 10px 0 !important;
+  }
+
+  .pledge-list {
+    padding-right: 14px !important;
+    font-size: 0.76rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .pledge-checkbox-label {
+    font-size: 0.78rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .no-print button {
+    font-size: 0.85rem !important;
+    padding: 8px 12px !important;
+  }
+}
+
 /* Print Styling for the Admission Form Sheet */
 @media print {
   body * {
