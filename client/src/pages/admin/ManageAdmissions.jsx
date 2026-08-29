@@ -55,7 +55,8 @@ export default function ManageAdmissions() {
     setActionError('');
     setSaving(true);
     try {
-      await updateAdmissionStatus(id, newStatus, adminNote);
+      const targetApp = applications.find((a) => a._id === id || a.trackingNumber === id) || showDetail;
+      await updateAdmissionStatus(id, newStatus, adminNote, targetApp);
       setApplications((prev) =>
         prev.map((a) => (a._id === id ? { ...a, status: newStatus, adminNotes: adminNote || a.adminNotes } : a))
       );

@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const AdmissionApplication = require('../models/AdmissionApplication');
 const Student = require('../models/Student');
 const Class = require('../models/Class');
@@ -142,11 +143,27 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
       return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const application = await AdmissionApplication.findByIdAndUpdate(
-      req.params.id,
-      { status, adminNotes: adminNotes || '' },
-      { new: true }
-    );
+    const targetId = req.params.id;
+    let application = null;
+
+    if (mongoose.Types.ObjectId.isValid(targetId)) {
+      application = await AdmissionApplication.findByIdAndUpdate(
+        targetId,
+        { status, adminNotes: adminNotes || '' },
+        { new: true }
+      );
+    } else {
+      application = await AdmissionApplication.findOneAndUpdate(
+        {
+          $or: [
+            { trackingNumber: targetId },
+            { trackingNumber: targetId.toUpperCase() },
+          ],
+        },
+        { status, adminNotes: adminNotes || '' },
+        { new: true }
+      );
+    }
 
     if (!application) return res.status(404).json({ message: 'Application not found' });
 
