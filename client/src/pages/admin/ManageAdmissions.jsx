@@ -123,6 +123,7 @@ export default function ManageAdmissions() {
               <th>نام</th>
               <th>والد کا نام</th>
               <th>مطلوبہ درجہ</th>
+              <th>داخلہ فیس</th>
               <th>نمبر</th>
               <th>تاریخ</th>
               <th>حالت</th>
@@ -136,6 +137,14 @@ export default function ManageAdmissions() {
                 <td>{app.studentName}</td>
                 <td>{app.fatherName}</td>
                 <td>{app.desiredClass}</td>
+                <td style={{ fontFamily: 'var(--font-english)' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--color-primary-dark)' }}>
+                    Rs. {(app.admissionFee || 1000).toLocaleString()}
+                  </span>
+                  <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+                    {app.paymentMethod || 'JazzCash'}
+                  </span>
+                </td>
                 <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700, color: 'var(--color-primary)' }}>#{app.queuePosition}</td>
                 <td style={{ fontFamily: 'var(--font-english)' }}>{app.date}</td>
                 <td>
@@ -172,7 +181,7 @@ export default function ManageAdmissions() {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan="8" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
                   کوئی درخواست نہیں ملی
                 </td>
               </tr>
@@ -204,6 +213,110 @@ export default function ManageAdmissions() {
                   #{showDetail.queuePosition}
                 </div>
                 <span className={`badge ${STATUS_BADGE[showDetail.status]}`}>{STATUS_LABELS[showDetail.status]}</span>
+              </div>
+
+              {/* Admission Fee & Payment Proof Card */}
+              <div style={{
+                background: 'rgba(184, 150, 12, 0.07)',
+                border: '1.5px solid var(--color-accent)',
+                borderRadius: 'var(--radius-md, 8px)',
+                padding: '14px 16px',
+                marginBottom: '20px',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--color-primary-dark)', fontWeight: 700 }}>
+                    داخلہ رجسٹریشن فیس کی تفصیلات
+                  </h4>
+                  <span style={{
+                    fontFamily: 'var(--font-english)',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                    color: 'var(--color-primary-dark)',
+                    background: '#fff',
+                    padding: '2px 10px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--color-accent)',
+                  }}>
+                    Rs. {(showDetail.admissionFee || 1000).toLocaleString()}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px', fontSize: '0.85rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ادائیگی کا ذریعہ</span>
+                    <p style={{ margin: '2px 0 0', fontWeight: 600 }}>{showDetail.paymentMethod || 'JazzCash'}</p>
+                  </div>
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>ٹرانزیکشن ID / حوالہ</span>
+                    <p style={{ margin: '2px 0 0', fontFamily: 'var(--font-english)', fontWeight: 600 }}>
+                      {showDetail.transactionId || 'درج نہیں'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Proof Screenshot */}
+                <div style={{ borderTop: '1px dashed rgba(184, 150, 12, 0.4)', paddingTop: '10px' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: '8px' }}>
+                    ادائیگی کا تصدیقی ثبوت (Payment Receipt):
+                  </span>
+                  {showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
+                    <div style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      padding: '8px',
+                      textAlign: 'center',
+                      background: '#fff',
+                    }}>
+                      <img
+                        src={showDetail.screenshotData || showDetail.screenshotPath}
+                        alt="فیس رسید"
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: '240px',
+                          borderRadius: '4px',
+                          objectFit: 'contain',
+                          display: 'block',
+                          margin: '0 auto',
+                        }}
+                      />
+                      <a
+                        href={showDetail.screenshotData || showDetail.screenshotPath}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: 'inline-block', marginTop: '6px', fontSize: '0.75rem', color: 'var(--color-primary)', textDecoration: 'underline' }}
+                      >
+                        بڑی تصویر دیکھنے کے لیے کلک کریں
+                      </a>
+                    </div>
+                  ) : showDetail.screenshotPath ? (
+                    <div style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      padding: '8px',
+                      textAlign: 'center',
+                      background: '#fff',
+                    }}>
+                      <a href={`/uploads/${showDetail.screenshotPath}`} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={`/uploads/${showDetail.screenshotPath}`}
+                          alt="فیس رسید"
+                          style={{
+                            maxWidth: '100%',
+                            maxHeight: '240px',
+                            borderRadius: '4px',
+                            objectFit: 'contain',
+                            display: 'block',
+                            margin: '0 auto',
+                          }}
+                        />
+                      </a>
+                    </div>
+                  ) : (
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
+                      اسکرین شاٹ فائل موجود نہیں ہے
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
