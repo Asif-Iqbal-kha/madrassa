@@ -5,7 +5,6 @@
 export const TEST_CREDENTIALS = {
   master_admin: { username: 'admin', password: 'admin123', role: 'master_admin' },
   teacher: { username: 'teacher', password: 'teacher123', role: 'teacher' },
-  student: { username: 'student', password: 'student123', role: 'student' },
 };
 
 // Classes
@@ -183,7 +182,6 @@ export const MOCK_RESULTS = [
 export const MOCK_USERS = [
   { _id: 'u1', name: 'ایڈمن', username: 'admin', role: 'master_admin', isActive: true },
   { _id: 'u2', name: 'مولانا عبدالرحمٰن', username: 'teacher', role: 'teacher', isActive: true },
-  { _id: 'u3', name: 'محمد احمد', username: 'student', role: 'student', isActive: true },
 ];
 
 // Current logged-in user profiles
@@ -209,19 +207,6 @@ export const MOCK_USER_PROFILES = {
       { _id: 'c7', name: 'درجہ پنجم' },
       { _id: 'c10', name: 'درجہ ہشتم' },
     ],
-  },
-  student: {
-    _id: 'u3',
-    name: 'محمد احمد',
-    username: 'student',
-    role: 'student',
-    rollNumber: '1001',
-    fatherName: 'محمد اکرم',
-    className: 'درجہ سوم',
-    classId: 'c5',
-    phone: '03001111111',
-    address: 'محلہ نو، مردان',
-    enrollmentDate: '2024-04-01',
   },
 };
 

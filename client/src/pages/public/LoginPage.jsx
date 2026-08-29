@@ -9,16 +9,20 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { login, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if already logged in (ignore/logout student role)
   if (user) {
-    const paths = {
-      master_admin: '/admin/dashboard',
-      teacher: '/teacher/dashboard',
-    };
-    navigate(paths[user.role] || '/');
+    if (user.role === 'student') {
+      logout();
+    } else {
+      const paths = {
+        master_admin: '/admin/dashboard',
+        teacher: '/teacher/dashboard',
+      };
+      navigate(paths[user.role] || '/');
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -34,6 +38,11 @@ export default function LoginPage() {
     try {
       const result = await login(username.trim(), password.trim());
       if (result.success) {
+        if (result.user?.role === 'student' || result.role === 'student') {
+          logout();
+          setError('طلباء کے لیے لاگ ان پورٹل دستیاب نہیں ہے');
+          return;
+        }
         const paths = {
           master_admin: '/admin/dashboard',
           teacher: '/teacher/dashboard',
@@ -60,7 +69,7 @@ export default function LoginPage() {
         <div className="login-card">
           <div className="login-header">
             <div className="login-logo-wrapper">
-              <img src="./logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
+              <img src="./logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
             </div>
             <h2>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
             <p>پورٹل لاگ ان</p>
@@ -104,9 +113,12 @@ export default function LoginPage() {
             </form>
 
             <div className="login-test-info">
-              <h4>لاگ ان معلومات:</h4>
+              <h4>صرف اساتذہ اور ایڈمن لاگ ان:</h4>
               <p>Admin: admin / admin123</p>
               <p>Teacher: teacher / teacher123</p>
+              <p style={{ color: 'var(--color-error)', marginTop: '6px', fontWeight: 600 }}>
+                * طلباء کے لیے کوئی لاگ ان پورٹل موجود نہیں ہے
+              </p>
             </div>
 
             <div className="login-footer-return">
