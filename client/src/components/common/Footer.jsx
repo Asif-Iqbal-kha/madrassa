@@ -44,8 +44,12 @@ export default function Footer() {
             <div className="footer-col">
               <h4 className="footer-heading">رابطہ معلومات</h4>
               <div className="footer-contact">
-                <p>مردان، خیبر پختونخوا، پاکستان</p>
-                <p>فون: 0937-123456</p>
+                <p>
+                  <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                    📍 توحید کالونی، چارسدہ روڈ، مردان (گوگل میپ)
+                  </a>
+                </p>
+                <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}>0315 3044992</a></p>
                 <p>ای میل: info@madrassasadeeq.pk</p>
               </div>
             </div>

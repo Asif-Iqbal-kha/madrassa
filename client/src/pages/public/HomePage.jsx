@@ -47,7 +47,11 @@ export default function HomePage() {
           </div>
           <h1 className="hero-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
           <p className="hero-subtitle-en">Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
-          <p className="hero-desc">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا — تعلیم القرآن و حفظ اور دینی علوم کا مرکز</p>
+          <p className="hero-desc">
+            <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+              📍 توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا (لوکیشن گوگل میپ)
+            </a> — تعلیم القرآن و حفظ اور دینی علوم کا مرکز
+          </p>
           <div className="hero-actions">
             <Link to="/admission" className="btn btn-accent btn-lg">داخلہ معلومات</Link>
             <Link to="/about" className="btn btn-outline btn-lg hero-btn-outline">مدرسہ کا تعارف و منہاج</Link>

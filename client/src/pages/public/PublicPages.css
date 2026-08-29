@@ -44,7 +44,7 @@
 
 .hero-title {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 3rem;
   color: var(--color-text-on-dark);
   margin-bottom: 8px;
   line-height: 1.5;
@@ -52,7 +52,7 @@
 
 .hero-subtitle-en {
   font-family: var(--font-english);
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--color-accent-light);
   margin-bottom: 16px;
   direction: ltr;
@@ -60,9 +60,10 @@
 }
 
 .hero-desc {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: var(--color-text-on-dark-muted);
   margin-bottom: 32px;
+  line-height: 2.2;
 }
 
 .hero-actions {
@@ -1829,7 +1830,7 @@
 }
 
 .objective-card-title {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-primary-dark);
   margin: 0;
@@ -1837,8 +1838,8 @@
 
 .objective-card-desc {
   color: var(--color-text-secondary);
-  line-height: 1.9;
-  font-size: 0.98rem;
+  line-height: 2.1;
+  font-size: 1.08rem;
   margin: 0;
 }
 
@@ -1852,8 +1853,8 @@
 }
 
 .manifesto-paragraph {
-  line-height: 2.3;
-  font-size: 1.06rem;
+  line-height: 2.45;
+  font-size: 1.22rem;
   color: var(--color-text-primary, #1e293b);
   margin-bottom: 22px;
   text-align: justify;
@@ -1875,9 +1876,9 @@
   display: inline-block;
   background: var(--color-accent);
   color: #143223;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  padding: 4px 16px;
+  padding: 4px 18px;
   border-radius: 20px;
   margin-bottom: 16px;
   letter-spacing: 0.5px;
@@ -1885,8 +1886,8 @@
 
 .urdu-poetry-lines {
   font-family: var(--font-heading, 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif);
-  font-size: 1.45rem;
-  line-height: 2.4;
+  font-size: 1.65rem;
+  line-height: 2.6;
   color: #fef08a;
   margin: 0;
   direction: rtl;

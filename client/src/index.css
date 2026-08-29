@@ -92,7 +92,7 @@
 }
 
 html {
-  font-size: 16px;
+  font-size: 18px;
   direction: rtl;
 }
 
@@ -100,7 +100,8 @@ body {
   font-family: var(--font-body);
   color: var(--color-text);
   background-color: var(--color-bg);
-  line-height: 1.7;
+  font-size: 1.12rem;
+  line-height: 2.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -109,16 +110,18 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   color: var(--color-primary);
-  line-height: 1.5;
+  line-height: 1.6;
   font-weight: 700;
 }
 
-h1 { font-size: 2rem; margin-bottom: var(--space-lg); }
-h2 { font-size: 1.625rem; margin-bottom: var(--space-md); }
-h3 { font-size: 1.375rem; margin-bottom: var(--space-md); }
-h4 { font-size: 1.125rem; margin-bottom: var(--space-sm); }
+h1 { font-size: 2.35rem; margin-bottom: var(--space-lg); }
+h2 { font-size: 1.9rem; margin-bottom: var(--space-md); }
+h3 { font-size: 1.55rem; margin-bottom: var(--space-md); }
+h4 { font-size: 1.3rem; margin-bottom: var(--space-sm); }
 
 p {
+  font-size: 1.12rem;
+  line-height: 2.15;
   margin-bottom: var(--space-md);
   color: var(--color-text-secondary);
 }

@@ -30,9 +30,9 @@ export default function Header() {
       <div className="header-top-bar">
         <div className="container header-top-inner">
           <div className="header-top-info">
-            <span>فون: 0937-123456</span>
+            <span>فون / واٹس ایپ: <a href="tel:03153044992" style={{ color: 'inherit', fontWeight: 600 }}>0315 3044992</a></span>
             <span className="header-top-divider">|</span>
-            <span>مردان، خیبر پختونخوا</span>
+            <span><a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>📍 مردان، خیبر پختونخوا (گوگل میپ)</a></span>
           </div>
           <div className="header-top-actions">
             {user ? (
@@ -53,7 +53,11 @@ export default function Header() {
             <img src="./logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبرؓ" className="header-logo-img" />
             <div className="header-title-group">
               <h1 className="header-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h1>
-              <p className="header-subtitle">توحید کالونی، چارسدہ روڈ، مردان | Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
+              <p className="header-subtitle">
+                <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
+                  توحید کالونی، چارسدہ روڈ، مردان
+                </a> | Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)
+              </p>
             </div>
           </Link>
         </div>
