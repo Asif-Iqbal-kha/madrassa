@@ -1,5 +1,7 @@
 const express = require('express');
 const AdmissionApplication = require('../models/AdmissionApplication');
+const Student = require('../models/Student');
+const Class = require('../models/Class');
 const upload = require('../middleware/upload');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -147,6 +149,59 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
     );
 
     if (!application) return res.status(404).json({ message: 'Application not found' });
+
+    // Automatically create Student record in database when admission is confirmed (admitted)
+    if (status === 'admitted' && application) {
+      try {
+        const existingStudent = await Student.findOne({
+          $or: [
+            { cnic: application.cnic && application.cnic.length > 5 ? application.cnic : 'NO_CNIC_MATCH' },
+            { name: application.studentName, fatherName: application.fatherName },
+          ],
+        });
+
+        if (!existingStudent) {
+          const studentCount = await Student.countDocuments();
+          const rollNumber = String(1000 + studentCount + 1);
+
+          let targetClass = await Class.findOne({ name: application.desiredClass });
+
+          await Student.create({
+            name: application.studentName,
+            fatherName: application.fatherName,
+            rollNumber,
+            class: targetClass ? targetClass._id : undefined,
+            className: application.desiredClass,
+            dateOfBirth: application.dateOfBirth || '',
+            cnic: application.cnic || '',
+            identificationMark: application.identificationMark || '',
+            maritalStatus: application.maritalStatus || 'مجرد',
+            phone: application.phone,
+            address: application.address || application.currentAddress || application.permanentAddress || '',
+            permanentAddress: application.permanentAddress || '',
+            currentAddress: application.currentAddress || '',
+            previousEducation: application.previousEducation || '',
+            guardianName: application.guardianName || application.fatherName,
+            guardianFatherName: application.guardianFatherName || '',
+            guardianRelation: application.guardianRelation || 'والد',
+            guardianPhone: application.guardianPhone || application.phone,
+            guardianCnic: application.guardianCnic || '',
+            guardianPermanentAddress: application.guardianPermanentAddress || '',
+            guardianCurrentAddress: application.guardianCurrentAddress || '',
+            mardanRelative: application.mardanRelative || '',
+            studentPhotoData: application.studentPhotoData || '',
+            admissionFee: application.admissionFee || 1000,
+            paymentMethod: application.paymentMethod || 'JazzCash',
+            transactionId: application.transactionId || '',
+            screenshotData: application.screenshotData || '',
+            status: 'active',
+            enrollmentDate: new Date().toISOString().split('T')[0],
+          });
+        }
+      } catch (stuErr) {
+        console.error('Auto create student on admission approval error:', stuErr);
+      }
+    }
 
     res.json(application);
   } catch (error) {
