@@ -451,7 +451,34 @@
 
 @media (max-width: 768px) {
   .dash-stats {
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .dash-stat-card {
+    min-width: 140px;
+    flex: 0 0 calc(50% - 6px);
+    scroll-snap-align: start;
+  }
+
+  .dash-stats::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .dash-stats::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 2px;
+  }
+
+  .dash-grid {
     grid-template-columns: 1fr;
+    gap: 18px;
   }
 
   .attendance-summary-cards {
@@ -465,9 +492,17 @@
   .mgmt-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
   }
 
   .mgmt-search {
     max-width: none;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
+    border-radius: var(--radius-md);
   }
 }

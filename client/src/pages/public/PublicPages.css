@@ -1060,6 +1060,89 @@
     height: 90px;
   }
 
+  /* Mobile Scrolling Views for Main Page Sections */
+  .stats-bar .grid-4 {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .stats-bar .grid-4 .stat-card {
+    min-width: 150px;
+    flex: 0 0 calc(50% - 6px);
+    scroll-snap-align: start;
+  }
+
+  .objectives-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .objective-item-card {
+    min-width: 260px;
+    max-width: 82vw;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .classes-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .class-card {
+    min-width: 250px;
+    max-width: 80vw;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .home-page .grid-3 {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .home-page .grid-3 .news-card {
+    min-width: 260px;
+    max-width: 82vw;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .stats-bar .grid-4::-webkit-scrollbar,
+  .objectives-grid::-webkit-scrollbar,
+  .classes-grid::-webkit-scrollbar,
+  .home-page .grid-3::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .stats-bar .grid-4::-webkit-scrollbar-thumb,
+  .objectives-grid::-webkit-scrollbar-thumb,
+  .classes-grid::-webkit-scrollbar-thumb,
+  .home-page .grid-3::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 2px;
+  }
+
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
   }

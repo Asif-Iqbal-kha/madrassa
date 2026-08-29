@@ -60,13 +60,38 @@
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
   }
 
   .dashboard-main {
     margin-right: 0;
+    width: 100%;
+    flex: 1;
+    min-height: auto;
+    overflow-y: visible;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dashboard-topbar {
+    padding: 0 16px;
+    height: 50px;
+    position: sticky;
+    top: 59px; /* Sits directly below the sticky mobile sidebar */
+    z-index: 40;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .dashboard-topbar-title {
+    font-size: 1.05rem;
   }
 
   .dashboard-content {
-    padding: 16px;
+    padding: 16px 12px 32px;
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
