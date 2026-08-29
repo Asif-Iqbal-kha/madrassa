@@ -284,9 +284,9 @@ export default function AdmissionPage() {
             <p>
               مزید معلومات کے لیے مدرسہ کے دفتر سے رابطہ کریں:
               <br />
-              فون: 0937-123456
+              فون / واٹس ایپ: <a href="tel:03153044992">0315 3044992</a>
               <br />
-              پتہ: مردان، خیبر پختونخوا
+              پتہ: <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-dark)', textDecoration: 'underline' }}>توحید کالونی، چارسدہ روڈ، مردان (گوگل میپ)</a>
             </p>
           </div>
         </div>

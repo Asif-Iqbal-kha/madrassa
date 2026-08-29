@@ -15,10 +15,25 @@ export default function ContactPage() {
           <div className="contact-grid">
             <div className="contact-info-card">
               <h3>دفتر مدرسہ</h3>
-              <p>پتہ: مردان، خیبر پختونخوا، پاکستان</p>
-              <p>فون: 0937-123456</p>
-              <p>موبائل: 0300-1234567</p>
-              <p>ای میل: info@madrassasadeeq.pk</p>
+              <p>
+                <strong>پتہ: </strong>
+                <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-dark)', textDecoration: 'underline' }}>
+                  توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا (گوگل میپ پر دیکھیں)
+                </a>
+              </p>
+              <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992">0315 3044992</a></p>
+              <p><strong>ای میل: </strong>info@madrassasadeeq.pk</p>
+              <div style={{ marginTop: '12px' }}>
+                <a
+                  href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  📍 گوگل میپ پر لوکیشن کھولیں
+                </a>
+              </div>
             </div>
 
             <div className="contact-info-card">
