@@ -71,7 +71,7 @@ export default function ResultPage() {
       <div className="page-header">
         <div className="container">
           <h1>امتحانی نتائج</h1>
-          <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ — کشف الدرجات و امتحانی رزلٹ پورٹل</p>
+          <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ — کشف الدرجات و امتحانی رزلٹ پورٹل</p>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export default function ResultPage() {
                     <div className="result-madrassa-header">
                       <img src="./logo.png" alt="لوگو مدرسہ" className="result-madrassa-logo" />
                       <div className="result-madrassa-info">
-                        <h3 className="result-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ</h3>
+                        <h3 className="result-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
                         <p className="result-madrassa-sub">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا</p>
                         <div className="result-sheet-title">
                           <span>کشف الدرجات (امتحانی سند و رزلٹ کارڈ)</span>

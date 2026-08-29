@@ -21,7 +21,7 @@ export default function ContactPage() {
                   توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا (گوگل میپ پر دیکھیں)
                 </a>
               </p>
-              <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992">0315 3044992</a></p>
+              <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992"><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
               <p><strong>ای میل: </strong>info@madrassasadeeq.pk</p>
               <div style={{ marginTop: '12px' }}>
                 <a

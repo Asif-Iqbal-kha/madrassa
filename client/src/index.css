@@ -1,6 +1,13 @@
 /* ============================================
-   مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ - Design System
+   مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ - Design System
    ============================================ */
+
+.ltr-text {
+  direction: ltr !important;
+  display: inline-block !important;
+  unicode-bidi: isolate !important;
+  text-align: left !important;
+}
 
 /* Jameel Noori Nastaleeq Webfont */
 @font-face {

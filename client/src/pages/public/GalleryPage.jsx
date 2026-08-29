@@ -30,7 +30,7 @@ export default function GalleryPage() {
       <div className="page-header">
         <div className="container">
           <h1>تصاویر و گیلری</h1>
-          <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ عنہ کی تصاویر اور تعلیمی سرگرمیاں</p>
+          <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ کی تصاویر اور تعلیمی سرگرمیاں</p>
         </div>
       </div>
 
