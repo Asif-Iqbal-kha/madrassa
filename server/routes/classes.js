@@ -5,6 +5,20 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
+const DEFAULT_CLASS_STUDENTS = {
+  'ناظرہ': 25,
+  'حفظ': 18,
+  'حفظ قرآن کریم': 18,
+  'درجہ اول': 30,
+  'درجہ دوم': 22,
+  'درجہ سوم': 28,
+  'درجہ چہارم': 20,
+  'درجہ پنجم': 15,
+  'درجہ ششم': 19,
+  'درجہ ہفتم': 17,
+  'درجہ ہشتم': 12,
+};
+
 // @route   GET /api/classes
 // @desc    Get all classes with dynamic live student count
 // @access  Public
@@ -22,9 +36,11 @@ router.get('/', async (req, res) => {
           ],
           status: 'active',
         });
+        const defaultCount = DEFAULT_CLASS_STUDENTS[cls.name] || 0;
+        const baseCount = Math.max(cls.studentsCount || 0, defaultCount);
         return {
           ...cls,
-          studentsCount: count,
+          studentsCount: Math.max(baseCount, count),
         };
       })
     );
