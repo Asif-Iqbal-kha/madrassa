@@ -1,11 +1,25 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { MOCK_STUDENTS } from '../../data/mockData';
+import { getStudents } from '../../services/api';
 import { FiBookOpen, FiUsers, FiCheckSquare } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
 export default function TeacherDashboard() {
   const { user } = useAuth();
   const assignedClasses = user?.classes || [];
+  const [totalStudents, setTotalStudents] = useState(0);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const students = await getStudents();
+        setTotalStudents(students?.length || 0);
+      } catch (err) {
+        console.warn('TeacherDashboard error:', err);
+      }
+    }
+    loadData();
+  }, []);
 
   return (
     <div>
@@ -19,7 +33,7 @@ export default function TeacherDashboard() {
         </div>
         <div className="dash-stat-card">
           <FiUsers size={24} className="dash-stat-icon" />
-          <div className="stat-number">{MOCK_STUDENTS.length}</div>
+          <div className="stat-number">{totalStudents}</div>
           <div className="stat-label">کل طلباء</div>
         </div>
         <div className="dash-stat-card">

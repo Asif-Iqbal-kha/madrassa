@@ -56,9 +56,14 @@ async function connectToDatabase() {
     const donationCount = await Donation.countDocuments();
     const studentCount = await Student.countDocuments();
 
-    if (userCount === 0 || (donationCount === 0 && studentCount === 0)) {
-      const seedDB = require('../server/seed');
-      await seedDB();
+    if (userCount === 0) {
+      const User = require('../server/models/User');
+      await User.create({
+        name: 'ایڈمن',
+        username: 'admin',
+        password: 'admin123',
+        role: 'master_admin',
+      });
     }
   } catch (err) {
     console.error('Serverless MongoDB Connection Error:', err);
