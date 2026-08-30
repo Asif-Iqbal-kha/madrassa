@@ -176,7 +176,7 @@ export default function ManageStudents() {
 
   return (
     <div>
-      <div className="page-title-bar">
+      <div className="page-title-bar no-print">
         <h2 className="page-title" style={{ border: 'none', margin: 0, padding: 0 }}>طلباء کا انتظام (ریکارڈ و کوائف)</h2>
         <div style={{ display: 'flex', gap: '8px' }}>
           <Link to="/admin/promote" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -188,7 +188,7 @@ export default function ManageStudents() {
         </div>
       </div>
 
-      <div className="mgmt-toolbar" style={{ flexWrap: 'wrap', gap: '12px' }}>
+      <div className="mgmt-toolbar no-print" style={{ flexWrap: 'wrap', gap: '12px' }}>
         <div className="mgmt-search" style={{ flex: '1 1 260px' }}>
           <input
             type="text"
@@ -225,7 +225,7 @@ export default function ManageStudents() {
         </span>
       </div>
 
-      <div className="table-container">
+      <div className="table-container no-print">
         <table>
           <thead>
             <tr>
@@ -362,7 +362,7 @@ export default function ManageStudents() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '8px' }} className="no-print">
                 <button
                   type="button"
                   className="btn btn-sm"

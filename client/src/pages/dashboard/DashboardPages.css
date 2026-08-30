@@ -680,24 +680,35 @@
    PRINT STYLING FOR STUDENT RECORD PROFILE
 =================================================== */
 @media print {
-  /* Hide all dashboard layout elements */
+  /* 1. Hide all dashboard layout elements, sidebar, topbar, toolbars, buttons, etc. */
+  .sidebar,
+  .dashboard-topbar,
   .dash-sidebar,
   .dash-header,
-  .dash-content > h2,
-  .dash-content > p,
-  .dash-stats,
-  .stats-grid,
+  .page-title-bar,
+  .mgmt-toolbar,
   .filter-bar,
   .table-actions,
   .table-container,
   .pagination,
+  .dash-stats,
+  .stats-grid,
+  .stats-row,
   .modal-close,
   .modal-footer,
   .btn,
+  button,
   .no-print {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
+  /* 2. Reset full-page document structure */
   html, body {
     background: #FFFFFF !important;
     color: #000000 !important;
@@ -705,39 +716,63 @@
     padding: 0 !important;
     width: 100% !important;
     height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
+  /* 3. Reset dashboard containers so they collapse completely and take 0 height */
+  .dashboard-layout,
+  .dashboard-main,
+  .dashboard-content,
   .dash-layout,
   .dash-main,
-  .dash-content,
+  .dash-content {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* 4. Modal overlay becomes a transparent normal document flow container starting at the very top */
   .modal-overlay {
     position: static !important;
     display: block !important;
     background: transparent !important;
     width: 100% !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
     border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
+  /* 5. Student detail modal dialog starts cleanly on page 1 */
   .student-detail-modal-dialog {
     position: relative !important;
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 auto !important;
-    padding: 18px 24px !important;
+    padding: 12px 18px !important;
     border: 2px solid #143223 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     overflow: visible !important;
     max-height: none !important;
     background: #FFFFFF !important;
-    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    break-before: avoid !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
