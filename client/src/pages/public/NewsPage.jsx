@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { getNews } from '../../services/api';
-import { MOCK_NEWS } from '../../data/mockData';
 import './PublicPages.css';
 
 export default function NewsPage() {
-  const [news, setNews] = useState(MOCK_NEWS);
+  const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadNews() {
       setLoading(true);
       const data = await getNews(true);
-      if (data && data.length > 0) {
+      if (data && Array.isArray(data)) {
         setNews(data);
       }
       setLoading(false);

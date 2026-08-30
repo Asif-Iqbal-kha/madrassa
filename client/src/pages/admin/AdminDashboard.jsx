@@ -44,28 +44,26 @@ export default function AdminDashboard() {
             return (studentClassId && studentClassId.toString() === cls._id?.toString()) ||
                    (studentClassName && studentClassName.trim() === cls.name?.trim());
           });
-          const baseCount = cls.studentsCount || 0;
           return {
             ...cls,
-            studentsCount: Math.max(baseCount, matchingStudents.length),
+            studentsCount: matchingStudents.length > 0 ? matchingStudents.length : (cls.studentsCount || 0),
           };
         });
 
-        const totalStudentsFromClasses = enrichedClasses.reduce((sum, c) => sum + (c.studentsCount || 0), 0);
-        const actualStudentsCount = Math.max(totalStudentsFromClasses, statsData?.totalStudents || 0, 206);
-        const actualTeachersCount = teachersData?.length || statsData?.totalTeachers || 5;
-        const actualClassesCount = enrichedClasses.length || statsData?.totalClasses || 10;
+        const realStudentsCount = statsData?.totalStudents ?? studentsData?.length ?? 0;
+        const realTeachersCount = statsData?.totalTeachers ?? teachersData?.length ?? 0;
+        const realClassesCount = statsData?.totalClasses ?? enrichedClasses.length ?? 0;
 
         setStats({
-          totalStudents: actualStudentsCount,
-          totalTeachers: actualTeachersCount,
-          totalClasses: actualClassesCount,
-          attendancePercentage: statsData?.attendancePercentage || 92,
-          pendingDonations: statsData?.pendingDonations || 0,
-          pendingAdmissions: statsData?.pendingAdmissions || 0,
+          totalStudents: realStudentsCount,
+          totalTeachers: realTeachersCount,
+          totalClasses: realClassesCount,
+          attendancePercentage: statsData?.attendancePercentage ?? 0,
+          pendingDonations: statsData?.pendingDonations ?? 0,
+          pendingAdmissions: statsData?.pendingAdmissions ?? 0,
         });
 
-        setRecentNews((newsData || []).slice(0, 3));
+        setRecentNews((newsData || []).slice(0, 5));
         setClasses(enrichedClasses);
       } catch (err) {
         console.warn('Dashboard load error:', err);

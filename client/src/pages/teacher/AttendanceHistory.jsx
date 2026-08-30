@@ -1,15 +1,38 @@
-import { MOCK_ATTENDANCE } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { getAttendance } from '../../services/api';
 import '../dashboard/DashboardPages.css';
 
 export default function AttendanceHistory() {
+  const [attendanceList, setAttendanceList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const records = await getAttendance();
+        setAttendanceList(records || []);
+      } catch (err) {
+        console.warn('AttendanceHistory load error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
   return (
     <div>
       <h2 className="page-title">حاضری ریکارڈ</h2>
 
-      {MOCK_ATTENDANCE.map((record) => (
-        <div key={record.date} className="dash-card" style={{ marginBottom: '16px' }}>
+      {loading && <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>لوڈ ہو رہا ہے...</p>}
+      {!loading && attendanceList.length === 0 && (
+        <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>کوئی حاضری ریکارڈ موجود نہیں</p>
+      )}
+
+      {attendanceList.map((record) => (
+        <div key={record._id || record.date} className="dash-card" style={{ marginBottom: '16px' }}>
           <div className="dash-card-header">
-            {record.className} - {record.date}
+            {record.className || record.class?.name || 'کلاس'} - {record.date}
           </div>
           <div className="dash-card-body">
             <div className="table-container" style={{ border: 'none' }}>

@@ -1,17 +1,6 @@
 // Centralized API Service for Madrassa Application
-// Full connectivity for Authentication, Students, Teachers, Classes, News, Attendance, Exams, Results, Donations, Admissions, and Stats.
-
-import {
-  MOCK_STUDENTS,
-  MOCK_TEACHERS,
-  MOCK_CLASSES,
-  MOCK_NEWS,
-  MOCK_EXAMS,
-  MOCK_RESULTS,
-  MOCK_DONATIONS,
-  MOCK_ADMISSION_APPLICATIONS,
-  MOCK_STATS,
-} from '../data/mockData';
+// 100% connected directly to MongoDB Atlas Backend for Authentication, Students, Teachers,
+// Classes, News, Attendance, Exams, Results, Donations, Admissions, and Stats.
 
 const API_BASE = '/api';
 
@@ -72,119 +61,30 @@ export async function getUserProfile() {
 // ----------------- STUDENTS API -----------------
 
 export async function getStudents(filter = {}) {
-  let serverStudents = null;
   try {
     const query = new URLSearchParams(filter).toString();
     const url = query ? `${API_BASE}/students?${query}` : `${API_BASE}/students`;
     const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) {
-      serverStudents = await res.json();
-    } else {
-      console.warn('getStudents non-ok response, using fallback');
+      return await res.json();
     }
   } catch (err) {
-    console.warn('getStudents failed, using fallback:', err);
+    console.warn('getStudents failed:', err);
   }
-
-  // Load students stored in local storage
-  let stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
-
-  // Check all admitted applications from localStorage and mock data to guarantee every admitted student exists
-  const localAdmissions = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  const allAdmissions = [...localAdmissions, ...MOCK_ADMISSION_APPLICATIONS];
-  const admittedApps = allAdmissions.filter((a) => a.status === 'admitted');
-
-  admittedApps.forEach((app) => {
-    const name = app.studentName || app.name || '';
-    const father = app.fatherName || '';
-    const cnic = app.cnic || '';
-
-    const alreadyInStored = stored.some(
-      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
-    );
-    const alreadyInMock = MOCK_STUDENTS.some(
-      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
-    );
-    const alreadyInServer = serverStudents && serverStudents.some(
-      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
-    );
-
-    if (!alreadyInStored && !alreadyInMock && !alreadyInServer) {
-      const rollNumber = String(1050 + stored.length + 1);
-      const studentFromApp = {
-        _id: 'stu_adm_' + (app._id || Date.now()),
-        name,
-        fatherName: father,
-        rollNumber,
-        className: app.desiredClass || 'حفظ قرآن کریم',
-        dateOfBirth: app.dateOfBirth || '',
-        cnic,
-        identificationMark: app.identificationMark || '',
-        maritalStatus: app.maritalStatus || 'مجرد',
-        phone: app.phone || '',
-        address: app.address || app.currentAddress || app.permanentAddress || '',
-        permanentAddress: app.permanentAddress || '',
-        currentAddress: app.currentAddress || '',
-        previousEducation: app.previousEducation || '',
-        guardianName: app.guardianName || father,
-        guardianFatherName: app.guardianFatherName || '',
-        guardianRelation: app.guardianRelation || 'والد',
-        guardianPhone: app.guardianPhone || app.phone || '',
-        guardianCnic: app.guardianCnic || '',
-        guardianPermanentAddress: app.guardianPermanentAddress || '',
-        guardianCurrentAddress: app.guardianCurrentAddress || '',
-        mardanRelative: app.mardanRelative || '',
-        studentPhotoData: app.studentPhotoData || '',
-        admissionFee: app.admissionFee || 1000,
-        paymentMethod: app.paymentMethod || 'JazzCash',
-        transactionId: app.transactionId || '',
-        screenshotData: app.screenshotData || '',
-        status: 'active',
-        enrollmentDate: app.date || new Date().toISOString().split('T')[0],
-      };
-      stored.unshift(studentFromApp);
-      localStorage.setItem('madrassa_students', JSON.stringify(stored));
-    }
-  });
-
-  if (serverStudents && Array.isArray(serverStudents) && serverStudents.length > 0) {
-    // Merge any stored students that server doesn't have yet
-    const nonServerStored = stored.filter(
-      (st) => !serverStudents.some((sv) => (sv.cnic && sv.cnic === st.cnic) || (sv.name === st.name && sv.fatherName === st.fatherName))
-    );
-    return [...nonServerStored, ...serverStudents];
-  }
-
-  const mockFiltered = MOCK_STUDENTS.filter(
-    (m) => !stored.some((s) => s._id === m._id || s.rollNumber === m.rollNumber || (s.name === m.name && s.fatherName === m.fatherName))
-  );
-  return [...stored, ...mockFiltered];
+  return [];
 }
 
 // Throws on failure — caller must handle and show error to user
 export async function createStudent(studentData) {
-  try {
-    const res = await fetch(`${API_BASE}/students`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(studentData),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('createStudent API failed, saving to local fallback:', err);
-  }
-
-  const stored = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
-  const newObj = {
-    _id: 'stu_' + Date.now(),
-    ...studentData,
-  };
-  stored.unshift(newObj);
-  localStorage.setItem('madrassa_students', JSON.stringify(stored));
-  return newObj;
+  const res = await fetch(`${API_BASE}/students`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(studentData),
+  });
+  return handleResponse(res);
 }
 
-// Throws on failure — caller must handle and show error to user
+// Throws on failure
 export async function updateStudent(id, studentData) {
   const res = await fetch(`${API_BASE}/students/${id}`, {
     method: 'PUT',
@@ -219,7 +119,6 @@ export async function promoteStudents(studentIds, toClassName, toClassId) {
   }
 }
 
-
 // ----------------- TEACHERS API -----------------
 
 export async function getTeachers() {
@@ -229,7 +128,7 @@ export async function getTeachers() {
   } catch (err) {
     console.warn('getTeachers failed:', err);
   }
-  return MOCK_TEACHERS;
+  return [];
 }
 
 // Throws on failure
@@ -263,38 +162,14 @@ export async function deleteTeacher(id) {
 
 // ----------------- CLASSES API -----------------
 
-export const DEFAULT_CLASS_STUDENTS = {
-  'ناظرہ': 25,
-  'حفظ': 18,
-  'حفظ قرآن کریم': 18,
-  'درجہ اول': 30,
-  'درجہ دوم': 22,
-  'درجہ سوم': 28,
-  'درجہ چہارم': 20,
-  'درجہ پنجم': 15,
-  'درجہ ششم': 19,
-  'درجہ ہفتم': 17,
-  'درجہ ہشتم': 12,
-};
-
 export async function getClasses() {
-  let list = null;
   try {
     const res = await fetch(`${API_BASE}/classes`, { headers: getAuthHeaders() });
-    if (res.ok) {
-      list = await res.json();
-    }
+    if (res.ok) return await res.json();
   } catch (err) {
     console.warn('getClasses failed:', err);
   }
-  const source = (list && Array.isArray(list) && list.length > 0) ? list : MOCK_CLASSES;
-  return source.map((cls) => {
-    const def = DEFAULT_CLASS_STUDENTS[cls.name] || 0;
-    return {
-      ...cls,
-      studentsCount: Math.max(cls.studentsCount || 0, def),
-    };
-  });
+  return [];
 }
 
 // Throws on failure
@@ -330,15 +205,13 @@ export async function deleteClass(id) {
 
 export async function getNews(publishedOnly = true) {
   try {
-    // publishedOnly=true  → public page, only show published articles
-    // publishedOnly=false → admin page, show all articles
     const url = publishedOnly ? `${API_BASE}/news` : `${API_BASE}/news?published=all`;
     const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
   } catch (err) {
     console.warn('getNews failed:', err);
   }
-  return MOCK_NEWS;
+  return [];
 }
 
 // Throws on failure
@@ -391,7 +264,6 @@ export async function toggleNewsPopup(id, isPopup) {
   return handleResponse(res);
 }
 
-
 // ----------------- ATTENDANCE API -----------------
 
 export async function getAttendance(classId, date) {
@@ -433,7 +305,7 @@ export async function getStudentAttendance(studentId) {
   } catch (err) {
     console.warn('getStudentAttendance failed:', err);
   }
-  return { totalDays: 120, presentDays: 108, absentDays: 8, leaveDays: 4, percentage: 90 };
+  return { totalDays: 0, presentDays: 0, absentDays: 0, leaveDays: 0, percentage: 0 };
 }
 
 // ----------------- EXAMS & RESULTS API -----------------
@@ -451,7 +323,7 @@ export async function getExams(classId, publishedOnly = false) {
   } catch (err) {
     console.warn('getExams failed:', err);
   }
-  return MOCK_EXAMS;
+  return [];
 }
 
 export async function createExam(examData) {
@@ -463,16 +335,46 @@ export async function createExam(examData) {
   return handleResponse(res);
 }
 
-export async function getStudentResults(studentId) {
+export async function updateExam(id, examData) {
+  const res = await fetch(`${API_BASE}/exams/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(examData),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteExam(id) {
+  const res = await fetch(`${API_BASE}/exams/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
+}
+
+export async function getResults(examId, classId) {
   try {
-    const res = await fetch(`${API_BASE}/results/student/${studentId}`, {
-      headers: getAuthHeaders(),
-    });
+    let url = `${API_BASE}/results`;
+    const params = new URLSearchParams();
+    if (examId) params.append('examId', examId);
+    if (classId) params.append('classId', classId);
+    if (params.toString()) url += `?${params.toString()}`;
+
+    const res = await fetch(url, { headers: getAuthHeaders() });
     if (res.ok) return await res.json();
   } catch (err) {
-    console.warn('getStudentResults failed:', err);
+    console.warn('getResults failed:', err);
   }
-  return MOCK_RESULTS;
+  return [];
+}
+
+export async function saveResults(resultsData) {
+  const res = await fetch(`${API_BASE}/results`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(resultsData),
+  });
+  return handleResponse(res);
 }
 
 export async function uploadResult(resultData) {
@@ -484,132 +386,84 @@ export async function uploadResult(resultData) {
   return handleResponse(res);
 }
 
-// Public search for student result by Roll Number
-export async function searchStudentResult(rollNumber) {
+export async function getStudentResults(studentId) {
   try {
-    const res = await fetch(`${API_BASE}/results/roll/${encodeURIComponent(rollNumber.trim())}`);
+    const res = await fetch(`${API_BASE}/results/student/${studentId}`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getStudentResults error:', err);
+  }
+  return [];
+}
+
+export async function searchStudentResult(rollNumber, examType) {
+  try {
+    let url = `${API_BASE}/results/search?rollNumber=${encodeURIComponent(rollNumber.trim())}`;
+    if (examType && examType !== 'all') {
+      url += `&examType=${encodeURIComponent(examType)}`;
+    }
+    const res = await fetch(url);
     if (res.ok) {
-      return await res.json();
+      const data = await res.json();
+      return data;
     }
     const data = await res.json().catch(() => ({}));
     return { error: data.message || `رول نمبر ${rollNumber} کا رزلٹ نہیں ملا` };
   } catch (err) {
     console.warn('searchStudentResult API error:', err);
+    return { error: 'سرور سے رابطہ نہیں ہو سکا' };
   }
-
-  // Fallback to mock data for demo/offline
-  const found = MOCK_RESULTS.filter((r) => r.rollNumber === rollNumber.trim());
-  if (found.length > 0) return found;
-  return { error: `رول نمبر ${rollNumber} کا کوئی ریکارڈ نہیں ملا` };
 }
 
 // ----------------- STATS API -----------------
 
 export async function getStats() {
-  let serverStats = null;
   try {
     const res = await fetch(`${API_BASE}/stats`, { headers: getAuthHeaders() });
     if (res.ok) {
-      serverStats = await res.json();
+      return await res.json();
     }
   } catch (err) {
-    console.warn('getStats failed, using dynamic local reconciliation:', err);
+    console.warn('getStats failed:', err);
   }
 
-  // Get live counts directly from actual data entities
-  const [students, teachers, classes, admissions, donations] = await Promise.all([
-    getStudents().catch(() => []),
-    getTeachers().catch(() => []),
-    getClasses().catch(() => []),
-    getAdmissions().catch(() => []),
-    getDonations().catch(() => []),
-  ]);
-
-  // Calculate total students by summing counts across all classes
-  let totalAcrossClasses = 0;
-  classes.forEach((c) => {
-    const def = DEFAULT_CLASS_STUDENTS[c.name] || 0;
-    totalAcrossClasses += Math.max(c.studentsCount || 0, def);
-  });
-
-  const effectiveTotalStudents = Math.max(
-    serverStats?.totalStudents || 0,
-    totalAcrossClasses,
-    students.length,
-    206
-  );
-
-  const liveTotalTeachers = teachers.length;
-  const liveTotalClasses = classes.length;
-  const livePendingAdmissions = admissions.filter(
-    (a) => a.status === 'pending' || a.status === 'under_review'
-  ).length;
-  const livePendingDonations = donations.filter(
-    (d) => d.status === 'pending'
-  ).length;
-
   return {
-    totalStudents: effectiveTotalStudents,
-    activeStudents: effectiveTotalStudents,
-    totalTeachers: Math.max(liveTotalTeachers, serverStats?.totalTeachers || 0, 5),
-    totalClasses: Math.max(liveTotalClasses, serverStats?.totalClasses || 0, 10),
-    todayAttendance: serverStats?.todayAttendance || Math.round(effectiveTotalStudents * 0.92),
-    attendancePercentage: serverStats?.attendancePercentage || 92,
-    pendingDonations: livePendingDonations > 0 ? livePendingDonations : (serverStats?.pendingDonations || 0),
-    pendingAdmissions: livePendingAdmissions > 0 ? livePendingAdmissions : (serverStats?.pendingAdmissions || 0),
+    totalStudents: 0,
+    activeStudents: 0,
+    totalTeachers: 0,
+    totalClasses: 0,
+    todayAttendance: 0,
+    attendancePercentage: 0,
+    pendingDonations: 0,
+    pendingAdmissions: 0,
   };
 }
 
 // ----------------- DONATIONS API -----------------
 
 export async function submitDonation(donationData, screenshotFile) {
-  try {
-    const formData = new FormData();
-    formData.append('donorName', donationData.donorName);
-    formData.append('phone', donationData.phone);
-    formData.append('amount', donationData.amount);
-    formData.append('method', donationData.method);
-    if (screenshotFile) {
-      formData.append('screenshot', screenshotFile);
-    }
-
-    const res = await fetch(`${API_BASE}/donations`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      return { success: true, trackingNumber: data.trackingNumber, message: data.message };
-    }
-    const errData = await res.json().catch(() => ({}));
-    return { success: false, message: errData.message || 'عطیہ جمع کرنے میں خرابی' };
-  } catch (err) {
-    console.warn('submitDonation API error:', err);
+  const formData = new FormData();
+  formData.append('donorName', donationData.donorName);
+  formData.append('phone', donationData.phone);
+  formData.append('amount', donationData.amount);
+  formData.append('method', donationData.method);
+  if (screenshotFile) {
+    formData.append('screenshot', screenshotFile);
   }
 
-  // Persistent local store fallback
-  const stored = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-  const year = new Date().getFullYear();
-  const count = stored.length + MOCK_DONATIONS.length + 1;
-  const trackingNumber = `DON-${year}-${String(count).padStart(4, '0')}`;
+  const res = await fetch(`${API_BASE}/donations`, {
+    method: 'POST',
+    body: formData,
+  });
 
-  const newDonation = {
-    _id: 'don_' + Date.now(),
-    trackingNumber,
-    donorName: donationData.donorName,
-    phone: donationData.phone,
-    amount: Number(donationData.amount),
-    method: donationData.method,
-    screenshotFile: screenshotFile?.name || '',
-    status: 'pending',
-    date: new Date().toISOString().split('T')[0],
-    adminNotes: '',
-  };
-
-  stored.unshift(newDonation);
-  localStorage.setItem('madrassa_donations', JSON.stringify(stored));
-  return { success: true, trackingNumber };
+  if (res.ok) {
+    const data = await res.json();
+    return { success: true, trackingNumber: data.trackingNumber, message: data.message };
+  }
+  const errData = await res.json().catch(() => ({}));
+  return { success: false, message: errData.message || 'عطیہ جمع کرنے میں خرابی' };
 }
 
 export async function getDonations(statusFilter = 'all') {
@@ -622,46 +476,16 @@ export async function getDonations(statusFilter = 'all') {
   } catch (err) {
     console.warn('getDonations API error:', err);
   }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-  const all = [...local, ...MOCK_DONATIONS.filter((m) => !local.some((l) => l.trackingNumber === m.trackingNumber))];
-  if (statusFilter !== 'all') {
-    return all.filter((d) => d.status === statusFilter);
-  }
-  return all;
+  return [];
 }
 
-// Update donation status on server and sync local storage
 export async function updateDonationStatus(id, newStatus, adminNotes = '') {
-  try {
-    const res = await fetch(`${API_BASE}/donations/${id}/status`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ status: newStatus, adminNotes }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-      const index = local.findIndex((d) => d._id === id || d.trackingNumber === id || (data && d.trackingNumber === data.trackingNumber));
-      if (index !== -1) {
-        local[index].status = newStatus;
-        local[index].adminNotes = adminNotes;
-        localStorage.setItem('madrassa_donations', JSON.stringify(local));
-      }
-      return data;
-    }
-    return await handleResponse(res);
-  } catch (err) {
-    const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-    const index = local.findIndex((d) => d._id === id || d.trackingNumber === id);
-    if (index !== -1) {
-      local[index].status = newStatus;
-      local[index].adminNotes = adminNotes;
-      localStorage.setItem('madrassa_donations', JSON.stringify(local));
-      return local[index];
-    }
-    throw err;
-  }
+  const res = await fetch(`${API_BASE}/donations/${id}/status`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status: newStatus, adminNotes }),
+  });
+  return handleResponse(res);
 }
 
 export async function trackDonation(trackingNumber) {
@@ -671,71 +495,38 @@ export async function trackDonation(trackingNumber) {
   } catch (err) {
     console.warn('trackDonation API error:', err);
   }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_donations') || '[]');
-  const found = local.find((d) => d.trackingNumber === trackingNumber) ||
-                MOCK_DONATIONS.find((d) => d.trackingNumber === trackingNumber);
-  return found || null;
+  return null;
 }
 
 // ----------------- ADMISSIONS API -----------------
 
-export async function submitAdmission(admissionData, paymentProofFile = null) {
-  try {
-    let res;
-    if (paymentProofFile) {
-      const formData = new FormData();
-      Object.keys(admissionData).forEach((key) => {
-        if (admissionData[key] !== undefined && admissionData[key] !== null) {
-          formData.append(key, admissionData[key]);
-        }
-      });
-      formData.append('screenshot', paymentProofFile);
-      res = await fetch(`${API_BASE}/admissions`, {
-        method: 'POST',
-        body: formData,
-      });
-    } else {
-      res = await fetch(`${API_BASE}/admissions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(admissionData),
-      });
+export async function submitAdmission(admissionData, paymentProofFile) {
+  const formData = new FormData();
+  Object.keys(admissionData).forEach((key) => {
+    if (admissionData[key] !== undefined && admissionData[key] !== null) {
+      formData.append(key, admissionData[key]);
     }
-
-    if (res.ok) {
-      const data = await res.json();
-      return { success: true, trackingNumber: data.trackingNumber, queuePosition: data.queuePosition, message: data.message };
-    }
-    const errData = await res.json().catch(() => ({}));
-    return { success: false, message: errData.message || 'درخواست جمع کرنے میں خرابی' };
-  } catch (err) {
-    console.warn('submitAdmission API error:', err);
+  });
+  if (paymentProofFile) {
+    formData.append('paymentProof', paymentProofFile);
   }
 
-  const stored = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  const count = stored.length + MOCK_ADMISSION_APPLICATIONS.length + 1;
-  const year = new Date().getFullYear();
-  const trackingNumber = `ADM-${year}-${String(count).padStart(4, '0')}`;
+  const res = await fetch(`${API_BASE}/admissions`, {
+    method: 'POST',
+    body: formData,
+  });
 
-  const newAdmission = {
-    _id: 'adm_' + Date.now(),
-    trackingNumber,
-    ...admissionData,
-    admissionFee: Number(admissionData.admissionFee) || 1000,
-    paymentMethod: admissionData.paymentMethod || 'JazzCash',
-    transactionId: admissionData.transactionId || '',
-    screenshotPath: paymentProofFile?.name || '',
-    screenshotData: admissionData.screenshotData || '',
-    status: 'pending',
-    queuePosition: count,
-    date: new Date().toISOString().split('T')[0],
-    adminNotes: '',
-  };
-
-  stored.unshift(newAdmission);
-  localStorage.setItem('madrassa_admissions', JSON.stringify(stored));
-  return { success: true, trackingNumber, queuePosition: count };
+  if (res.ok) {
+    const data = await res.json();
+    return {
+      success: true,
+      trackingNumber: data.trackingNumber,
+      queuePosition: data.queuePosition,
+      message: data.message,
+    };
+  }
+  const errData = await res.json().catch(() => ({}));
+  return { success: false, message: errData.message || 'درخواست جمع کرنے میں خرابی' };
 }
 
 export async function getAdmissions(statusFilter = 'all') {
@@ -748,111 +539,16 @@ export async function getAdmissions(statusFilter = 'all') {
   } catch (err) {
     console.warn('getAdmissions API error:', err);
   }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  const all = [...local, ...MOCK_ADMISSION_APPLICATIONS.filter((m) => !local.some((l) => l.trackingNumber === m.trackingNumber))];
-  if (statusFilter !== 'all') {
-    return all.filter((a) => a.status === statusFilter);
-  }
-  return all;
+  return [];
 }
 
-// Throws on failure — caller must show error
-export async function updateAdmissionStatus(id, newStatus, adminNotes = '', appData = null) {
-  let serverData = null;
-  try {
-    const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ status: newStatus, adminNotes }),
-    });
-    if (res.ok) {
-      serverData = await res.json();
-    }
-  } catch (err) {
-    console.warn('updateAdmissionStatus API error:', err);
-  }
-
-  // Update admission in local storage
-  const storedAdmissions = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  let applicationObj = serverData || appData;
-  const idx = storedAdmissions.findIndex((a) => a._id === id || a.trackingNumber === id);
-  if (idx !== -1) {
-    storedAdmissions[idx].status = newStatus;
-    if (adminNotes) storedAdmissions[idx].adminNotes = adminNotes;
-    applicationObj = { ...storedAdmissions[idx], ...(applicationObj || {}) };
-    localStorage.setItem('madrassa_admissions', JSON.stringify(storedAdmissions));
-  } else if (!applicationObj) {
-    const mockFound = MOCK_ADMISSION_APPLICATIONS.find((a) => a._id === id || a.trackingNumber === id);
-    if (mockFound) {
-      applicationObj = { ...mockFound, status: newStatus, adminNotes: adminNotes || mockFound.adminNotes };
-    }
-  }
-
-  // When admission is confirmed (admitted), automatically create the Student record with all details
-  if (newStatus === 'admitted' && applicationObj) {
-    const name = applicationObj.studentName || applicationObj.name || '';
-    const father = applicationObj.fatherName || '';
-    const cnic = applicationObj.cnic || '';
-
-    const storedStudents = JSON.parse(localStorage.getItem('madrassa_students') || '[]');
-    const alreadyExists = storedStudents.some(
-      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
-    ) || MOCK_STUDENTS.some(
-      (s) => (cnic && s.cnic === cnic) || (s.name === name && s.fatherName === father)
-    );
-
-    if (!alreadyExists) {
-      const rollNumber = String(1000 + storedStudents.length + MOCK_STUDENTS.length + 1);
-      const newStudent = {
-        _id: 'stu_' + Date.now(),
-        name,
-        fatherName: father,
-        rollNumber,
-        className: applicationObj.desiredClass || 'حفظ قرآن کریم',
-        dateOfBirth: applicationObj.dateOfBirth || '',
-        cnic,
-        identificationMark: applicationObj.identificationMark || '',
-        maritalStatus: applicationObj.maritalStatus || 'مجرد',
-        phone: applicationObj.phone || '',
-        address: applicationObj.address || applicationObj.currentAddress || applicationObj.permanentAddress || '',
-        permanentAddress: applicationObj.permanentAddress || '',
-        currentAddress: applicationObj.currentAddress || '',
-        previousEducation: applicationObj.previousEducation || '',
-        guardianName: applicationObj.guardianName || father,
-        guardianFatherName: applicationObj.guardianFatherName || '',
-        guardianRelation: applicationObj.guardianRelation || 'والد',
-        guardianPhone: applicationObj.guardianPhone || applicationObj.phone || '',
-        guardianCnic: applicationObj.guardianCnic || '',
-        guardianPermanentAddress: applicationObj.guardianPermanentAddress || '',
-        guardianCurrentAddress: applicationObj.guardianCurrentAddress || '',
-        mardanRelative: applicationObj.mardanRelative || '',
-        studentPhotoData: applicationObj.studentPhotoData || '',
-        admissionFee: applicationObj.admissionFee || 1000,
-        paymentMethod: applicationObj.paymentMethod || 'JazzCash',
-        transactionId: applicationObj.transactionId || '',
-        screenshotData: applicationObj.screenshotData || '',
-        status: 'active',
-        enrollmentDate: new Date().toISOString().split('T')[0],
-      };
-      storedStudents.unshift(newStudent);
-      localStorage.setItem('madrassa_students', JSON.stringify(storedStudents));
-
-      // Also attempt to push to backend server via POST /api/students
-      try {
-        await fetch(`${API_BASE}/students`, {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(newStudent),
-        });
-      } catch (err) {
-        console.warn('Backend student sync error:', err);
-      }
-    }
-  }
-
-  if (serverData) return serverData;
-  return applicationObj || { success: true, status: newStatus };
+export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
+  const res = await fetch(`${API_BASE}/admissions/${id}/status`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status: newStatus, adminNotes }),
+  });
+  return handleResponse(res);
 }
 
 export async function trackAdmission(trackingNumber) {
@@ -862,11 +558,7 @@ export async function trackAdmission(trackingNumber) {
   } catch (err) {
     console.warn('trackAdmission API error:', err);
   }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_admissions') || '[]');
-  const found = local.find((a) => a.trackingNumber === trackingNumber) ||
-                MOCK_ADMISSION_APPLICATIONS.find((a) => a.trackingNumber === trackingNumber);
-  return found || null;
+  return null;
 }
 
 // ----------------- GALLERY API -----------------
@@ -878,58 +570,30 @@ export async function getGalleryItems() {
   } catch (err) {
     console.warn('getGalleryItems error:', err);
   }
-
-  const local = JSON.parse(localStorage.getItem('madrassa_gallery') || '[]');
-  return local.length > 0 ? local : [
-    { _id: 'g1', title: 'مدرسہ کی مرکزی عمارت', category: 'عمارت', imagePath: '' },
-    { _id: 'g2', title: 'تلاوت قرآن مجید کی کلاس', category: 'تعلیم', imagePath: '' },
-    { _id: 'g3', title: 'حفظ القرآن کلاس', category: 'تعلیم', imagePath: '' },
-    { _id: 'g4', title: 'سالانہ تقریب تقسیم اسناد', category: 'تقاریب', imagePath: '' },
-    { _id: 'g5', title: 'کتب خانہ و لائبریری', category: 'سہولیات', imagePath: '' },
-    { _id: 'g6', title: 'مسجد مدرسہ', category: 'عمارت', imagePath: '' },
-  ];
+  return [];
 }
 
 export async function uploadGalleryItem(title, category, imageFile) {
-  try {
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('category', category || 'عمارت');
-    if (imageFile) {
-      formData.append('image', imageFile);
-    }
-
-    const token = localStorage.getItem('madrassa_token');
-    const headers = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-    const res = await fetch(`${API_BASE}/gallery`, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
-
-    if (res.ok) return await res.json();
-  } catch (err) {
-    console.warn('uploadGalleryItem error:', err);
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('category', category || 'عمارت');
+  if (imageFile) {
+    formData.append('image', imageFile);
   }
 
-  // Fallback to local storage
-  const local = JSON.parse(localStorage.getItem('madrassa_gallery') || '[]');
-  const newItem = {
-    _id: 'g_' + Date.now(),
-    title,
-    category: category || 'عمارت',
-    imagePath: '',
-    imagePreview: imageFile ? URL.createObjectURL(imageFile) : '',
-    createdAt: new Date().toISOString(),
-  };
-  local.unshift(newItem);
-  localStorage.setItem('madrassa_gallery', JSON.stringify(local));
-  return newItem;
+  const token = localStorage.getItem('madrassa_token');
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE}/gallery`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+
+  return handleResponse(res);
 }
 
-// Throws on failure
 export async function deleteGalleryItem(id) {
   const res = await fetch(`${API_BASE}/gallery/${id}`, {
     method: 'DELETE',

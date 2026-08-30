@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getNews, getStats, getClasses, getStudents, getTeachers } from '../../services/api';
-import { MOCK_NEWS, MOCK_STATS, MOCK_CLASSES } from '../../data/mockData';
 import {
   FiUsers,
   FiBookOpen,
@@ -14,9 +13,14 @@ import {
 import './PublicPages.css';
 
 export default function HomePage() {
-  const [news, setNews] = useState(MOCK_NEWS.slice(0, 3));
-  const [stats, setStats] = useState(MOCK_STATS);
-  const [classes, setClasses] = useState(MOCK_CLASSES);
+  const [news, setNews] = useState([]);
+  const [stats, setStats] = useState({
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalClasses: 0,
+    attendancePercentage: 0,
+  });
+  const [classes, setClasses] = useState([]);
 
   useEffect(() => {
     async function loadHomeData() {
@@ -28,38 +32,18 @@ export default function HomePage() {
           getStudents().catch(() => []),
           getTeachers().catch(() => []),
         ]);
-        if (newsData && newsData.length > 0) setNews(newsData.slice(0, 3));
+        if (newsData && Array.isArray(newsData)) setNews(newsData.slice(0, 3));
+        if (classesData && Array.isArray(classesData)) setClasses(classesData);
 
-        const sourceClasses = (classesData && classesData.length > 0) ? classesData : MOCK_CLASSES;
-        const activeStudents = (studentsData || []).filter((s) => s.status !== 'inactive');
-
-        const enrichedClasses = sourceClasses.map((cls) => {
-          const matchingStudents = activeStudents.filter((s) => {
-            const studentClassId = s.class?._id || s.class;
-            const studentClassName = s.className || s.class?.name;
-            return (studentClassId && studentClassId.toString() === cls._id?.toString()) ||
-                   (studentClassName && studentClassName.trim() === cls.name?.trim());
-          });
-          const baseCount = cls.studentsCount || 0;
-          return {
-            ...cls,
-            studentsCount: Math.max(baseCount, matchingStudents.length),
-          };
-        });
-
-        setClasses(enrichedClasses);
-
-        const totalStudentsFromClasses = enrichedClasses.reduce((sum, c) => sum + (c.studentsCount || 0), 0);
-        const actualStudentsCount = Math.max(totalStudentsFromClasses, statsData?.totalStudents || 0, 206);
-        const actualTeachersCount = teachersData?.length || statsData?.totalTeachers || 5;
-        const actualClassesCount = enrichedClasses.length || statsData?.totalClasses || 10;
+        const realStudentsCount = statsData?.totalStudents ?? studentsData?.length ?? 0;
+        const realTeachersCount = statsData?.totalTeachers ?? teachersData?.length ?? 0;
+        const realClassesCount = statsData?.totalClasses ?? classesData?.length ?? 0;
 
         setStats({
-          ...(statsData || {}),
-          totalStudents: actualStudentsCount,
-          totalTeachers: actualTeachersCount,
-          totalClasses: actualClassesCount,
-          attendancePercentage: statsData?.attendancePercentage || 92,
+          totalStudents: realStudentsCount,
+          totalTeachers: realTeachersCount,
+          totalClasses: realClassesCount,
+          attendancePercentage: statsData?.attendancePercentage ?? 0,
         });
       } catch (e) {
         console.warn('Home data load error:', e);

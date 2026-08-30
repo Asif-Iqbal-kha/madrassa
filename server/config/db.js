@@ -45,9 +45,13 @@ async function checkAndSeed() {
     const User = require('../models/User');
     const count = await User.countDocuments();
     if (count === 0) {
-      console.log('Database empty. Auto-seeding initial data to Atlas Cloud...');
-      const seedDB = require('../seed');
-      await seedDB();
+      console.log('Database empty. Creating initial admin user...');
+      await User.create({
+        name: 'ایڈمن',
+        username: 'admin',
+        password: 'admin123',
+        role: 'master_admin',
+      });
     } else {
       console.log(`Found existing data (${count} users). Skipping seed.`);
     }
