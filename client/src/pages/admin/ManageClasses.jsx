@@ -37,10 +37,15 @@ export default function ManageClasses() {
 
   const getStudentsCountForClass = (cls) => {
     const matchingStudents = students.filter((s) => {
+      const sClsId = s.class?._id || s.class;
+      if (sClsId && String(sClsId) === String(cls._id)) return true;
       const sCls = s.className || s.class?.name || s.class;
-      return sCls === cls.name ||
+      return (
+        sCls === cls.name ||
+        (cls.name === 'حفظ' && (sCls === 'حفظ' || sCls === 'حفظ قرآن کریم')) ||
         (cls.name === 'حفظ قرآن کریم' && (sCls === 'حفظ' || sCls === 'حفظ قرآن کریم')) ||
-        (cls.name === 'ناظرہ' && (sCls === 'ناظرہ' || sCls === 'ناظرہ قرآن کریم'));
+        (cls.name === 'ناظرہ' && (sCls === 'ناظرہ' || sCls === 'ناظرہ قرآن کریم'))
+      );
     });
     return Math.max(cls.studentsCount || 0, matchingStudents.length);
   };

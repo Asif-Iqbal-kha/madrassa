@@ -163,7 +163,7 @@ export default function AdminDashboard() {
                   {classes.length > 0 && (
                     <tfoot>
                       <tr style={{ fontWeight: 700, background: 'var(--color-bg-alt)', borderTop: '2px solid var(--color-border-light)' }}>
-                        <td>کل فعال طلباء (زیرِ تعلیم)</td>
+                        <td>کل طلباء (تمام درجات)</td>
                         <td style={{ fontFamily: 'var(--font-english)', color: 'var(--color-primary)', fontWeight: 700 }}>
                           {classes.reduce((sum, c) => sum + (c.studentsCount || 0), 0)}
                         </td>

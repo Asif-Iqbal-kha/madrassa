@@ -23,12 +23,11 @@ router.get('/', async (req, res) => {
   try {
     const classes = await Class.find().populate('teacher', 'name').sort('name').lean();
     
-    // Calculate live active student count for each class dynamically
+    // Calculate live total student count (both graduated and undergraduate) for each class
     const enrichedClasses = await Promise.all(
       classes.map(async (cls) => {
         const aliases = getClassAliases(cls.name);
         const count = await Student.countDocuments({
-          status: { $in: ['active', null, ''] },
           $or: [
             { class: cls._id },
             { className: { $in: aliases } },

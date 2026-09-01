@@ -23,7 +23,6 @@ router.get('/', async (req, res) => {
       classes.map(async (cls) => {
         const aliases = getClassAliases(cls.name);
         const count = await Student.countDocuments({
-          status: { $in: ['active', null, ''] },
           $or: [
             { class: cls._id },
             { className: { $in: aliases } },
