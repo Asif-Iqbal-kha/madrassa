@@ -36,35 +36,26 @@ export default function AdminDashboard() {
           getTeachers().catch(() => []),
         ]);
 
-        const activeStudents = (studentsData || []).filter((s) => s.status !== 'inactive');
-        const enrichedClasses = (classesData || []).map((cls) => {
-          const matchingStudents = activeStudents.filter((s) => {
-            const studentClassId = s.class?._id || s.class;
-            const studentClassName = s.className || s.class?.name;
-            return (studentClassId && studentClassId.toString() === cls._id?.toString()) ||
-                   (studentClassName && studentClassName.trim() === cls.name?.trim());
-          });
-          return {
-            ...cls,
-            studentsCount: matchingStudents.length > 0 ? matchingStudents.length : (cls.studentsCount || 0),
-          };
-        });
-
-        const realStudentsCount = statsData?.totalStudents ?? studentsData?.length ?? 0;
-        const realTeachersCount = statsData?.totalTeachers ?? teachersData?.length ?? 0;
-        const realClassesCount = statsData?.totalClasses ?? enrichedClasses.length ?? 0;
+        const activeStudents = (studentsData || []).filter(
+          (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
+        );
+        const graduatedCount = statsData?.graduatedStudents ?? (studentsData || []).filter((s) => s.status === 'graduated').length;
+        const activeCount = statsData?.activeStudents ?? activeStudents.length;
+        const totalCount = statsData?.totalStudents ?? (studentsData?.length || 0);
 
         setStats({
-          totalStudents: realStudentsCount,
-          totalTeachers: realTeachersCount,
-          totalClasses: realClassesCount,
+          totalStudents: totalCount,
+          activeStudents: activeCount,
+          graduatedStudents: graduatedCount,
+          totalTeachers: statsData?.totalTeachers ?? teachersData?.length ?? 0,
+          totalClasses: statsData?.totalClasses ?? (classesData?.length || 0),
           attendancePercentage: statsData?.attendancePercentage ?? 0,
           pendingDonations: statsData?.pendingDonations ?? 0,
           pendingAdmissions: statsData?.pendingAdmissions ?? 0,
         });
 
         setRecentNews((newsData || []).slice(0, 5));
-        setClasses(enrichedClasses);
+        setClasses(classesData || []);
       } catch (err) {
         console.warn('Dashboard load error:', err);
       } finally {
@@ -83,7 +74,9 @@ export default function AdminDashboard() {
         <div className="dash-stat-card">
           <FiUsers size={24} className="dash-stat-icon" />
           <div className="stat-number">{loading ? '...' : stats.totalStudents}</div>
-          <div className="stat-label">کل طلباء</div>
+          <div className="stat-label">
+            کل طلباء {stats.graduatedStudents > 0 ? `(${stats.activeStudents} فعال + ${stats.graduatedStudents} فارغ)` : ''}
+          </div>
         </div>
         <div className="dash-stat-card">
           <FiUser size={24} className="dash-stat-icon" />
@@ -170,12 +163,21 @@ export default function AdminDashboard() {
                   {classes.length > 0 && (
                     <tfoot>
                       <tr style={{ fontWeight: 700, background: 'var(--color-bg-alt)', borderTop: '2px solid var(--color-border-light)' }}>
-                        <td>کل طلباء (مجموعہ)</td>
+                        <td>کل فعال طلباء (زیرِ تعلیم)</td>
                         <td style={{ fontFamily: 'var(--font-english)', color: 'var(--color-primary)', fontWeight: 700 }}>
                           {classes.reduce((sum, c) => sum + (c.studentsCount || 0), 0)}
                         </td>
                         <td>—</td>
                       </tr>
+                      {stats.graduatedStudents > 0 && (
+                        <tr style={{ fontWeight: 600, background: 'var(--color-bg-alt)' }}>
+                          <td>فارغ التحصیل طلباء (Graduated)</td>
+                          <td style={{ fontFamily: 'var(--font-english)', color: 'var(--color-text-secondary)', fontWeight: 700 }}>
+                            {stats.graduatedStudents}
+                          </td>
+                          <td>—</td>
+                        </tr>
+                      )}
                     </tfoot>
                   )}
                 </table>
