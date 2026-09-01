@@ -90,6 +90,7 @@ function App() {
             <Route path="teachers" element={<ManageTeachers />} />
             <Route path="classes" element={<ManageClasses />} />
             <Route path="promote" element={<PromoteStudents />} />
+            <Route path="results" element={<UploadResults />} />
             <Route path="donations" element={<ManageDonations />} />
             <Route path="admissions" element={<ManageAdmissions />} />
             <Route path="news" element={<ManageNews />} />

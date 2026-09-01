@@ -352,12 +352,17 @@ export async function deleteExam(id) {
   return handleResponse(res);
 }
 
-export async function getResults(examId, classId) {
+export async function getResults(filters = {}) {
   try {
     let url = `${API_BASE}/results`;
     const params = new URLSearchParams();
-    if (examId) params.append('examId', examId);
-    if (classId) params.append('classId', classId);
+    if (typeof filters === 'string') {
+      params.append('examId', filters);
+    } else if (filters && typeof filters === 'object') {
+      Object.entries(filters).forEach(([key, val]) => {
+        if (val) params.append(key, val);
+      });
+    }
     if (params.toString()) url += `?${params.toString()}`;
 
     const res = await fetch(url, { headers: getAuthHeaders() });
@@ -386,6 +391,32 @@ export async function uploadResult(resultData) {
   return handleResponse(res);
 }
 
+export async function saveBulkResults(resultsArray) {
+  const res = await fetch(`${API_BASE}/results/bulk`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ results: resultsArray }),
+  });
+  return handleResponse(res);
+}
+
+export async function updateResult(id, resultData) {
+  const res = await fetch(`${API_BASE}/results/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(resultData),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteResult(id) {
+  const res = await fetch(`${API_BASE}/results/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
+}
+
 export async function getStudentResults(studentId) {
   try {
     const res = await fetch(`${API_BASE}/results/student/${studentId}`, {
@@ -400,17 +431,26 @@ export async function getStudentResults(studentId) {
 
 export async function searchStudentResult(rollNumber, examType) {
   try {
-    let url = `${API_BASE}/results/search?rollNumber=${encodeURIComponent(rollNumber.trim())}`;
+    const cleanRoll = rollNumber.trim();
+    let url = `${API_BASE}/results/search?rollNumber=${encodeURIComponent(cleanRoll)}`;
     if (examType && examType !== 'all') {
       url += `&examType=${encodeURIComponent(examType)}`;
     }
-    const res = await fetch(url);
+    let res = await fetch(url);
     if (res.ok) {
       const data = await res.json();
       return data;
     }
+
+    // Fallback to /results/roll/:rollNumber
+    res = await fetch(`${API_BASE}/results/roll/${encodeURIComponent(cleanRoll)}`);
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    }
+
     const data = await res.json().catch(() => ({}));
-    return { error: data.message || `رول نمبر ${rollNumber} کا رزلٹ نہیں ملا` };
+    return { error: data.message || `رول نمبر ${cleanRoll} کا رزلٹ نہیں ملا` };
   } catch (err) {
     console.warn('searchStudentResult API error:', err);
     return { error: 'سرور سے رابطہ نہیں ہو سکا' };
