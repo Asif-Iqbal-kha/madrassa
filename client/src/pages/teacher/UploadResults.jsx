@@ -103,16 +103,15 @@ export default function UploadResults() {
           getResults({ className: currentClass?.name || '', examName: examName || '' }),
         ]);
 
-        // Filter students for this class
-        const filtered = (allStudents || []).filter((s) => {
+        // Filter students for this class - exclude graduated and inactive students
+        const eligibleStudents = (allStudents || []).filter((s) => {
+          if (s.status === 'graduated' || s.status === 'inactive') return false;
           if (s.class === selectedClass || s.class?._id === selectedClass) return true;
           if (currentClass && (s.className === currentClass.name || s.class === currentClass.name)) return true;
           return false;
         });
 
-        // If no match found, fallback to all students so user can still enter marks
-        const finalList = filtered.length > 0 ? filtered : (allStudents || []);
-        setStudents(finalList);
+        setStudents(eligibleStudents);
 
         // Pre-fill existing marks if any
         const resultsMap = {};

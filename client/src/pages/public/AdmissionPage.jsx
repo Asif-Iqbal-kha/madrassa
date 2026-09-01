@@ -53,10 +53,17 @@ export default function AdmissionPage() {
         const data = await getClasses();
         if (data && data.length > 0) {
           setClasses(data);
-          setForm((prev) => ({
-            ...prev,
-            desiredClass: prev.desiredClass || data[0].name,
-          }));
+          setForm((prev) => {
+            const classExists = data.some(
+              (c) => c.name === prev.desiredClass || (prev.desiredClass === 'حفظ قرآن کریم' && c.name === 'حفظ')
+            );
+            return {
+              ...prev,
+              desiredClass: classExists
+                ? (prev.desiredClass === 'حفظ قرآن کریم' && !data.some((c) => c.name === 'حفظ قرآن کریم') ? 'حفظ' : prev.desiredClass)
+                : data[0].name,
+            };
+          });
         }
       } catch (err) {
         console.warn('Failed to load classes for admission form:', err);
@@ -145,6 +152,7 @@ export default function AdmissionPage() {
       }
     } catch (err) {
       console.error('Admission submit error:', err);
+      alert('درخواست جمع کرنے میں خرابی: ' + (err.message || 'سرور سے رابطہ چیک فرمائیں۔'));
     } finally {
       setSubmitting(false);
     }

@@ -576,6 +576,9 @@ export async function submitAdmission(admissionData, paymentProofFile) {
   const formData = new FormData();
   Object.keys(admissionData).forEach((key) => {
     if (admissionData[key] !== undefined && admissionData[key] !== null) {
+      if (key === 'screenshotData' && paymentProofFile) {
+        return;
+      }
       formData.append(key, admissionData[key]);
     }
   });
