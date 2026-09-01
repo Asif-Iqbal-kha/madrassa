@@ -85,13 +85,12 @@ router.post('/promote', protect, authorize('master_admin'), async (req, res) => 
       toClassName.toLowerCase().includes('graduat');
 
     if (isGrad) {
-      // Graduate students
+      // Graduate students — mark status as graduated while preserving their original Darja
       const result = await Student.updateMany(
         { _id: { $in: studentIds } },
         {
           $set: {
             status: 'graduated',
-            className: 'فارغ التحصیل',
           },
         }
       );
