@@ -10,6 +10,7 @@ const menuItems = {
     { path: '/admin/teachers', label: 'اساتذہ', icon: FiUser },
     { path: '/admin/classes', label: 'درجات', icon: FiBookOpen },
     { path: '/admin/promote', label: 'ترقی / داخلہ', icon: FiArrowUpCircle },
+    { path: '/admin/results', label: 'امتحانی نتائج', icon: FiClipboard },
     { path: '/admin/donations', label: 'عطیات', icon: FiHeart },
     { path: '/admin/admissions', label: 'داخلہ درخواستیں', icon: FiUserPlus },
     { path: '/admin/news', label: 'اعلانات', icon: FiFileText },
