@@ -80,7 +80,6 @@ router.post('/promote', protect, authorize('master_admin'), async (req, res) => 
         {
           $set: {
             status: 'graduated',
-            className: 'فارغ التحصیل',
           },
         }
       );
