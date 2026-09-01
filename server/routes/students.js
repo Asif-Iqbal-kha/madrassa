@@ -1,68 +1,124 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const Class = require('../models/Class');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-const defaultStudents = [
-  { name: 'محمد احمد', fatherName: 'محمد اکرم', rollNumber: '1001', className: 'درجہ سوم', status: 'active', phone: '03001111111', address: 'محلہ نو، مردان', enrollmentDate: '2024-04-01' },
-  { name: 'عبداللہ', fatherName: 'عمر فاروق', rollNumber: '1002', className: 'درجہ سوم', status: 'active', phone: '03002222222', address: 'کچہری روڈ، مردان', enrollmentDate: '2024-04-01' },
-  { name: 'علی حسن', fatherName: 'حسن علی', rollNumber: '1003', className: 'حفظ', status: 'active', phone: '03003333333', address: 'لنڈ خور، مردان', enrollmentDate: '2024-04-01' },
-  { name: 'اسامہ خان', fatherName: 'خان محمد', rollNumber: '1004', className: 'ناظرہ', status: 'active', phone: '03004444444', address: 'شیر گڑھ، مردان', enrollmentDate: '2024-04-01' },
-  { name: 'بلال احمد', fatherName: 'احمد شاہ', rollNumber: '1005', className: 'درجہ اول', status: 'active', phone: '03005555555', address: 'پار حتی، مردان', enrollmentDate: '2024-04-01' },
-];
+// Helper to get class name variants/aliases
+function getClassAliases(name) {
+  const clean = (name || '').trim();
+  const aliases = [clean];
+  if (clean === 'حفظ') aliases.push('حفظ قرآن کریم');
+  if (clean === 'حفظ قرآن کریم') aliases.push('حفظ');
+  if (clean === 'ناظرہ') aliases.push('ناظرہ قرآن کریم');
+  if (clean === 'ناظرہ قرآن کریم') aliases.push('ناظرہ');
+  return aliases;
+}
 
 // @route   GET /api/students
-// @desc    Get all students (optional filter by classId/status)
+// @desc    Get students with robust filtering (by status, classId, className)
 // @access  Public/Auth
 router.get('/', async (req, res) => {
   try {
-    const count = await Student.countDocuments();
-    if (count === 0) {
-      try {
-        const classes = await Class.find();
-        const enriched = defaultStudents.map(s => {
-          const matched = classes.find(c => c.name === s.className);
-          return matched ? { ...s, class: matched._id } : s;
-        });
-        await Student.insertMany(enriched);
-      } catch (seedErr) {
-        console.warn('Auto seed students warning:', seedErr.message);
+    const filter = {};
+
+    // Status filter: 'active', 'graduated', 'inactive', or 'all'
+    if (req.query.status && req.query.status !== 'all') {
+      if (req.query.status === 'active') {
+        filter.status = { $in: ['active', null, ''] };
+      } else {
+        filter.status = req.query.status;
       }
     }
 
-    const filter = {};
-    if (req.query.classId) filter.class = req.query.classId;
-    if (req.query.status) filter.status = req.query.status;
+    // Class filter: can pass classId or className
+    if (req.query.classId) {
+      if (mongoose.Types.ObjectId.isValid(req.query.classId)) {
+        const cls = await Class.findById(req.query.classId);
+        if (cls) {
+          const aliases = getClassAliases(cls.name);
+          filter.$or = [
+            { class: cls._id },
+            { className: { $in: aliases } },
+          ];
+        } else {
+          filter.class = req.query.classId;
+        }
+      } else {
+        // Passed as class name
+        const aliases = getClassAliases(req.query.classId);
+        filter.className = { $in: aliases };
+      }
+    } else if (req.query.className) {
+      const aliases = getClassAliases(req.query.className);
+      filter.className = { $in: aliases };
+    }
 
-    const students = await Student.find(filter).populate('class', 'name').sort('rollNumber');
+    const students = await Student.find(filter)
+      .populate('class', 'name year')
+      .sort({ rollNumber: 1 })
+      .collation({ locale: 'en_US', numericOrdering: true });
+
     res.json(students);
   } catch (error) {
     console.error('Get students error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 });
 
 // @route   POST /api/students/promote
-// @desc    Promote students to next class
+// @desc    Promote students to next class OR graduate them
 // @access  Admin
 router.post('/promote', protect, authorize('master_admin'), async (req, res) => {
   try {
-    const { studentIds, toClassName, toClassId } = req.body;
+    const { studentIds, toClassName, toClassId, isGraduation } = req.body;
 
     if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0 || !toClassName) {
       return res.status(400).json({ message: 'طلباء اور اگلا درجہ منتخب کرنا ضروری ہے' });
     }
 
-    let targetClass = null;
-    if (toClassId) {
-      targetClass = await Class.findById(toClassId);
-    } else {
-      targetClass = await Class.findOne({ name: toClassName });
+    const isGrad = isGraduation || 
+      toClassName.includes('فارغ التحصیل') || 
+      toClassName.includes('تکمیل') || 
+      toClassName.toLowerCase().includes('graduat');
+
+    if (isGrad) {
+      // Graduate students
+      const result = await Student.updateMany(
+        { _id: { $in: studentIds } },
+        {
+          $set: {
+            status: 'graduated',
+            className: 'فارغ التحصیل',
+          },
+        }
+      );
+
+      return res.json({
+        success: true,
+        message: `${studentIds.length} طلباء کو کامیابی سے فارغ التحصیل قرار دے دیا گیا`,
+        promotedCount: result.modifiedCount,
+        toClassName: 'فارغ التحصیل',
+        isGraduation: true,
+      });
     }
 
-    const updateData = { className: toClassName };
+    // Normal class promotion
+    let targetClass = null;
+    if (toClassId && mongoose.Types.ObjectId.isValid(toClassId)) {
+      targetClass = await Class.findById(toClassId);
+    }
+    if (!targetClass) {
+      const aliases = getClassAliases(toClassName);
+      targetClass = await Class.findOne({ name: { $in: aliases } });
+    }
+
+    const updateData = {
+      className: targetClass ? targetClass.name : toClassName.trim(),
+      status: 'active',
+    };
     if (targetClass) {
       updateData.class = targetClass._id;
     }
@@ -74,13 +130,14 @@ router.post('/promote', protect, authorize('master_admin'), async (req, res) => 
 
     res.json({
       success: true,
-      message: `${studentIds.length} طلباء کو کامیابی سے ${toClassName} میں ترقی دے دی گئی`,
+      message: `${studentIds.length} طلباء کو کامیابی سے ${updateData.className} میں ترقی دے دی گئی`,
       promotedCount: result.modifiedCount,
-      toClassName,
+      toClassName: updateData.className,
+      isGraduation: false,
     });
   } catch (error) {
     console.error('Promotion error:', error);
-    res.status(500).json({ message: 'طلباء کو ترقی دینے میں خرابی ہوئی' });
+    res.status(500).json({ message: 'طلباء کو ترقی دینے میں خرابی ہوئی: ' + error.message });
   }
 });
 
@@ -89,7 +146,7 @@ router.post('/promote', protect, authorize('master_admin'), async (req, res) => 
 // @access  Auth
 router.get('/:id', protect, async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id).populate('class', 'name');
+    const student = await Student.findById(req.params.id).populate('class', 'name year');
     if (!student) return res.status(404).json({ message: 'طالب علم نہیں ملا' });
     res.json(student);
   } catch (error) {
@@ -103,11 +160,37 @@ router.get('/:id', protect, async (req, res) => {
 // @access  Admin
 router.post('/', protect, authorize('master_admin'), async (req, res) => {
   try {
-    const student = await Student.create(req.body);
+    const data = { ...req.body };
+    if (!data.name || !data.fatherName) {
+      return res.status(400).json({ message: 'طالب علم کا نام اور والد کا نام درج کرنا ضروری ہے' });
+    }
+
+    // Auto-generate rollNumber if missing
+    if (!data.rollNumber) {
+      const existing = await Student.find({}, 'rollNumber').lean();
+      const numbers = existing.map(s => parseInt(s.rollNumber, 10)).filter(n => !isNaN(n));
+      const nextRoll = numbers.length > 0 ? Math.max(...numbers) + 1 : 1001;
+      data.rollNumber = String(nextRoll);
+    }
+
+    // Ensure status defaults to active
+    if (!data.status) data.status = 'active';
+
+    // Link class if className is given
+    if (!data.class && data.className) {
+      const aliases = getClassAliases(data.className);
+      const matchedClass = await Class.findOne({ name: { $in: aliases } });
+      if (matchedClass) {
+        data.class = matchedClass._id;
+        data.className = matchedClass.name;
+      }
+    }
+
+    const student = await Student.create(data);
     res.status(201).json(student);
   } catch (error) {
     console.error('Create student error:', error);
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message || 'طالب علم بنانے میں خرابی' });
   }
 });
 
@@ -116,11 +199,24 @@ router.post('/', protect, authorize('master_admin'), async (req, res) => {
 // @access  Admin
 router.put('/:id', protect, authorize('master_admin'), async (req, res) => {
   try {
+    const data = { ...req.body };
+
+    // If className changed or class changed, keep them in sync
+    if (data.className && !data.class) {
+      const aliases = getClassAliases(data.className);
+      const matchedClass = await Class.findOne({ name: { $in: aliases } });
+      if (matchedClass) {
+        data.class = matchedClass._id;
+        data.className = matchedClass.name;
+      }
+    }
+
     const updated = await Student.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      data,
       { new: true, runValidators: true }
-    );
+    ).populate('class', 'name year');
+
     if (!updated) return res.status(404).json({ message: 'طالب علم نہیں ملا' });
     res.json(updated);
   } catch (error) {

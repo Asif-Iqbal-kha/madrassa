@@ -1,24 +1,129 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Attendance = require('../models/Attendance');
+const Student = require('../models/Student');
+const Class = require('../models/Class');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
+function getClassAliases(name) {
+  const clean = (name || '').trim();
+  const aliases = [clean];
+  if (clean === 'حفظ') aliases.push('حفظ قرآن کریم');
+  if (clean === 'حفظ قرآن کریم') aliases.push('حفظ');
+  if (clean === 'ناظرہ') aliases.push('ناظرہ قرآن کریم');
+  if (clean === 'ناظرہ قرآن کریم') aliases.push('ناظرہ');
+  return aliases;
+}
+
+// @route   GET /api/attendance/search
+// @desc    Search attendance for specific date and class
+// @access  Auth
+router.get('/search', protect, async (req, res) => {
+  try {
+    const { date, classId, className } = req.query;
+    const filter = {};
+    if (date) filter.date = date;
+
+    if (classId && mongoose.Types.ObjectId.isValid(classId)) {
+      filter.$or = [{ class: classId }];
+      const cls = await Class.findById(classId);
+      if (cls) {
+        const aliases = getClassAliases(cls.name);
+        filter.$or.push({ className: { $in: aliases } });
+      }
+    } else if (className) {
+      const aliases = getClassAliases(className);
+      filter.className = { $in: aliases };
+    }
+
+    const attendance = await Attendance.findOne(filter).populate('class', 'name year');
+    res.json(attendance || null);
+  } catch (error) {
+    console.error('Attendance search error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
+// @route   GET /api/attendance/today-present
+// @desc    Get currently present students for printing / reports
+// @access  Auth
+router.get('/today-present', protect, async (req, res) => {
+  try {
+    const targetDate = req.query.date || new Date().toISOString().split('T')[0];
+
+    // Find attendance records for this date
+    let attendanceDocs = await Attendance.find({ date: targetDate });
+
+    // If no attendance for this date, find the most recent date
+    let effectiveDate = targetDate;
+    if (!attendanceDocs || attendanceDocs.length === 0) {
+      const latest = await Attendance.findOne().sort('-date');
+      if (latest) {
+        effectiveDate = latest.date;
+        attendanceDocs = await Attendance.find({ date: effectiveDate });
+      }
+    }
+
+    const presentStudents = [];
+    (attendanceDocs || []).forEach((doc) => {
+      const className = doc.className || (doc.class && doc.class.name) || 'نامعلوم درجہ';
+      (doc.records || []).forEach((r) => {
+        if (r.status === 'present') {
+          presentStudents.push({
+            studentId: r.student,
+            studentName: r.studentName || 'طالب علم',
+            rollNumber: r.rollNumber || '-',
+            className: className,
+            date: doc.date,
+            status: 'حاضر',
+          });
+        }
+      });
+    });
+
+    res.json({
+      date: effectiveDate,
+      totalPresent: presentStudents.length,
+      students: presentStudents,
+    });
+  } catch (error) {
+    console.error('Today present fetch error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
 // @route   GET /api/attendance
-// @desc    Get attendance records (filter by classId, date)
+// @desc    Get attendance records (filter by classId, date, className)
 // @access  Auth
 router.get('/', protect, async (req, res) => {
   try {
     const filter = {};
-    if (req.query.classId) filter.class = req.query.classId;
     if (req.query.date) filter.date = req.query.date;
 
+    if (req.query.classId) {
+      if (mongoose.Types.ObjectId.isValid(req.query.classId)) {
+        filter.$or = [{ class: req.query.classId }];
+        const cls = await Class.findById(req.query.classId);
+        if (cls) {
+          filter.$or.push({ className: { $in: getClassAliases(cls.name) } });
+        }
+      } else {
+        filter.className = { $in: getClassAliases(req.query.classId) };
+      }
+    } else if (req.query.className) {
+      filter.className = { $in: getClassAliases(req.query.className) };
+    }
+
     const records = await Attendance.find(filter)
-      .populate('class', 'name')
-      .sort('-date');
+      .populate('class', 'name year')
+      .sort('-date -createdAt');
+
     res.json(records);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get attendance error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 });
 
@@ -27,7 +132,6 @@ router.get('/', protect, async (req, res) => {
 // @access  Auth
 router.get('/student/:studentId', protect, async (req, res) => {
   try {
-    // Find all attendance records containing this student
     const allRecords = await Attendance.find({
       'records.student': req.params.studentId,
     }).sort('-date');
@@ -59,37 +163,97 @@ router.get('/student/:studentId', protect, async (req, res) => {
       percentage,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 });
 
 // @route   POST /api/attendance
-// @desc    Mark attendance
+// @desc    Mark/update attendance with student-specific identity & upsert
 // @access  Teacher/Admin
 router.post('/', protect, authorize('teacher', 'master_admin'), async (req, res) => {
   try {
     const { date, classId, className, records } = req.body;
 
-    // Check if attendance already exists for this date and class
-    let attendance = await Attendance.findOne({ date, class: classId });
+    if (!date || (!classId && !className) || !Array.isArray(records)) {
+      return res.status(400).json({ message: 'تاریخ، درجہ اور حاضری کا ریکارڈ لازمی ہے' });
+    }
+
+    // Resolve classId and className
+    let resolvedClassId = classId && mongoose.Types.ObjectId.isValid(classId) ? classId : null;
+    let resolvedClassName = (className || '').trim();
+
+    if (!resolvedClassName && resolvedClassId) {
+      const cls = await Class.findById(resolvedClassId);
+      if (cls) resolvedClassName = cls.name;
+    }
+    if (!resolvedClassId && resolvedClassName) {
+      const aliases = getClassAliases(resolvedClassName);
+      const cls = await Class.findOne({ name: { $in: aliases } });
+      if (cls) resolvedClassId = cls._id;
+    }
+
+    // Sanitize and attach student identity to each attendance record
+    const sanitizedRecords = records.map((r) => ({
+      student: r.student && mongoose.Types.ObjectId.isValid(r.student) ? r.student : undefined,
+      studentName: r.studentName || r.name || 'طالب علم',
+      rollNumber: String(r.rollNumber || '').trim(),
+      status: ['present', 'absent', 'leave'].includes(r.status) ? r.status : 'present',
+    }));
+
+    // Find if attendance exists for this date and class
+    const searchFilter = { date };
+    if (resolvedClassId) {
+      searchFilter.$or = [
+        { class: resolvedClassId },
+        { className: { $in: getClassAliases(resolvedClassName) } },
+      ];
+    } else {
+      searchFilter.className = { $in: getClassAliases(resolvedClassName) };
+    }
+
+    let attendance = await Attendance.findOne(searchFilter);
 
     if (attendance) {
-      // Update existing
-      attendance.records = records;
+      // Update existing record: merge student records preventing duplicates for (student + date + class)
+      const existingMap = new Map();
+      attendance.records.forEach((r) => {
+        const key = r.student ? r.student.toString() : r.rollNumber;
+        existingMap.set(key, r);
+      });
+
+      sanitizedRecords.forEach((newR) => {
+        const key = newR.student ? newR.student.toString() : newR.rollNumber;
+        existingMap.set(key, newR);
+      });
+
+      attendance.records = Array.from(existingMap.values());
+      if (resolvedClassId) attendance.class = resolvedClassId;
+      if (resolvedClassName) attendance.className = resolvedClassName;
+      if (req.user) {
+        attendance.teacher = req.user._id;
+        attendance.teacherName = req.user.name;
+      }
       await attendance.save();
     } else {
-      // Create new
+      // Create new attendance record
       attendance = await Attendance.create({
         date,
-        class: classId,
-        className,
-        records,
+        class: resolvedClassId || undefined,
+        className: resolvedClassName,
+        teacher: req.user ? req.user._id : undefined,
+        teacherName: req.user ? req.user.name : undefined,
+        records: sanitizedRecords,
       });
     }
 
-    res.status(201).json(attendance);
+    res.status(201).json({
+      success: true,
+      message: `${attendance.records.length} طلباء کی حاضری کامیابی سے محفوظ ہو گئی`,
+      attendance,
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Mark attendance error:', error);
+    res.status(400).json({ message: error.message || 'حاضری محفوظ کرنے میں خرابی ہوئی' });
   }
 });
 

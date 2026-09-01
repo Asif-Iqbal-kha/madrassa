@@ -8,21 +8,32 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-const defaultAdmissions = [
-  { trackingNumber: 'ADM-2026-0001', studentName: 'محمد یاسین', fatherName: 'محمد صدیق', cnic: '1234567890123', phone: '03011112222', desiredClass: 'ناظرہ', previousEducation: 'پرائمری پاس', address: 'محلہ قاضیان، مردان', dateOfBirth: '2014-05-10', admissionFee: 1000, paymentMethod: 'JazzCash', transactionId: 'TXN-98214', status: 'admitted', queuePosition: 1, date: '2026-08-15', adminNotes: 'داخلہ منظور، فیس موصول' },
-  { trackingNumber: 'ADM-2026-0002', studentName: 'عبداللہ بن عمر', fatherName: 'عمر حیات', cnic: '1234567890124', phone: '03022223333', desiredClass: 'حفظ', previousEducation: 'ناظرہ مکمل', address: 'تحصیل روڈ، مردان', dateOfBirth: '2012-08-20', admissionFee: 1000, paymentMethod: 'EasyPaisa', transactionId: 'EP-54321', status: 'under_review', queuePosition: 2, date: '2026-08-18', adminNotes: 'ٹیسٹ باقی ہے، فیس تصدیق شدہ' },
-  { trackingNumber: 'ADM-2026-0003', studentName: 'حمزہ', fatherName: 'خالد محمود', cnic: '1234567890125', phone: '03033334444', desiredClass: 'درجہ اول', previousEducation: 'حفظ مکمل', address: 'شیر گڑھ، مردان', dateOfBirth: '2011-03-15', admissionFee: 1000, paymentMethod: 'بینک ٹرانسفر', transactionId: 'MEZN-8812', status: 'pending', queuePosition: 3, date: '2026-08-22' },
-  { trackingNumber: 'ADM-2026-0004', studentName: 'ابوبکر', fatherName: 'عبدالستار', cnic: '1234567890126', phone: '03044445555', desiredClass: 'ناظرہ', previousEducation: 'کوئی نہیں', address: 'پار حتی، مردان', dateOfBirth: '2015-11-25', admissionFee: 1000, paymentMethod: 'JazzCash', transactionId: 'JC-11223', status: 'pending', queuePosition: 4, date: '2026-08-25' },
-  { trackingNumber: 'ADM-2026-0005', studentName: 'عثمان غنی', fatherName: 'غنی الرحمٰن', cnic: '1234567890127', phone: '03055556666', desiredClass: 'درجہ سوم', previousEducation: 'درجہ دوم پاس', address: 'لنڈ خور، مردان', dateOfBirth: '2012-07-08', admissionFee: 1000, paymentMethod: 'EasyPaisa', transactionId: 'EP-99881', status: 'rejected', queuePosition: 5, date: '2026-08-20', adminNotes: 'عمر کم ہے' },
-];
+// Helper to get class name variants/aliases
+function getClassAliases(name) {
+  const clean = (name || '').trim();
+  const aliases = [clean];
+  if (clean === 'حفظ') aliases.push('حفظ قرآن کریم');
+  if (clean === 'حفظ قرآن کریم') aliases.push('حفظ');
+  if (clean === 'ناظرہ') aliases.push('ناظرہ قرآن کریم');
+  if (clean === 'ناظرہ قرآن کریم') aliases.push('ناظرہ');
+  return aliases;
+}
+
+// Multer flexible upload accepting screenshot, paymentProof, or studentPhoto
+const admissionUpload = upload.fields([
+  { name: 'screenshot', maxCount: 1 },
+  { name: 'paymentProof', maxCount: 1 },
+  { name: 'studentPhoto', maxCount: 1 },
+]);
 
 // @route   POST /api/admissions
 // @desc    Submit admission application with fee & payment proof
 // @access  Public
 router.post('/', (req, res, next) => {
-  upload.single('screenshot')(req, res, (err) => {
+  admissionUpload(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message || 'فائل اپلوڈ میں خرابی' });
+      console.warn('Admission upload warning:', err.message);
+      // Even if multer warnings occur on field names, proceed if body has data
     }
     next();
   });
@@ -31,27 +42,40 @@ router.post('/', (req, res, next) => {
     const { studentName, fatherName, phone, desiredClass } = req.body;
 
     if (!studentName || !fatherName || !phone || !desiredClass) {
-      return res.status(400).json({ message: 'تمام ضروری فیلڈز پُر کریں' });
+      return res.status(400).json({ message: 'تمام ضروری فیلڈز (نام، ولدیت، فون، مطلوبہ درجہ) پُر کریں' });
     }
 
-    const count = await AdmissionApplication.countDocuments();
     const year = new Date().getFullYear();
-    const trackingNumber = `ADM-${year}-${String(count + 1).padStart(4, '0')}`;
+    const count = await AdmissionApplication.countDocuments();
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    const trackingNumber = `ADM-${year}-${String(count + 1).padStart(4, '0')}-${randomSuffix}`;
 
+    // Extract screenshot file if provided via multer
     let screenshotData = req.body.screenshotData || '';
     let screenshotFilename = req.body.screenshotFilename || '';
-    if (req.file) {
-      screenshotData = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-      screenshotFilename = req.file.originalname || 'payment_proof.jpg';
+
+    const uploadedProof = (req.files?.screenshot && req.files.screenshot[0]) || 
+                          (req.files?.paymentProof && req.files.paymentProof[0]) ||
+                          req.file;
+
+    if (uploadedProof) {
+      screenshotData = `data:${uploadedProof.mimetype};base64,${uploadedProof.buffer.toString('base64')}`;
+      screenshotFilename = uploadedProof.originalname || 'payment_proof.jpg';
+    }
+
+    let studentPhotoData = req.body.studentPhotoData || '';
+    if (req.files?.studentPhoto && req.files.studentPhoto[0]) {
+      const p = req.files.studentPhoto[0];
+      studentPhotoData = `data:${p.mimetype};base64,${p.buffer.toString('base64')}`;
     }
 
     const application = await AdmissionApplication.create({
       trackingNumber,
-      studentName: req.body.studentName,
-      fatherName: req.body.fatherName,
+      studentName: req.body.studentName.trim(),
+      fatherName: req.body.fatherName.trim(),
       cnic: req.body.cnic || '',
-      phone: req.body.phone,
-      desiredClass: req.body.desiredClass,
+      phone: req.body.phone.trim(),
+      desiredClass: req.body.desiredClass.trim(),
       previousEducation: req.body.previousEducation || '',
       address: req.body.address || req.body.currentAddress || req.body.permanentAddress || '',
       dateOfBirth: req.body.dateOfBirth || '',
@@ -59,15 +83,15 @@ router.post('/', (req, res, next) => {
       maritalStatus: req.body.maritalStatus || 'مجرد',
       permanentAddress: req.body.permanentAddress || '',
       currentAddress: req.body.currentAddress || '',
-      guardianName: req.body.guardianName || '',
+      guardianName: req.body.guardianName || req.body.fatherName,
       guardianFatherName: req.body.guardianFatherName || '',
       guardianRelation: req.body.guardianRelation || 'والد',
-      guardianPhone: req.body.guardianPhone || '',
+      guardianPhone: req.body.guardianPhone || req.body.phone,
       guardianCnic: req.body.guardianCnic || '',
       guardianPermanentAddress: req.body.guardianPermanentAddress || '',
       guardianCurrentAddress: req.body.guardianCurrentAddress || '',
       mardanRelative: req.body.mardanRelative || '',
-      studentPhotoData: req.body.studentPhotoData || '',
+      studentPhotoData,
       admissionFee: Number(req.body.admissionFee) || 1000,
       paymentMethod: req.body.paymentMethod || 'JazzCash',
       transactionId: req.body.transactionId || '',
@@ -87,7 +111,7 @@ router.post('/', (req, res, next) => {
     });
   } catch (error) {
     console.error('Admission error:', error);
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message || 'درخواست جمع کرنے میں خرابی ہوئی' });
   }
 });
 
@@ -96,29 +120,20 @@ router.post('/', (req, res, next) => {
 // @access  Public
 router.get('/track/:trackingNumber', async (req, res) => {
   try {
+    const tracking = req.params.trackingNumber.trim();
     const application = await AdmissionApplication.findOne({
-      trackingNumber: req.params.trackingNumber.toUpperCase(),
+      $or: [
+        { trackingNumber: tracking },
+        { trackingNumber: tracking.toUpperCase() },
+        { trackingNumber: new RegExp(`^${tracking}$`, 'i') },
+      ],
     });
 
     if (!application) {
       return res.status(404).json({ message: 'کوئی ریکارڈ نہیں ملا' });
     }
 
-    res.json({
-      trackingNumber: application.trackingNumber,
-      studentName: application.studentName,
-      fatherName: application.fatherName,
-      desiredClass: application.desiredClass,
-      status: application.status,
-      queuePosition: application.queuePosition,
-      date: application.date,
-      admissionFee: application.admissionFee || 1000,
-      paymentMethod: application.paymentMethod || 'JazzCash',
-      transactionId: application.transactionId || '',
-      screenshotData: application.screenshotData || '',
-      screenshotPath: application.screenshotPath || '',
-      adminNotes: application.adminNotes,
-    });
+    res.json(application);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -129,19 +144,10 @@ router.get('/track/:trackingNumber', async (req, res) => {
 // @access  Admin
 router.get('/', protect, authorize('master_admin'), async (req, res) => {
   try {
-    const count = await AdmissionApplication.countDocuments();
-    if (count === 0) {
-      try {
-        await AdmissionApplication.insertMany(defaultAdmissions);
-      } catch (seedErr) {
-        console.warn('Auto seed admissions warning:', seedErr.message);
-      }
-    }
-
     const filter = {};
     if (req.query.status && req.query.status !== 'all') filter.status = req.query.status;
 
-    const applications = await AdmissionApplication.find(filter).sort('queuePosition');
+    const applications = await AdmissionApplication.find(filter).sort('-createdAt');
     res.json(applications);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -156,7 +162,7 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
     const { status, adminNotes } = req.body;
 
     if (!['pending', 'under_review', 'admitted', 'rejected'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
+      return res.status(400).json({ message: 'درست حالت منتخب کریں' });
     }
 
     let application = null;
@@ -183,22 +189,9 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
       );
     }
 
-    if (!application) {
-      const mockItem = defaultAdmissions.find(
-        (a) => a._id === targetId || a.trackingNumber === targetId || a.trackingNumber === targetId.toUpperCase()
-      );
-      if (mockItem) {
-        application = await AdmissionApplication.create({
-          ...mockItem,
-          status,
-          adminNotes: adminNotes || mockItem.adminNotes || '',
-        });
-      }
-    }
-
     if (!application) return res.status(404).json({ message: 'درخواست نہیں ملی' });
 
-    // Automatically create Student record in database when admission is confirmed (admitted)
+    // When status changes to 'admitted', create/verify Student record in database
     if (status === 'admitted' && application) {
       try {
         const existingStudent = await Student.findOne({
@@ -209,27 +202,28 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
         });
 
         if (!existingStudent) {
-          const studentCount = await Student.countDocuments();
-          const rollNumber = String(1000 + studentCount + 1);
+          // Generate unique numeric roll number
+          const existingStudents = await Student.find({}, 'rollNumber').lean();
+          const rollNumbers = existingStudents
+            .map((s) => parseInt(s.rollNumber, 10))
+            .filter((n) => !isNaN(n));
+          const nextRoll = rollNumbers.length > 0 ? Math.max(...rollNumbers) + 1 : 1001;
+          const rollNumber = String(nextRoll);
 
-          let targetClass = await Class.findOne({
-            $or: [
-              { name: application.desiredClass },
-              { name: application.desiredClass === 'حفظ قرآن کریم' ? 'حفظ' : 'حفظ قرآن کریم' },
-              { name: application.desiredClass === 'ناظرہ' ? 'ناظرہ قرآن کریم' : 'ناظرہ' },
-            ],
-          });
+          // Find matching Class in database
+          const aliases = getClassAliases(application.desiredClass);
+          let targetClass = await Class.findOne({ name: { $in: aliases } });
 
           if (targetClass) {
             await Class.findByIdAndUpdate(targetClass._id, { $inc: { studentsCount: 1 } });
           }
 
-          await Student.create({
+          const createdStudent = await Student.create({
             name: application.studentName,
             fatherName: application.fatherName,
             rollNumber,
             class: targetClass ? targetClass._id : undefined,
-            className: application.desiredClass,
+            className: targetClass ? targetClass.name : application.desiredClass,
             dateOfBirth: application.dateOfBirth || '',
             cnic: application.cnic || '',
             identificationMark: application.identificationMark || '',
@@ -255,6 +249,8 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
             status: 'active',
             enrollmentDate: new Date().toISOString().split('T')[0],
           });
+
+          console.log(`Auto-created student: ${createdStudent.name} (Roll: ${createdStudent.rollNumber}, Class: ${createdStudent.className})`);
         }
       } catch (stuErr) {
         console.error('Auto create student on admission approval error:', stuErr);

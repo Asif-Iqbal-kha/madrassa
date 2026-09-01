@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { submitAdmission } from '../../services/api';
+import { useState, useEffect, useRef } from 'react';
+import { submitAdmission, getClasses } from '../../services/api';
 import {
   FiCheckCircle,
   FiCopy,
@@ -39,12 +39,31 @@ export default function AdmissionPage() {
     transactionId: '',
   });
 
+  const [classes, setClasses] = useState([]);
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [paymentProof, setPaymentProof] = useState(null);
   const [proofPreview, setProofPreview] = useState(null);
   const [agreePledge, setAgreePledge] = useState(true);
   const [showPledgeDetails, setShowPledgeDetails] = useState(false);
+
+  useEffect(() => {
+    async function loadClasses() {
+      try {
+        const data = await getClasses();
+        if (data && data.length > 0) {
+          setClasses(data);
+          setForm((prev) => ({
+            ...prev,
+            desiredClass: prev.desiredClass || data[0].name,
+          }));
+        }
+      } catch (err) {
+        console.warn('Failed to load classes for admission form:', err);
+      }
+    }
+    loadClasses();
+  }, []);
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState('');
@@ -241,8 +260,18 @@ export default function AdmissionPage() {
                         fontFamily: 'inherit',
                       }}
                     >
-                      <option value="حفظ قرآن کریم" style={{ color: '#000' }}>حفظ قرآن کریم</option>
-                      <option value="ناظرہ" style={{ color: '#000' }}>ناظرہ</option>
+                      {classes.length > 0 ? (
+                        classes.map((c) => (
+                          <option key={c._id} value={c.name} style={{ color: '#000' }}>
+                            {c.name}
+                          </option>
+                        ))
+                      ) : (
+                        <>
+                          <option value="حفظ قرآن کریم" style={{ color: '#000' }}>حفظ قرآن کریم</option>
+                          <option value="ناظرہ" style={{ color: '#000' }}>ناظرہ</option>
+                        </>
+                      )}
                     </select>
                   </div>
                 </div>

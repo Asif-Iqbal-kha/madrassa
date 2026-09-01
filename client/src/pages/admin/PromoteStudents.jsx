@@ -31,31 +31,34 @@ export default function PromoteStudents() {
     loadData();
   }, []);
 
-  const getStudentClassName = (student) => {
-    if (student.className && typeof student.className === 'string') return student.className.trim();
-    if (student.class && typeof student.class === 'object' && student.class.name) return student.class.name.trim();
-    if (student.class && typeof student.class === 'string') {
-      const matched = classes.find((c) => c._id === student.class);
-      if (matched) return matched.name.trim();
-      return student.class.trim();
-    }
-    return '';
+  const matchesClass = (student, target) => {
+    if (!target) return false;
+    const cleanTarget = target.trim().toLowerCase();
+    const sId = student.class?._id || student.class;
+    if (sId && sId.toString() === target) return true;
+
+    const sName = (student.className || student.class?.name || '').trim().toLowerCase();
+    if (sName === cleanTarget) return true;
+
+    // Alias checks
+    if ((cleanTarget === 'حفظ' || cleanTarget === 'حفظ قرآن کریم') && (sName === 'حفظ' || sName === 'حفظ قرآن کریم')) return true;
+    if ((cleanTarget === 'ناظرہ' || cleanTarget === 'ناظرہ قرآن کریم') && (sName === 'ناظرہ' || sName === 'ناظرہ قرآن کریم')) return true;
+
+    return false;
   };
 
-  // Filter students who are currently in the selected fromClass
-  const classStudents = allStudents.filter((s) => {
-    if (!fromClass) return false;
-    const currentClassName = getStudentClassName(s);
-    return currentClassName.toLowerCase() === fromClass.trim().toLowerCase() || s.class === fromClass;
-  });
+  const activeStudents = allStudents.filter(
+    (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
+  );
+  const graduatedStudents = allStudents.filter((s) => s.status === 'graduated');
+
+  // Filter students who are currently active in the selected fromClass
+  const classStudents = activeStudents.filter((s) => matchesClass(s, fromClass));
 
   // Calculate target class info
+  const isTargetGraduation = toClass === 'فارغ التحصیل';
   const targetClassObj = classes.find((c) => c.name.trim().toLowerCase() === toClass.trim().toLowerCase() || c._id === toClass);
-  const targetClassCurrentStudents = allStudents.filter((s) => {
-    if (!toClass) return false;
-    const currentClassName = getStudentClassName(s);
-    return currentClassName.toLowerCase() === toClass.trim().toLowerCase() || s.class === toClass;
-  });
+  const targetClassCurrentStudents = activeStudents.filter((s) => matchesClass(s, toClass));
 
   const toggleStudent = (id) => {
     setSelectedStudents((prev) =>
@@ -86,16 +89,20 @@ export default function PromoteStudents() {
     setErrorMessage('');
     setSuccessMessage('');
 
+    const isGraduation = toClass === 'فارغ التحصیل';
     try {
       const res = await promoteStudents(
         selectedStudents,
         toClass,
-        targetClassObj ? targetClassObj._id : undefined
+        targetClassObj ? targetClassObj._id : undefined,
+        isGraduation
       );
 
       if (res.success) {
         setSuccessMessage(
-          `${selectedStudents.length} طلباء کو کامیابی سے "${fromClass}" سے "${toClass}" میں ترقی دے دی گئی!`
+          isGraduation
+            ? `${selectedStudents.length} طلباء کو کامیابی سے فارغ التحصیل کر دیا گیا!`
+            : `${selectedStudents.length} طلباء کو کامیابی سے "${fromClass}" سے "${toClass}" میں ترقی دے دی گئی!`
         );
         setSelectedStudents([]);
         await loadData();
@@ -166,22 +173,25 @@ export default function PromoteStudents() {
             {/* To Class */}
             <div className="form-group" style={{ margin: 0 }}>
               <label className="form-label" style={{ fontWeight: 600 }}>اگلا درجہ (To Class) *</label>
-              <select
-                className="form-select"
-                value={toClass}
-                onChange={(e) => {
-                  setToClass(e.target.value);
-                  setSuccessMessage('');
-                  setErrorMessage('');
-                }}
-              >
-                <option value="">اگلا درجہ منتخب کریں</option>
-                {classes.map((c) => (
-                  <option key={c._id} value={c.name} disabled={c.name === fromClass}>
-                    {c.name} ({c.studentsCount || 0} طلباء پہلے سے موجود)
+                <select
+                  className="form-select"
+                  value={toClass}
+                  onChange={(e) => {
+                    setToClass(e.target.value);
+                    setSuccessMessage('');
+                    setErrorMessage('');
+                  }}
+                >
+                  <option value="">اگلا درجہ منتخب کریں</option>
+                  {classes.map((c) => (
+                    <option key={c._id} value={c.name} disabled={c.name === fromClass}>
+                      {c.name} ({c.studentsCount || 0} طلباء پہلے سے موجود)
+                    </option>
+                  ))}
+                  <option value="فارغ التحصیل" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
+                    🎓 فارغ التحصیل / تکمیلِ تعلیم (Graduation)
                   </option>
-                ))}
-              </select>
+                </select>
             </div>
           </div>
 
@@ -316,9 +326,7 @@ export default function PromoteStudents() {
               </thead>
               <tbody>
                 {classes.map((cls) => {
-                  const count = allStudents.filter(
-                    (s) => (s.className || s.class?.name || s.class) === cls.name
-                  ).length;
+                  const count = activeStudents.filter((s) => matchesClass(s, cls.name)).length;
                   return (
                     <tr key={cls._id}>
                       <td style={{ fontWeight: 600 }}>{cls.name}</td>
@@ -342,6 +350,28 @@ export default function PromoteStudents() {
                     </tr>
                   );
                 })}
+                {graduatedStudents.length > 0 && (
+                  <tr style={{ background: 'var(--color-bg-alt)', fontWeight: 600 }}>
+                    <td>فارغ التحصیل طلباء (Graduates)</td>
+                    <td>—</td>
+                    <td>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '3px 10px',
+                        borderRadius: '12px',
+                        background: 'rgba(55, 65, 81, 0.1)',
+                        color: 'var(--color-text-secondary)',
+                        fontWeight: 700,
+                        fontFamily: 'var(--font-english)',
+                      }}>
+                        {graduatedStudents.length} طلباء
+                      </span>
+                    </td>
+                    <td>
+                      <span className="badge badge-primary">مکمل</span>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -103,12 +103,12 @@ export async function deleteStudent(id) {
   return handleResponse(res);
 }
 
-export async function promoteStudents(studentIds, toClassName, toClassId) {
+export async function promoteStudents(studentIds, toClassName, toClassId, isGraduation = false) {
   try {
     const res = await fetch(`${API_BASE}/students/promote`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ studentIds, toClassName, toClassId }),
+      body: JSON.stringify({ studentIds, toClassName, toClassId, isGraduation }),
     });
     const data = await res.json();
     if (res.ok) return data;
@@ -290,10 +290,42 @@ export async function markAttendance(attendanceData) {
       body: JSON.stringify(attendanceData),
     });
     if (res.ok) return await res.json();
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'حاضری محفوظ نہیں ہو سکی');
   } catch (err) {
     console.warn('markAttendance failed:', err);
+    throw err;
   }
-  return { success: true };
+}
+
+export async function searchAttendance(date, classId, className) {
+  try {
+    const params = new URLSearchParams();
+    if (date) params.append('date', date);
+    if (classId) params.append('classId', classId);
+    if (className) params.append('className', className);
+
+    const res = await fetch(`${API_BASE}/attendance/search?${params.toString()}`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('searchAttendance error:', err);
+  }
+  return null;
+}
+
+export async function getTodayPresentStudents(date) {
+  try {
+    const url = date
+      ? `${API_BASE}/attendance/today-present?date=${encodeURIComponent(date)}`
+      : `${API_BASE}/attendance/today-present`;
+    const res = await fetch(url, { headers: getAuthHeaders() });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getTodayPresentStudents error:', err);
+  }
+  return { date: date || new Date().toISOString().split('T')[0], totalPresent: 0, students: [] };
 }
 
 export async function getStudentAttendance(studentId) {
@@ -549,6 +581,7 @@ export async function submitAdmission(admissionData, paymentProofFile) {
   });
   if (paymentProofFile) {
     formData.append('paymentProof', paymentProofFile);
+    formData.append('screenshot', paymentProofFile);
   }
 
   const res = await fetch(`${API_BASE}/admissions`, {
