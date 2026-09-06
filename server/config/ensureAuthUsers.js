@@ -25,13 +25,11 @@ async function ensureAuthUsers() {
 
     // 2. Ensure Master Admin account
     let admin = await User.findOne({ role: 'master_admin' });
-    const adminSalt = await bcrypt.genSalt(10);
-    const hashedAdminPassword = await bcrypt.hash(adminPassword, adminSalt);
 
     if (admin) {
       admin.name = adminName;
       admin.username = adminUsername;
-      admin.password = hashedAdminPassword;
+      admin.password = adminPassword;
       admin.isActive = true;
       await admin.save();
       console.log(`  ✓ Admin account synced: "${adminUsername}"`);
@@ -51,13 +49,11 @@ async function ensureAuthUsers() {
 
     // 3. Ensure Teacher account (generic, secure, not tied to any individual)
     let teacher = await User.findOne({ role: 'teacher' });
-    const teacherSalt = await bcrypt.genSalt(10);
-    const hashedTeacherPassword = await bcrypt.hash(teacherPassword, teacherSalt);
 
     if (teacher) {
       teacher.name = teacherName;
       teacher.username = teacherUsername;
-      teacher.password = hashedTeacherPassword;
+      teacher.password = teacherPassword;
       teacher.isActive = true;
       await teacher.save();
       console.log(`  ✓ Teacher account synced: "${teacherUsername}"`);
