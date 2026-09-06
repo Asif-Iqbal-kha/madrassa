@@ -54,9 +54,60 @@
   font-family: var(--font-english);
   font-size: 1.05rem;
   color: var(--color-accent-light);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   direction: ltr;
   letter-spacing: 1px;
+}
+
+/* Hero Registration Strip */
+.hero-registration-strip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 30px;
+  padding: 8px 24px;
+  margin: 6px auto 24px auto;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-reg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFFFFF;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.hero-reg-icon {
+  font-size: 1.15rem;
+}
+
+.hero-reg-divider {
+  color: var(--color-accent);
+  font-size: 1.2rem;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .hero-registration-strip {
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+  }
+  .hero-reg-divider {
+    display: none;
+  }
+  .hero-reg-badge {
+    font-size: 0.92rem;
+  }
 }
 
 .hero-desc {
