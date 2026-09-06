@@ -69,6 +69,16 @@ export default function AdminDashboard() {
     <div>
       <h2 className="page-title">ڈیش بورڈ</h2>
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">ڈیش بورڈ لوڈ ہو رہا ہے...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Stats */}
       <div className="dash-stats" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         <div className="dash-stat-card">
@@ -186,6 +196,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

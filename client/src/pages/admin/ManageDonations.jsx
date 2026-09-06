@@ -95,6 +95,16 @@ export default function ManageDonations() {
         </h2>
       </div>
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">عطیات کا ریکارڈ لوڈ ہو رہا ہے...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
+      <>
       <div className="mgmt-toolbar">
         <div className="mgmt-search">
           <input
@@ -194,6 +204,8 @@ export default function ManageDonations() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
 
       {/* Detail Modal */}
       {showDetail && (
