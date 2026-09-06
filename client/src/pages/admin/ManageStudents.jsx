@@ -520,7 +520,7 @@ export default function ManageStudents() {
               <img src="/logo.png" alt="مدرسہ لوگو" className="student-modal-print-logo" />
               <div className="student-modal-print-info">
                 <h3>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
-                <p>توحید کالونی، چارسدہ روڈ، مردان — طالب علم کا دفتری و تعلیمی ریکارڈ فائل</p>
+                <p>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان — طالب علم کا دفتری و تعلیمی ریکارڈ فائل</p>
               </div>
               <div className="student-modal-print-date">
                 تاریخِ پرنٹ: {new Date().toISOString().split('T')[0]}
@@ -1035,7 +1035,7 @@ export default function ManageStudents() {
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
-            <p style={{ margin: '0 0 4px', fontSize: '0.9rem' }}>صدیق اکبر کالونی نزد توحید کالونی چارسدہ روڈ مردان</p>
+            <p style={{ margin: '0 0 4px', fontSize: '0.9rem' }}>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
             <h3 style={{ margin: '8px 0 0', fontSize: '1.15rem', textDecoration: 'underline' }}>
               حاضر طلباء کی یومیہ دفتری رپورٹ (Currently Present Students Report)
             </h3>
@@ -1103,7 +1103,7 @@ export default function ManageStudents() {
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
-            <p style={{ margin: '0 0 4px', fontSize: '0.9rem' }}>صدیق اکبر کالونی نزد توحید کالونی چارسدہ روڈ مردان</p>
+            <p style={{ margin: '0 0 4px', fontSize: '0.9rem' }}>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
             <h3 style={{ margin: '8px 0 0', fontSize: '1.15rem', textDecoration: 'underline' }}>
               فارغ التحصیل حفاظ و علماء کرام کا رجسٹر (Graduated Students Registry)
             </h3>

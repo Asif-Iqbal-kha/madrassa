@@ -18,7 +18,7 @@ export default function ContactPage() {
               <p>
                 <strong>پتہ: </strong>
                 <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary-dark)', textDecoration: 'underline' }}>
-                  توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا (گوگل میپ پر دیکھیں)
+                  صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان (گوگل میپ پر دیکھیں)
                 </a>
               </p>
               <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992"><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
@@ -31,7 +31,7 @@ export default function ContactPage() {
                   className="btn btn-outline btn-sm"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  📍 گوگل میپ پر لوکیشن کھولیں
+                  گوگل میپ پر لوکیشن کھولیں
                 </a>
               </div>
             </div>

@@ -37,7 +37,7 @@ export default function Header() {
           <div className="header-top-info">
             <span>فون / واٹس ایپ: <a href="tel:03153044992" style={{ color: 'inherit', fontWeight: 600 }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></span>
             <span className="header-top-divider">|</span>
-            <span><a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>📍 مردان، خیبر پختونخوا (گوگل میپ)</a></span>
+            <span><a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان (گوگل میپ)</a></span>
           </div>
           <div className="header-top-actions">
             {user && (user.role === 'master_admin' || user.role === 'teacher') ? (
@@ -60,7 +60,7 @@ export default function Header() {
               <h1 className="header-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h1>
               <p className="header-subtitle">
                 <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                  توحید کالونی، چارسدہ روڈ، مردان
+                  صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان
                 </a> | Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)
               </p>
             </div>

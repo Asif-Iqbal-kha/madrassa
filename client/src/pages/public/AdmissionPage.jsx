@@ -251,7 +251,7 @@ export default function AdmissionPage() {
                 <div className="sheet-header-center">
                   <h1 className="sheet-title-main">داخلہ فارم</h1>
                   <h2 className="sheet-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
-                  <p className="sheet-madrassa-location">صدیق اکبر کالونی نزد توحید کالونی چارسدہ روڈ مردان</p>
+                  <p className="sheet-madrassa-location">صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
                   <div className="sheet-class-badge">
                     <span>برائے درجہ: </span>
                     <select
@@ -974,7 +974,7 @@ export default function AdmissionPage() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                     <FiMapPin size={14} style={{ color: '#143223', flexShrink: 0, marginTop: '4px' }} />
-                    <span>توحید کالونی، چارسدہ روڈ، مردان</span>
+                    <span>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</span>
                   </div>
                 </div>
               </div>
