@@ -700,7 +700,7 @@ export default function AdmissionPage() {
 
                 <div className="sheet-fee-box">
                   <p style={{ margin: '0 0 10px', fontSize: '0.85rem', color: '#4b5563', lineHeight: '1.7' }}>
-                    داخلہ فارم کی پروسیسنگ و دفتری اندراج کے لیے فیس مبلغ <strong>1,000 روپے</strong> مختص ہے۔ رقم مدرسہ کے اکاؤنٹ (JazzCash / EasyPaisa: 0315-3044992 یا میزان بینک) میں جمع کروا کر رسید کا عکس لازمی منسلک فرمائیں۔
+                    داخلہ فارم کی پروسیسنگ و دفتری اندراج کے لیے فیس مبلغ <strong>1,000 روپے</strong> مختص ہے۔ رقم اکاؤنٹ (JazzCash: 0302-2855766 / EasyPaisa: 0315-3044992 یا Faysal Bank) میں جمع کروا کر رسید کا عکس لازمی منسلک فرمائیں۔
                   </p>
 
                   <div className="sheet-form-row" style={{ marginBottom: '10px' }}>
@@ -730,9 +730,9 @@ export default function AdmissionPage() {
                           flex: 1,
                         }}
                       >
-                        <option value="JazzCash">JazzCash (0315-3044992)</option>
+                        <option value="JazzCash">JazzCash (0302-2855766)</option>
                         <option value="EasyPaisa">EasyPaisa (0315-3044992)</option>
-                        <option value="بینک ٹرانسفر">بینک ٹرانسفر (میزان بینک: PK12MEZN0012345678)</option>
+                        <option value="بینک ٹرانسفر">بینک ٹرانسفر (Faysal Bank: PK66FAYS3125301000005358)</option>
                       </select>
                     </div>
                   </div>
@@ -917,25 +917,25 @@ export default function AdmissionPage() {
                 <div className="admission-account-row">
                   <div>
                     <strong>JazzCash:</strong>
-                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>مدرسہ عربیہ سیدنا صدیق اکبر</div>
+                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Hazrat Umar</div>
                   </div>
-                  <span style={{ fontFamily: 'var(--font-english)', fontWeight: 600, direction: 'ltr' }}>0315-3044992</span>
+                  <span style={{ fontFamily: 'var(--font-english)', fontWeight: 600, direction: 'ltr' }}>0302-2855766</span>
                 </div>
 
                 <div className="admission-account-row">
                   <div>
                     <strong>EasyPaisa:</strong>
-                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>مدرسہ عربیہ سیدنا صدیق اکبر</div>
+                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Hazrat Umar</div>
                   </div>
                   <span style={{ fontFamily: 'var(--font-english)', fontWeight: 600, direction: 'ltr' }}>0315-3044992</span>
                 </div>
 
                 <div className="admission-account-row">
                   <div>
-                    <strong>میزان بینک (Meezan):</strong>
-                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>جامعہ عربیہ صدیق اکبر</div>
+                    <strong>Faysal Bank (فیصل بینک):</strong>
+                    <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>Hazrat Umar</div>
                   </div>
-                  <span style={{ fontFamily: 'var(--font-english)', fontSize: '0.76rem', fontWeight: 600, direction: 'ltr' }}>PK12MEZN0012345678</span>
+                  <span style={{ fontFamily: 'var(--font-english)', fontSize: '0.76rem', fontWeight: 600, direction: 'ltr' }}>PK66FAYS3125301000005358</span>
                 </div>
               </div>
 
