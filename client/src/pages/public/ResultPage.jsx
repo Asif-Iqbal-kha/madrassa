@@ -34,6 +34,8 @@ export default function ResultPage() {
     setResultsData(null);
     setSearchedRoll(targetRoll);
 
+    const minDelay = new Promise(resolve => setTimeout(resolve, 7000));
+
     try {
       const data = await searchStudentResult(targetRoll);
       if (data && !data.error && Array.isArray(data) && data.length > 0) {
@@ -55,17 +57,20 @@ export default function ResultPage() {
         }
 
         setResultsData(data);
+        setSearchLoading(false);
         setTimeout(() => {
           if (resultCardRef.current) {
             resultCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }, 100);
       } else {
+        await minDelay;
         setResultError(data?.error || `رول نمبر ${targetRoll} کا کوئی نتیجہ دستیاب نہیں ہے`);
+        setSearchLoading(false);
       }
     } catch (err) {
+      await minDelay;
       setResultError('رزلٹ تلاش کرنے میں خرابی ہوئی، دوبارہ کوشش کریں');
-    } finally {
       setSearchLoading(false);
     }
   };
@@ -169,8 +174,19 @@ export default function ResultPage() {
               ))}
             </div>
 
+            {/* Loading State */}
+            {searchLoading && (
+              <div className="tracking-loading-container">
+                <div className="tracking-loading-spinner"></div>
+                <p className="tracking-loading-text">نتیجہ تلاش ہو رہا ہے، براہ کرم انتظار کریں...</p>
+                <div className="tracking-loading-dots">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            )}
+
             {/* Error Display */}
-            {resultError && (
+            {resultError && !searchLoading && (
               <div className="result-error-alert">
                 <FiAlertCircle size={20} />
                 <span>{resultError}</span>

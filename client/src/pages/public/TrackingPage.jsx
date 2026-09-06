@@ -28,21 +28,34 @@ export default function TrackingPage() {
 
     setLoading(true);
     setSearched(true);
+    setResult(null);
+
+    const minDelay = new Promise(resolve => setTimeout(resolve, 7000));
 
     try {
+      let found = null;
       if (activeTab === 'donation') {
-        const found = await trackDonation(query);
-        setResult(found || null);
+        found = (await trackDonation(query)) || null;
         setResultType('donation');
       } else {
-        const found = await trackAdmission(query);
-        setResult(found || null);
+        found = (await trackAdmission(query)) || null;
         setResultType('admission');
+      }
+
+      if (found) {
+        // Data found — show immediately
+        setResult(found);
+        setLoading(false);
+      } else {
+        // No data — wait for the full loading animation
+        await minDelay;
+        setResult(null);
+        setLoading(false);
       }
     } catch (err) {
       console.error('Tracking query error:', err);
+      await minDelay;
       setResult(null);
-    } finally {
       setLoading(false);
     }
   };
@@ -106,8 +119,19 @@ export default function TrackingPage() {
             </form>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="tracking-loading-container">
+              <div className="tracking-loading-spinner"></div>
+              <p className="tracking-loading-text">ریکارڈ تلاش ہو رہا ہے، براہ کرم انتظار کریں...</p>
+              <div className="tracking-loading-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          )}
+
           {/* Results */}
-          {searched && !result && (
+          {searched && !result && !loading && (
             <div className="tracking-not-found">
               <FiXCircle size={48} />
               <h3>کوئی ریکارڈ نہیں ملا</h3>
