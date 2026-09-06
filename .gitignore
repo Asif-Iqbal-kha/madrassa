@@ -11,6 +11,8 @@ build/
 # Environment & Credentials
 .env
 .env.*
+!.env.example
+!server/.env.example
 *.env
 atlas-credentials.env
 server/.env

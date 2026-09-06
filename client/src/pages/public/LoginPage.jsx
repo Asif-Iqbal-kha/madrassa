@@ -113,10 +113,11 @@ export default function LoginPage() {
             </form>
 
             <div className="login-test-info">
-              <h4>صرف اساتذہ اور ایڈمن لاگ ان:</h4>
-              <p>Admin: admin / admin123</p>
-              <p>Teacher: teacher / teacher123</p>
-              <p style={{ color: 'var(--color-error)', marginTop: '6px', fontWeight: 600 }}>
+              <h4>محفوظ دفتری پورٹل</h4>
+              <p style={{ margin: '4px 0', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                یہ پورٹل صرف مدرسہ کے مجاز ایڈمن اور اساتذہ کے دفتری و تدریسی امور کے لیے مخصوص ہے۔
+              </p>
+              <p style={{ color: 'var(--color-error)', marginTop: '6px', fontWeight: 600, fontSize: '0.82rem' }}>
                 * طلباء کے لیے کوئی لاگ ان پورٹل موجود نہیں ہے
               </p>
             </div>

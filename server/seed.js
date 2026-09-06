@@ -68,7 +68,7 @@ const seedDB = async () => {
     // ====== TEACHERS ======
     console.log('Seeding Teachers...');
     const teachersData = [
-      { name: 'مولانا عبدالرحمٰن', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classNames: ['ناظرہ', 'درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
+      { name: 'مولانا مفتی صاحب', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classNames: ['ناظرہ', 'درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
       { name: 'قاری محمد یوسف', subject: 'حفظ القرآن', phone: '03009876543', qualification: 'سند حفظ و قراءت', classNames: ['حفظ', 'درجہ سوم', 'درجہ ششم'], isActive: true },
       { name: 'مولانا سعید احمد', subject: 'فقہ و عربی', phone: '03004567890', qualification: 'فضیلت', classNames: ['درجہ اول', 'درجہ چہارم', 'درجہ ہفتم'], isActive: true },
       { name: 'حافظ عمر فاروق', subject: 'ناظرہ و تجوید', phone: '03007654321', qualification: 'سند تجوید', classNames: [], isActive: true },
@@ -122,31 +122,22 @@ const seedDB = async () => {
     // ====== USERS ======
     console.log('Seeding Users...');
     const adminUser = await User.create({
-      name: 'ایڈمن',
-      username: 'admin',
-      password: 'admin123',
+      name: process.env.ADMIN_NAME || 'ایڈمن (مدیرِ اعلیٰ)',
+      username: (process.env.ADMIN_USERNAME || 'admin_sadeeq').toLowerCase(),
+      password: process.env.ADMIN_PASSWORD || 'Sadeeq@Admin2026!',
       role: 'master_admin',
       phone: '03001234567',
     });
 
     const teacherUser = await User.create({
-      name: 'مولانا عبدالرحمٰن',
-      username: 'teacher',
-      password: 'teacher123',
+      name: process.env.TEACHER_NAME || 'استاذ',
+      username: (process.env.TEACHER_USERNAME || 'teacher_sadeeq').toLowerCase(),
+      password: process.env.TEACHER_PASSWORD || 'Sadeeq@Teacher2026!',
       role: 'teacher',
       phone: '03001234567',
       teacherProfile: teachers[0]._id,
     });
-
-    const studentUser = await User.create({
-      name: 'محمد احمد',
-      username: 'student',
-      password: 'student123',
-      role: 'student',
-      phone: '03001111111',
-      studentProfile: students[0]._id,
-    });
-    console.log(`  ✓ 3 users created (admin, teacher, student)`);
+    console.log(`  ✓ 2 users created (admin: ${adminUser.username}, teacher: ${teacherUser.username})`);
 
     // ====== NEWS ======
     console.log('Seeding News...');

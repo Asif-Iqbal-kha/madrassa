@@ -11,7 +11,8 @@
     "start": "node server/server.js",
     "server": "node server/server.js",
     "client": "npm run dev --prefix client",
-    "seed": "node server/seed.js"
+    "seed": "node server/seed.js",
+    "update-credentials": "node server/scripts/updateCredentials.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
