@@ -23,7 +23,7 @@ export const MOCK_CLASSES = [
 
 // Teachers
 export const MOCK_TEACHERS = [
-  { _id: 't1', name: 'مولانا عبدالرحمٰن', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classes: ['درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
+  { _id: 't1', name: 'مولانا مفتی صاحب', subject: 'تفسیر و حدیث', phone: '03001234567', qualification: 'شہادۃ العالمیہ', classes: ['درجہ دوم', 'درجہ پنجم', 'درجہ ہشتم'], isActive: true },
   { _id: 't2', name: 'قاری محمد یوسف', subject: 'حفظ القرآن', phone: '03009876543', qualification: 'سند حفظ و قراءت', classes: ['حفظ قرآن کریم', 'درجہ سوم', 'درجہ ششم'], isActive: true },
   { _id: 't3', name: 'مولانا سعید احمد', subject: 'فقہ و عربی', phone: '03004567890', qualification: 'فضیلت', classes: ['درجہ اول', 'درجہ چہارم', 'درجہ ہفتم'], isActive: true },
   { _id: 't4', name: 'حافظ عمر فاروق', subject: 'ناظرہ و تجوید', phone: '03007654321', qualification: 'سند تجوید', classes: ['ناظرہ'], isActive: true },
@@ -482,26 +482,26 @@ export const MOCK_RESULTS = [
 
 // Users (for admin management)
 export const MOCK_USERS = [
-  { _id: 'u1', name: 'ایڈمن', username: 'admin', role: 'master_admin', isActive: true },
-  { _id: 'u2', name: 'مولانا عبدالرحمٰن', username: 'teacher', role: 'teacher', isActive: true },
+  { _id: 'u1', name: 'ایڈمن (مدیرِ اعلیٰ)', username: 'admin_sadeeq', role: 'master_admin', isActive: true },
+  { _id: 'u2', name: 'استاذ', username: 'teacher_sadeeq', role: 'teacher', isActive: true },
 ];
 
 // Current logged-in user profiles
 export const MOCK_USER_PROFILES = {
   master_admin: {
     _id: 'u1',
-    name: 'ایڈمن',
-    username: 'admin',
+    name: 'ایڈمن (مدیرِ اعلیٰ)',
+    username: 'admin_sadeeq',
     role: 'master_admin',
     phone: '03001234567',
   },
   teacher: {
     _id: 'u2',
-    name: 'مولانا عبدالرحمٰن',
-    username: 'teacher',
+    name: 'استاذ',
+    username: 'teacher_sadeeq',
     role: 'teacher',
     phone: '03001234567',
-    subject: 'تفسیر و حدیث',
+    subject: 'تدریس',
     qualification: 'شہادۃ العالمیہ',
     classes: [
       { _id: 'c1', name: 'ناظرہ' },

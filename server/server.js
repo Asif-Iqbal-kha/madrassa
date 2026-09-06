@@ -57,10 +57,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
+const ensureAuthUsers = require('./config/ensureAuthUsers');
 
 // Connect to MongoDB and start server
 connectDB()
-  .then(() => {
+  .then(async () => {
+    // Synchronize and secure Admin and Teacher accounts from .env
+    await ensureAuthUsers();
+
     app.listen(PORT, () => {
       console.log(`\n=================================`);
       console.log(`  🚀 Madrassa API Server Ready`);
