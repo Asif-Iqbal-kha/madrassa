@@ -64,18 +64,9 @@ export default function HomePage() {
           <h1 className="hero-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h1>
           <p className="hero-subtitle-en">Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
 
-          {/* Official Affiliation & Registration Strip */}
-          <div className="hero-registration-strip">
-            <span className="hero-reg-badge">
-              <span className="hero-reg-icon">📜</span>
-              <span>رجسٹرڈ آف حکومت پاکستان (1860)</span>
-            </span>
-            <span className="hero-reg-divider">•</span>
-            <span className="hero-reg-badge">
-              <span className="hero-reg-icon">🏛️</span>
-              <span>منظورہ وفاق المدارس العربیہ پاکستان (14303)</span>
-            </span>
-          </div>
+          <p className="hero-affiliations-text">
+            رجسٹرڈ آف حکومت پاکستان (1860) | منظورہ وفاق المدارس العربیہ پاکستان (14303)
+          </p>
 
           <p className="hero-desc">
             <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>

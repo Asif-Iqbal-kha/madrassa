@@ -20,14 +20,9 @@ export default function AboutPage() {
             <p>
               مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان میں واقع ایک عظیم الشان و معتبر دینی تعلیمی ادارہ ہے۔ یہ ادارہ وحیِ الٰہی یعنی قرآن و سنت کے علوم کے تحفظ و بقا، اشاعت اور نئی نسل کی اخلاقی، علمی اور روحانی تربیت کا فریضہ کمال اخلاص و محنت سے سرانجام دے رہا ہے۔ مدرسہ میں ناظرہ و حفظ القرآن الکریم کے ساتھ ساتھ درسِ نظامی کے مرحلہ وار درجات کی جامع اور معیاری تعلیم دی جاتی ہے۔
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '16px' }}>
-              <div style={{ background: '#f8fafc', border: '1.5px solid var(--color-accent)', padding: '8px 16px', borderRadius: '8px', fontWeight: 700, color: 'var(--color-primary-dark)', fontSize: '0.95rem' }}>
-                📜 رجسٹرڈ آف حکومت پاکستان (1860)
-              </div>
-              <div style={{ background: '#f8fafc', border: '1.5px solid var(--color-accent)', padding: '8px 16px', borderRadius: '8px', fontWeight: 700, color: 'var(--color-primary-dark)', fontSize: '0.95rem' }}>
-                🏛️ منظورہ وفاق المدارس العربیہ پاکستان (14303)
-              </div>
-            </div>
+            <p style={{ marginTop: '12px', fontWeight: 700, color: 'var(--color-primary)' }}>
+              رجسٹرڈ آف حکومت پاکستان (1860) | منظورہ وفاق المدارس العربیہ پاکستان (14303)
+            </p>
           </div>
 
           {/* Section 2: Core Purpose & Key Objectives (Aims & Objectives) */}
