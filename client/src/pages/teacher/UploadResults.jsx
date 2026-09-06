@@ -368,6 +368,16 @@ export default function UploadResults() {
         </div>
       )}
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">نتائج اور درجات کا ڈیٹا لوڈ ہو رہا ہے...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Control Panel: Class, Exam, Year */}
       <div className="dash-card" style={{ marginBottom: '24px', padding: '16px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', alignItems: 'end' }}>
@@ -771,6 +781,8 @@ export default function UploadResults() {
             </div>
           )}
         </div>
+      )}
+      </>
       )}
     </div>
   );

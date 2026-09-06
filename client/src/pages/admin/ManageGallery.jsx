@@ -91,6 +91,16 @@ export default function ManageGallery() {
         </button>
       </div>
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">تصاویر لوڈ ہو رہی ہیں...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Grid of gallery photos */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px', marginTop: '20px' }}>
         {galleryItems.map((item) => (
@@ -145,6 +155,8 @@ export default function ManageGallery() {
           <FiImage size={48} style={{ opacity: 0.5, marginBottom: '12px' }} />
           <p>ابھی تک کوئی تصویر اپلوڈ نہیں کی گئی۔ اوپر دیے گئے بٹن سے نئی تصویر شامل کریں۔</p>
         </div>
+      )}
+      </>
       )}
 
       {/* Upload Modal */}

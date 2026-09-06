@@ -104,6 +104,15 @@ export default function ManageNews() {
         </span>
       </div>
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">اعلانات کا ریکارڈ لوڈ ہو رہا ہے...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
       <div className="table-container">
         <table>
           <thead>
@@ -171,6 +180,7 @@ export default function ManageNews() {
           </tbody>
         </table>
       </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>

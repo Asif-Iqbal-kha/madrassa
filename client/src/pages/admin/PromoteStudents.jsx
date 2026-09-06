@@ -127,6 +127,17 @@ export default function PromoteStudents() {
         </span>
       </div>
 
+      {loading ? (
+        <div className="admin-loading-screen">
+          <div className="admin-loading-spinner"></div>
+          <p className="admin-loading-text">درجات اور طلباء کا ڈیٹا لوڈ ہو رہا ہے...</p>
+          <div className="admin-loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      ) : (
+      <>
+
       {successMessage && (
         <div className="alert alert-success" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <FiCheckCircle size={18} />
@@ -377,6 +388,8 @@ export default function PromoteStudents() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
