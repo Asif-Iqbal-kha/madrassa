@@ -14,7 +14,7 @@ export default function Footer() {
                 <h4 className="footer-heading" style={{ margin: 0, paddingBottom: '4px' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h4>
               </div>
               <p className="footer-text">
-                توحید کالونی، چارسدہ روڈ، مردان میں واقع ایک معتبر دینی تعلیمی ادارہ جو ناظرہ، حفظ القرآن اور
+                صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان میں واقع ایک معتبر دینی تعلیمی ادارہ جو ناظرہ، حفظ القرآن اور
                 درجہ اول سے ہشتم تک دینی تعلیم فراہم کرتا ہے۔
               </p>
             </div>
@@ -46,7 +46,7 @@ export default function Footer() {
               <div className="footer-contact">
                 <p>
                   <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                    📍 توحید کالونی، چارسدہ روڈ، مردان (گوگل میپ)
+                    صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان (گوگل میپ)
                   </a>
                 </p>
                 <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>

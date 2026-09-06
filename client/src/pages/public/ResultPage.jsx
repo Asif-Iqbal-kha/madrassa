@@ -202,7 +202,7 @@ export default function ResultPage() {
                       <img src="/logo.png" alt="لوگو مدرسہ" className="result-madrassa-logo" />
                       <div className="result-madrassa-info">
                         <h3 className="result-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
-                        <p className="result-madrassa-sub">توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا</p>
+                        <p className="result-madrassa-sub">صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
                         <div className="result-sheet-title">
                           <span>کشف الدرجات (امتحانی سند و رزلٹ کارڈ)</span>
                         </div>

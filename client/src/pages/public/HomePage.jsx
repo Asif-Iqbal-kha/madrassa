@@ -65,7 +65,7 @@ export default function HomePage() {
           <p className="hero-subtitle-en">Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
           <p className="hero-desc">
             <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-              📍 توحید کالونی، چارسدہ روڈ، مردان، خیبر پختونخوا (لوکیشن گوگل میپ)
+              صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان (لوکیشن گوگل میپ)
             </a> — تعلیم القرآن و حفظ اور دینی علوم کا مرکز
           </p>
           <div className="hero-actions">
