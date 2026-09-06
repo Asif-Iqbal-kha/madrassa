@@ -252,6 +252,9 @@ export default function AdmissionPage() {
                   <h1 className="sheet-title-main">داخلہ فارم</h1>
                   <h2 className="sheet-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
                   <p className="sheet-madrassa-location">صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
+                  <p style={{ margin: '2px 0 6px', fontSize: '0.78rem', color: '#374151', fontWeight: 600 }}>
+                    رجسٹرڈ آف حکومت پاکستان (1860) | منظورہ وفاق المدارس العربیہ پاکستان (14303)
+                  </p>
                   <div className="sheet-class-badge">
                     <span>برائے درجہ: </span>
                     <select
