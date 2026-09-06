@@ -138,18 +138,18 @@ export default function DonationPage() {
             <div className="payment-details-grid">
               <div className="payment-detail-card">
                 <h4>JazzCash</h4>
-                <p className="payment-number">0300-1234567</p>
-                <p className="payment-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</p>
+                <p className="payment-number">0302-2855766</p>
+                <p className="payment-name">Account Title: Hazrat Umar</p>
               </div>
               <div className="payment-detail-card">
                 <h4>EasyPaisa</h4>
-                <p className="payment-number">0300-7654321</p>
-                <p className="payment-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</p>
+                <p className="payment-number">0315-3044992</p>
+                <p className="payment-name">Account Title: Hazrat Umar</p>
               </div>
               <div className="payment-detail-card">
-                <h4>بینک ٹرانسفر</h4>
-                <p className="payment-number">PK12MEZN0012345678</p>
-                <p className="payment-name">میزان بینک — مدرسہ اکاؤنٹ</p>
+                <h4>Faysal Bank (فیصل بینک)</h4>
+                <p className="payment-number" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>PK66FAYS3125301000005358</p>
+                <p className="payment-name">Account Title: Hazrat Umar</p>
               </div>
             </div>
           </div>
