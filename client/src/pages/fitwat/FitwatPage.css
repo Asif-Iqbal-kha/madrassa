@@ -1,0 +1,346 @@
+/* ===== Under Construction / Fitwat Page Styles ===== */
+
+.construction-container {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--color-bg-alt, #F7F7F7);
+}
+
+.construction-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 48px 36px;
+  max-width: 540px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-border-light, #E5E5E5);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Top Caution Stripe */
+.construction-caution-tape {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent, #B8960C),
+    var(--color-accent, #B8960C) 12px,
+    var(--color-primary-dark, #0D1B2A) 12px,
+    var(--color-primary-dark, #0D1B2A) 24px
+  );
+  background-size: 34px 100%;
+  animation: moveStripes 2s linear infinite;
+}
+
+@keyframes moveStripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 34px 0;
+  }
+}
+
+/* Working Animation Stage */
+.construction-animation-stage {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 10px auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ambient glow */
+.stage-glow {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(circle, rgba(184, 150, 12, 0.18) 0%, rgba(26, 43, 66, 0.05) 60%, transparent 70%);
+  border-radius: 50%;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+/* Gear 1 (Main Big Gear) */
+.gear-main {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  width: 74px;
+  height: 74px;
+  color: var(--color-primary, #1A2B42);
+  transform-origin: center;
+  animation: spinClockwise 8s linear infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Gear 2 (Small Interlocking Gear) */
+.gear-small {
+  position: absolute;
+  bottom: 30px;
+  right: 26px;
+  width: 52px;
+  height: 52px;
+  color: var(--color-accent, #B8960C);
+  transform-origin: center;
+  animation: spinCounterClockwise 5.6s linear infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Working Wrench Tool */
+.working-wrench {
+  position: absolute;
+  bottom: 22px;
+  left: 24px;
+  width: 44px;
+  height: 44px;
+  color: #555555;
+  transform-origin: bottom left;
+  animation: wrenchSwing 2.2s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* Working Hammer Tool */
+.working-hammer {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 46px;
+  height: 46px;
+  color: var(--color-accent, #B8960C);
+  transform-origin: bottom right;
+  animation: hammerTap 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* Sparks / Work Dust */
+.work-spark {
+  position: absolute;
+  border-radius: 50%;
+  background-color: var(--color-accent, #B8960C);
+  opacity: 0;
+}
+
+.spark-1 {
+  width: 6px;
+  height: 6px;
+  top: 48px;
+  left: 78px;
+  animation: sparkBurst1 1.6s ease-out infinite 0.4s;
+}
+
+.spark-2 {
+  width: 5px;
+  height: 5px;
+  top: 54px;
+  left: 86px;
+  animation: sparkBurst2 1.6s ease-out infinite 0.4s;
+}
+
+.spark-3 {
+  width: 4px;
+  height: 4px;
+  top: 42px;
+  left: 82px;
+  animation: sparkBurst3 1.6s ease-out infinite 0.4s;
+}
+
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCounterClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes wrenchSwing {
+  0%, 100% {
+    transform: rotate(-15deg);
+  }
+  50% {
+    transform: rotate(25deg);
+  }
+}
+
+@keyframes hammerTap {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  30% {
+    transform: rotate(-28deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  70% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes sparkBurst1 {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-14px, -18px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkBurst2 {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(16px, -14px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkBurst3 {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(2px, -22px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Live Status Badge */
+.construction-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(184, 150, 12, 0.12);
+  color: var(--color-accent, #B8960C);
+  border: 1px solid rgba(184, 150, 12, 0.3);
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-accent, #B8960C);
+  border-radius: 50%;
+  animation: blinkDot 1.4s ease-in-out infinite;
+}
+
+@keyframes blinkDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(184, 150, 12, 0.6);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+    box-shadow: 0 0 0 5px rgba(184, 150, 12, 0);
+  }
+}
+
+/* Typography */
+.construction-title {
+  font-family: var(--font-urdu, inherit);
+  font-size: 3.2rem;
+  font-weight: bold;
+  color: var(--color-primary, #1A2B42);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.construction-subtitle {
+  font-family: var(--font-urdu, inherit);
+  font-size: 1.6rem;
+  color: var(--color-text-secondary, #4A4A4A);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Progress bar */
+.construction-progress-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 8px;
+  background-color: #EEEEEE;
+  border-radius: 8px;
+  margin-top: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.construction-progress-fill {
+  width: 55%;
+  height: 100%;
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent, #B8960C),
+    var(--color-accent, #B8960C) 8px,
+    var(--color-primary, #1A2B42) 8px,
+    var(--color-primary, #1A2B42) 16px
+  );
+  background-size: 23px 100%;
+  animation: moveStripes 1.5s linear infinite;
+}
+
+@media (max-width: 600px) {
+  .construction-card {
+    padding: 36px 20px;
+  }
+  .construction-title {
+    font-size: 2.6rem;
+  }
+  .construction-subtitle {
+    font-size: 1.35rem;
+  }
+}
