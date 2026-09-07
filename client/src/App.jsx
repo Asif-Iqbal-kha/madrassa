@@ -21,6 +21,7 @@ import NewsPage from './pages/public/NewsPage';
 import GalleryPage from './pages/public/GalleryPage';
 import ContactPage from './pages/public/ContactPage';
 import LoginPage from './pages/public/LoginPage';
+import FitwatPage from './pages/fitwat/FitwatPage';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -69,6 +70,8 @@ function App() {
             <Route path="/exams" element={<ExamsPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/news" element={<NewsPage />} />
+            <Route path="/fitwat" element={<FitwatPage />} />
+            <Route path="/fatwa" element={<FitwatPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Route>
