@@ -22,6 +22,7 @@ export default function Header() {
     { path: '/exams', label: 'امتحانات' },
     { path: '/results', label: 'امتحانی نتائج' },
     { path: '/news', label: 'اعلانات' },
+    { path: '/fitwat', label: 'فتاویٰ' },
     { path: '/gallery', label: 'تصاویر' },
     { path: '/contact', label: 'رابطہ' },
     { path: '/track', label: 'ٹریکنگ' },
