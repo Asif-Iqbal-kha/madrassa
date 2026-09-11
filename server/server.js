@@ -34,6 +34,7 @@ app.use('/api/results', require('./routes/results'));
 app.use('/api/donations', require('./routes/donations'));
 app.use('/api/admissions', require('./routes/admissions'));
 app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/fatwa', require('./routes/fatwa'));
 app.use('/api/stats', require('./routes/stats'));
 
 // Health check
