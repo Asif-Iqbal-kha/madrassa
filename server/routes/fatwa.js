@@ -54,24 +54,6 @@ router.get('/admin/all', protect, authorize('master_admin'), async (req, res) =>
   }
 });
 
-// @route   GET /api/fatwa/:id
-// @desc    Get single fatwa by id (public — only published)
-// @access  Public
-router.get('/:id', async (req, res) => {
-  try {
-    const fatwa = await Fatwa.findById(req.params.id).select('-__v');
-    if (!fatwa || fatwa.status !== 'published') {
-      return res.status(404).json({ message: 'فتویٰ نہیں ملا' });
-    }
-    // Increment view count
-    fatwa.views = (fatwa.views || 0) + 1;
-    await fatwa.save();
-    res.json(fatwa);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // @route   POST /api/fatwa/ask
 // @desc    Submit a new question (public)
 // @access  Public
@@ -91,6 +73,24 @@ router.post('/ask', async (req, res) => {
     res.status(201).json({ message: 'آپ کا سوال موصول ہو گیا۔ جواب دینے پر آپ کو مطلع کیا جائے گا۔', id: fatwa._id });
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// @route   GET /api/fatwa/:id
+// @desc    Get single fatwa by id (public — only published)
+// @access  Public
+router.get('/:id', async (req, res) => {
+  try {
+    const fatwa = await Fatwa.findById(req.params.id).select('-__v');
+    if (!fatwa || fatwa.status !== 'published') {
+      return res.status(404).json({ message: 'فتویٰ نہیں ملا' });
+    }
+    // Increment view count
+    fatwa.views = (fatwa.views || 0) + 1;
+    await fatwa.save();
+    res.json(fatwa);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
