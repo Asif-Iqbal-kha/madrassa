@@ -1,5 +1,7 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { getAllFatwaAdmin } from '../../services/api';
 import { FiHome, FiUsers, FiBookOpen, FiFileText, FiImage, FiSettings, FiLogOut, FiCheckSquare, FiClipboard, FiUser, FiCalendar, FiArrowUpCircle, FiHeart, FiUserPlus, FiMessageSquare } from 'react-icons/fi';
 import './Sidebar.css';
 
@@ -28,6 +30,34 @@ const menuItems = {
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [pendingFatwaCount, setPendingFatwaCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.role !== 'master_admin') return;
+
+    let isMounted = true;
+    const fetchPendingCount = async () => {
+      try {
+        const list = await getAllFatwaAdmin({ status: 'pending' });
+        if (isMounted && Array.isArray(list)) {
+          setPendingFatwaCount(list.length);
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 30000);
+    window.addEventListener('fatwaUpdated', fetchPendingCount);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      window.removeEventListener('fatwaUpdated', fetchPendingCount);
+    };
+  }, [user?.role, location.pathname]);
 
   if (!user) return null;
 
@@ -67,7 +97,14 @@ export default function Sidebar() {
                 to={item.path}
                 className={({ isActive }) => `sidebar-link ${isActive ? 'sidebar-active' : ''}`}
               >
-                <item.icon className="sidebar-icon" size={18} />
+                <span className="sidebar-icon-wrapper">
+                  <item.icon className="sidebar-icon" size={18} />
+                  {item.path === '/admin/fatwa' && pendingFatwaCount > 0 && (
+                    <span className="sidebar-badge" title={`${pendingFatwaCount} نئے سوالات`}>
+                      {pendingFatwaCount > 99 ? '99+' : pendingFatwaCount}
+                    </span>
+                  )}
+                </span>
                 <span>{item.label}</span>
               </NavLink>
             </li>
