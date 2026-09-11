@@ -95,7 +95,7 @@ export default function Header() {
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`nav-link ${isActive(link.path) ? 'nav-active' : ''}`}
+                  className={`nav-link ${isActive(link.path) ? 'nav-active' : ''} ${link.path === '/fitwat' ? 'nav-fatwa-highlight' : ''}`}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}
