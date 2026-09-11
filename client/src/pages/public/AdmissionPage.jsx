@@ -10,6 +10,7 @@ import {
   FiMapPin,
   FiCamera,
   FiCheck,
+  FiLoader,
 } from 'react-icons/fi';
 import './PublicPages.css';
 
@@ -117,6 +118,34 @@ export default function AdmissionPage() {
     reader.readAsDataURL(file);
   };
 
+  const scrollToField = (fieldId) => {
+    setTimeout(() => {
+      const el = document.getElementById(fieldId) || document.querySelector(`[name="${fieldId}"]`);
+      if (!el) return;
+
+      const headerEl = document.querySelector('.site-header');
+      const headerHeight = headerEl ? headerEl.getBoundingClientRect().height : 120;
+      const elRect = el.getBoundingClientRect();
+      const absoluteElementTop = elRect.top + window.pageYOffset;
+      const targetScrollY = Math.max(0, absoluteElementTop - headerHeight - 35);
+
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'smooth',
+      });
+
+      setTimeout(() => {
+        try {
+          if (typeof el.focus === 'function') {
+            el.focus({ preventScroll: true });
+          }
+        } catch (e) {
+          // ignore
+        }
+      }, 350);
+    }, 50);
+  };
+
   const validate = () => {
     const newErrors = {};
     if (!form.studentName.trim()) newErrors.studentName = 'طالب علم کا نام درج فرمائیں';
@@ -127,7 +156,25 @@ export default function AdmissionPage() {
     if (!paymentProof) newErrors.paymentProof = 'رقم منتقلی کی رسید یا اسکرین شاٹ منسلک کرنا لازمی ہے';
     if (!agreePledge) newErrors.agreePledge = 'جامعہ کے قواعد و ضوابط اور عہد نامہ کی توثیق لازمی ہے';
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    const errorKeys = Object.keys(newErrors);
+    if (errorKeys.length > 0) {
+      const orderedFieldIds = [
+        'desiredClass',
+        'studentName',
+        'fatherName',
+        'dateOfBirth',
+        'phone',
+        'paymentProof',
+        'agreePledge',
+      ];
+      const firstMissingId = orderedFieldIds.find((id) => newErrors[id]);
+      if (firstMissingId) {
+        scrollToField(firstMissingId);
+      }
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -258,6 +305,8 @@ export default function AdmissionPage() {
                   <div className="sheet-class-badge">
                     <span>برائے درجہ: </span>
                     <select
+                      id="desiredClass"
+                      name="desiredClass"
                       value={form.desiredClass}
                       onChange={(e) => handleChange('desiredClass', e.target.value)}
                       style={{
@@ -357,22 +406,36 @@ export default function AdmissionPage() {
                   <div className="sheet-field-half">
                     <span className="sheet-label">نام: *</span>
                     <input
+                      id="studentName"
+                      name="studentName"
                       type="text"
                       className={`sheet-input-dotted ${errors.studentName ? 'sheet-input-error' : ''}`}
                       placeholder="طالب علم کا مکمل نام درج کریں"
                       value={form.studentName}
                       onChange={(e) => handleChange('studentName', e.target.value)}
                     />
+                    {errors.studentName && (
+                      <span className="form-error-text" style={{ color: '#dc2626', fontSize: '0.75rem', display: 'block', marginTop: '2px' }}>
+                        {errors.studentName}
+                      </span>
+                    )}
                   </div>
                   <div className="sheet-field-half">
                     <span className="sheet-label">ولدیت: *</span>
                     <input
+                      id="fatherName"
+                      name="fatherName"
                       type="text"
                       className={`sheet-input-dotted ${errors.fatherName ? 'sheet-input-error' : ''}`}
                       placeholder="والد محترم کا نام درج کریں"
                       value={form.fatherName}
                       onChange={(e) => handleChange('fatherName', e.target.value)}
                     />
+                    {errors.fatherName && (
+                      <span className="form-error-text" style={{ color: '#dc2626', fontSize: '0.75rem', display: 'block', marginTop: '2px' }}>
+                        {errors.fatherName}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -381,12 +444,19 @@ export default function AdmissionPage() {
                   <div className="sheet-field-half" style={{ flex: '1.2' }}>
                     <span className="sheet-label">تاریخِ پیدائش: *</span>
                     <input
+                      id="dateOfBirth"
+                      name="dateOfBirth"
                       type="date"
                       className={`sheet-input-dotted ${errors.dateOfBirth ? 'sheet-input-error' : ''}`}
                       value={form.dateOfBirth}
                       onChange={(e) => handleChange('dateOfBirth', e.target.value)}
                       style={{ direction: 'ltr', textAlign: 'right' }}
                     />
+                    {errors.dateOfBirth && (
+                      <span className="form-error-text" style={{ color: '#dc2626', fontSize: '0.75rem', display: 'block', marginTop: '2px' }}>
+                        {errors.dateOfBirth}
+                      </span>
+                    )}
                   </div>
                   <div className="sheet-field-half">
                     <span className="sheet-label">شناختی علامت:</span>
@@ -463,6 +533,8 @@ export default function AdmissionPage() {
                   <div className="sheet-field-half">
                     <span className="sheet-label">رابطہ کیلئے فون نمبر: *</span>
                     <input
+                      id="phone"
+                      name="phone"
                       type="tel"
                       className={`sheet-input-dotted ${errors.phone ? 'sheet-input-error' : ''}`}
                       placeholder="03001234567"
@@ -470,6 +542,11 @@ export default function AdmissionPage() {
                       onChange={(e) => handleChange('phone', e.target.value)}
                       style={{ direction: 'ltr', textAlign: 'right', fontFamily: 'var(--font-english)' }}
                     />
+                    {errors.phone && (
+                      <span className="form-error-text" style={{ color: '#dc2626', fontSize: '0.75rem', display: 'block', marginTop: '2px' }}>
+                        {errors.phone}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -760,9 +837,11 @@ export default function AdmissionPage() {
                       رقم منتقلی کا تصدیقی ثبوت (رسید یا اسکرین شاٹ) *
                     </span>
                     <div
+                      id="paymentProof"
+                      tabIndex={-1}
                       className={`file-upload-area ${errors.paymentProof ? 'file-upload-error' : ''} ${proofPreview ? 'file-upload-has-file' : ''}`}
                       onClick={() => proofInputRef.current && proofInputRef.current.click()}
-                      style={{ padding: '16px', minHeight: '95px' }}
+                      style={{ padding: '16px', minHeight: '95px', outline: 'none' }}
                     >
                       {proofPreview ? (
                         <div className="file-upload-preview" style={{ textAlign: 'center' }}>
@@ -856,6 +935,8 @@ export default function AdmissionPage() {
 
                   <label className="pledge-checkbox-label">
                     <input
+                      id="agreePledge"
+                      name="agreePledge"
                       type="checkbox"
                       checked={agreePledge}
                       onChange={(e) => setAgreePledge(e.target.checked)}
@@ -877,11 +958,32 @@ export default function AdmissionPage() {
                   <button
                     type="submit"
                     className="btn btn-primary btn-lg"
-                    style={{ flex: 1 }}
+                    style={{
+                      flex: 1,
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      opacity: submitting ? 0.85 : 1,
+                      pointerEvents: submitting ? 'none' : 'auto',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                    }}
                     disabled={submitting}
                   >
-                    <FiSend size={16} />
-                    {submitting ? 'درخواست ارسال ہو رہی ہے...' : 'درخواستِ داخلہ جمع فرمائیں'}
+                    {submitting ? (
+                      <>
+                        <FiLoader
+                          size={18}
+                          style={{ animation: 'spinLoader 0.9s linear infinite', flexShrink: 0 }}
+                        />
+                        <span>درخواست جمع کی جا رہی ہے... (Processing...)</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiSend size={16} />
+                        <span>درخواستِ داخلہ جمع فرمائیں</span>
+                      </>
+                    )}
                   </button>
                   <button
                     type="button"
