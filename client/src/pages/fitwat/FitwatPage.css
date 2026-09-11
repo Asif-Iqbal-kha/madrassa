@@ -34,14 +34,7 @@
 
 .fitwat-cat-btn {
   border-radius: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
   padding: 5px 14px;
-}
-
-.fitwat-cat-icon {
-  font-size: 1rem;
 }
 
 /* Top Row */
@@ -121,11 +114,13 @@
 }
 
 .fitwat-card-question {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 6px;
-  line-height: 1.9;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+  line-height: 2;
+  border-right: 3px solid var(--color-accent);
+  padding-right: var(--space-sm);
 }
 
 .fitwat-card-answer-preview {

@@ -5,17 +5,6 @@ import './FitwatPage.css';
 
 const CATEGORIES = ['تمام', 'طہارت', 'نماز', 'زکوٰۃ', 'روزہ', 'حج', 'نکاح و طلاق', 'تجارت', 'کھانا پینا', 'متفرقات'];
 
-const CATEGORY_ICONS = {
-  'طہارت': '🧼',
-  'نماز': '🕌',
-  'زکوٰۃ': '💰',
-  'روزہ': '🌙',
-  'حج': '🕋',
-  'نکاح و طلاق': '💍',
-  'تجارت': '📊',
-  'کھانا پینا': '🍽️',
-  'متفرقات': '📖',
-};
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -212,7 +201,6 @@ export default function FitwatPage() {
                 className={`btn btn-sm fitwat-cat-btn ${activeCategory === cat ? 'btn-primary' : 'btn-outline'}`}
                 onClick={() => handleCategoryChange(cat)}
               >
-                {cat !== 'تمام' && <span className="fitwat-cat-icon">{CATEGORY_ICONS[cat]}</span>}
                 {cat}
               </button>
             ))}
