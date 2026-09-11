@@ -78,6 +78,7 @@ export default function ManageFatwa() {
       });
       setSaveMsg(newStatus === 'published' ? 'فتویٰ شائع ہو گیا!' : 'جواب محفوظ ہو گیا۔');
       await loadFatwas();
+      window.dispatchEvent(new Event('fatwaUpdated'));
       // update selected in-place
       setSelected((prev) => ({ ...prev, answer: answerText, category: answerCategory, status: newStatus || prev.status }));
     } catch (err) {
@@ -94,6 +95,7 @@ export default function ManageFatwa() {
       await deleteFatwa(confirmDelete._id);
       setFatwas((prev) => prev.filter((f) => f._id !== confirmDelete._id));
       setConfirmDelete(null);
+      window.dispatchEvent(new Event('fatwaUpdated'));
     } catch (err) {
       alert('حذف کرنے میں خرابی آئی: ' + err.message);
     } finally {
