@@ -31,6 +31,7 @@ import ManageClasses from './pages/admin/ManageClasses';
 import PromoteStudents from './pages/admin/PromoteStudents';
 import ManageNews from './pages/admin/ManageNews';
 import ManageGallery from './pages/admin/ManageGallery';
+import ManageFatwa from './pages/admin/ManageFatwa';
 import ManageDonations from './pages/admin/ManageDonations';
 import ManageAdmissions from './pages/admin/ManageAdmissions';
 
@@ -98,6 +99,7 @@ function App() {
             <Route path="admissions" element={<ManageAdmissions />} />
             <Route path="news" element={<ManageNews />} />
             <Route path="gallery" element={<ManageGallery />} />
+            <Route path="fatwa" element={<ManageFatwa />} />
           </Route>
 
           {/* Teacher Dashboard */}

@@ -677,3 +677,69 @@ export async function deleteGalleryItem(id) {
   });
   return handleResponse(res);
 }
+
+// ----------------- FATWA API -----------------
+
+export async function getFatwas({ category, page = 1, limit = 10, search } = {}) {
+  try {
+    const params = new URLSearchParams({ page, limit });
+    if (category && category !== 'تمام') params.set('category', category);
+    if (search) params.set('search', search);
+    const res = await fetch(`${API_BASE}/fatwa?${params.toString()}`);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getFatwas failed:', err);
+  }
+  return { fatwas: [], total: 0, page: 1, pages: 1 };
+}
+
+export async function getFatwaById(id) {
+  try {
+    const res = await fetch(`${API_BASE}/fatwa/${id}`);
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getFatwaById failed:', err);
+  }
+  return null;
+}
+
+export async function submitFatwaQuestion(data) {
+  const res = await fetch(`${API_BASE}/fatwa/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleResponse(res);
+}
+
+export async function getAllFatwaAdmin({ status, search } = {}) {
+  try {
+    const params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (search) params.set('search', search);
+    const res = await fetch(`${API_BASE}/fatwa/admin/all?${params.toString()}`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getAllFatwaAdmin failed:', err);
+  }
+  return [];
+}
+
+export async function updateFatwaAdmin(id, data) {
+  const res = await fetch(`${API_BASE}/fatwa/admin/${id}`, {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteFatwa(id) {
+  const res = await fetch(`${API_BASE}/fatwa/admin/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
+}
