@@ -2986,5 +2986,22 @@
   }
 }
 
+/* Admission Form Submit Loading Spinner & Auto-Scroll Helpers */
+@keyframes spinLoader {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-
+#desiredClass,
+#studentName,
+#fatherName,
+#dateOfBirth,
+#phone,
+#paymentProof,
+#agreePledge {
+  scroll-margin-top: 140px;
+}
