@@ -40,9 +40,9 @@ export default function ContactPage() {
               <h3>دفتر کے اوقات 🕘</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9375rem', lineHeight: '1.7' }}>
                 <div>
-                  <strong style={{ color: 'var(--color-primary-dark)' }}>📌 پیر تا بدھ:</strong>
+                  <strong style={{ color: 'var(--color-primary-dark)' }}>📌 ہفتہ تا بدھ:</strong>
                   <div style={{ paddingRight: '16px' }}>صبح 9:00 بجے سے 11:00 بجے تک</div>
-                  <div style={{ paddingRight: '16px' }}>دوپہر 3:00 بجے سے شام 7:00 بجے تک</div>
+                  <div style={{ paddingRight: '16px' }}>دوپہر 3:00 بجے سے شام 5:00 بجے تک</div>
                 </div>
                 <div>
                   <strong style={{ color: 'var(--color-primary-dark)' }}>📌 جمعرات:</strong>
@@ -51,7 +51,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <strong style={{ color: 'var(--color-primary-dark)' }}>📌 جمعہ:</strong>
-                  <div style={{ paddingRight: '16px' }}>صبح 9:00 بجے سے دوپہر 12:00 بجے تک</div>
+                  <div style={{ paddingRight: '16px', color: '#b91c1c', fontWeight: 600 }}>مکمل چھٹی ہوگی۔</div>
                 </div>
                 <div style={{ marginTop: '8px', fontWeight: 700, color: 'var(--color-primary)' }}>
                   جزاکم اللہ خیراً 🌸
