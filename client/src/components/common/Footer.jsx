@@ -10,7 +10,7 @@ export default function Footer() {
             {/* About */}
             <div className="footer-col">
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <img src="./logo.png" alt="لوگو" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', padding: '2px', border: '1px solid var(--color-accent)' }} />
+                <img src="/logo.png" alt="لوگو" style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', padding: '2px', border: '1px solid var(--color-accent)' }} />
                 <h4 className="footer-heading" style={{ margin: 0, paddingBottom: '4px' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h4>
               </div>
               <p className="footer-text">

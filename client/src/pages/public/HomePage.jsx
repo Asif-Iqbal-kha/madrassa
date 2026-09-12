@@ -65,7 +65,7 @@ export default function HomePage() {
             </div>
 
             <div className="hero-logo-wrapper">
-              <img src="./logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="hero-logo-img" />
+              <img src="/logo.png" alt="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="hero-logo-img" />
             </div>
 
             <div className="hero-header-side hero-header-left">

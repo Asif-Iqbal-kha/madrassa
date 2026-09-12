@@ -77,7 +77,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-header-brand">
-          <img src="./logo.png" alt="لوگو" className="sidebar-madrassa-logo" />
+          <img src="/logo.png" alt="لوگو" className="sidebar-madrassa-logo" />
           <div className="sidebar-user-info">
             <p className="sidebar-user-name">{user.name}</p>
             <p className="sidebar-user-role">{roleLabels[user.role] || user.role}</p>
