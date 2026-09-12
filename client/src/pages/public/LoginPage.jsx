@@ -69,7 +69,7 @@ export default function LoginPage() {
         <div className="login-card">
           <div className="login-header">
             <div className="login-logo-wrapper">
-              <img src="./logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
+              <img src="/logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="login-logo-img" />
             </div>
             <h2>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
             <p>پورٹل لاگ ان</p>
