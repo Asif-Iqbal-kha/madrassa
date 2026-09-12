@@ -74,7 +74,7 @@ export default function HomePage() {
           </div>
 
           <h1 className="hero-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h1>
-          <p className="hero-subtitle-en">Madrassa Arabia Sayedina Sadeeq-e-Akbar (RA)</p>
+          <p className="hero-subtitle-en">Madrasa Arabia Syedna Siddiq Akbar (RA)</p>
 
           <p className="hero-desc">
             <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
