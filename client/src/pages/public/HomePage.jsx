@@ -13,21 +13,53 @@ import {
 } from 'react-icons/fi';
 import './PublicPages.css';
 
+const DEFAULT_STATS = {
+  totalStudents: 4,
+  totalTeachers: 1,
+  totalClasses: 1,
+  attendancePercentage: 50,
+};
+
+const DEFAULT_CLASSES = [
+  {
+    _id: '6aa52ff9a497b16f15435bd0',
+    name: 'حفظ القرآن (Hafiz)',
+    year: '1447',
+    studentsCount: 4,
+  },
+];
+
+const DEFAULT_NEWS = [
+  {
+    _id: '6a917e726f135480c1e544da',
+    title: 'سالانہ امتحانات کا شیڈول جاری',
+    publishDate: '2026-03-01',
+    content: 'مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ میں سالانہ امتحانات کے شیڈول کا باقاعدہ اعلان کر دیا گیا ہے۔ تمام طلباء بروقت تیاری مکمل کریں۔',
+  },
+  {
+    _id: '6a917e726f135480c1e544db',
+    title: 'نئے تعلیمی سال کے داخلے شروع',
+    publishDate: '2026-02-15',
+    content: 'شعبہ حفظ القرآن، ناظرہ اور دینی درجات میں نئے داخلوں کا آغاز ہو چکا ہے۔ خواہش مند حضرات آن لائن یا دفتر مدرسہ سے رابطہ کریں۔',
+  },
+  {
+    _id: '6a917e726f135480c1e544dc',
+    title: 'حفظ القرآن تقریب تقسیم اسناد',
+    publishDate: '2026-01-20',
+    content: 'قرآن مجید مکمل کرنے والے خوش نصیب حفاظ کرام کے لیے خصوصی تقریبِ دستار بندی و تقسیم اسناد کا انعقاد کیا گیا۔',
+  },
+];
+
 export default function HomePage() {
-  const [news, setNews] = useState([]);
-  const [stats, setStats] = useState({
-    totalStudents: 0,
-    totalTeachers: 0,
-    totalClasses: 0,
-    attendancePercentage: 0,
-  });
-  const [classes, setClasses] = useState([]);
+  const [news, setNews] = useState(DEFAULT_NEWS);
+  const [stats, setStats] = useState(DEFAULT_STATS);
+  const [classes, setClasses] = useState(DEFAULT_CLASSES);
 
   useEffect(() => {
     // 1. Fetch Aggregated Statistics (students, teachers, classes, attendance)
     getStats()
       .then((data) => {
-        if (data && typeof data === 'object') {
+        if (data && typeof data === 'object' && data.totalStudents !== undefined) {
           setStats({
             totalStudents: data.totalStudents || 0,
             totalTeachers: data.totalTeachers || 0,
@@ -41,7 +73,7 @@ export default function HomePage() {
     // 2. Fetch Active Classes
     getClasses()
       .then((data) => {
-        if (data && Array.isArray(data)) {
+        if (data && Array.isArray(data) && data.length > 0) {
           setClasses(data);
         }
       })
@@ -50,7 +82,7 @@ export default function HomePage() {
     // 3. Fetch Latest News & Announcements
     getNews(true)
       .then((data) => {
-        if (data && Array.isArray(data)) {
+        if (data && Array.isArray(data) && data.length > 0) {
           setNews(data.slice(0, 3));
         }
       })
