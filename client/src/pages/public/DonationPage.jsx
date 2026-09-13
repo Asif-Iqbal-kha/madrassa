@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { submitDonation } from '../../services/api';
-import './PublicPages.css';
+import { FiUpload, FiCheckCircle, FiCopy, FiHeart, FiDollarSign, FiSmartphone, FiX } from 'react-icons/fi';
 import SEOHead from '../../components/common/SEOHead';
+import './PublicPages.css';
 
 export default function DonationPage() {
   const [form, setForm] = useState({

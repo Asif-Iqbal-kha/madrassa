@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { trackDonation, trackAdmission } from '../../services/api';
-import './PublicPages.css';
+import { FiSearch, FiCheckCircle, FiClock, FiXCircle, FiEye, FiHash, FiUser, FiPhone, FiDollarSign, FiCalendar, FiBookOpen } from 'react-icons/fi';
 import SEOHead from '../../components/common/SEOHead';
+import './PublicPages.css';
 
 const STATUS_CONFIG = {
   // Donation statuses
