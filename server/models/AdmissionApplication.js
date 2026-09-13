@@ -147,4 +147,7 @@ admissionApplicationSchema.pre('save', async function (next) {
   next();
 });
 
+admissionApplicationSchema.index({ createdAt: -1 });
+admissionApplicationSchema.index({ status: 1, createdAt: -1 });
+
 module.exports = mongoose.model('AdmissionApplication', admissionApplicationSchema);

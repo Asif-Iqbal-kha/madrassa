@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDonations, updateDonationStatus } from '../../services/api';
+import { getDonations, getDonationById, updateDonationStatus } from '../../services/api';
 import { FiCheckCircle, FiXCircle, FiEye, FiX } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
@@ -18,6 +18,7 @@ const STATUS_BADGE = {
 export default function ManageDonations() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showDetail, setShowDetail] = useState(null);
@@ -76,10 +77,28 @@ export default function ManageDonations() {
     }
   };
 
-  const openDetail = (donation) => {
+  const openDetail = async (donation) => {
     setShowDetail(donation);
     setAdminNote(donation.adminNotes || '');
     setActionError('');
+
+    if (!donation.screenshotData && (donation._id || donation.trackingNumber)) {
+      setLoadingDetail(true);
+      try {
+        const full = await getDonationById(donation._id || donation.trackingNumber);
+        if (full) {
+          setShowDetail((prev) =>
+            prev && (prev._id === donation._id || prev.trackingNumber === donation.trackingNumber)
+              ? { ...prev, ...full }
+              : prev
+          );
+        }
+      } catch (err) {
+        console.warn('Failed to load full donation detail:', err);
+      } finally {
+        setLoadingDetail(false);
+      }
+    }
   };
 
   return (
@@ -251,7 +270,20 @@ export default function ManageDonations() {
                   ادائیگی کا تصدیقی اسکرین شاٹ (Payment Proof)
                 </span>
 
-                {showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
+                {loadingDetail ? (
+                  <div style={{
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '24px',
+                    textAlign: 'center',
+                    background: 'var(--color-bg-alt)',
+                    color: 'var(--color-text-muted)',
+                    fontSize: '0.875rem',
+                  }}>
+                    <div className="admin-loading-spinner" style={{ width: '24px', height: '24px', margin: '0 auto 8px' }}></div>
+                    تصویر لوڈ ہو رہی ہے...
+                  </div>
+                ) : showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
                   <div style={{
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius-md)',

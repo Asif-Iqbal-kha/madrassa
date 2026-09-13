@@ -90,8 +90,36 @@ router.get('/', protect, authorize('master_admin'), async (req, res) => {
     const filter = {};
     if (req.query.status) filter.status = req.query.status;
 
-    const donations = await Donation.find(filter).sort('-createdAt');
+    const donations = await Donation.find(filter)
+      .select('-screenshotData')
+      .sort('-createdAt')
+      .lean();
     res.json(donations);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/donations/:id
+// @desc    Get single donation by ID with full details/screenshot (admin)
+// @access  Admin
+router.get('/:id', protect, authorize('master_admin'), async (req, res) => {
+  try {
+    const targetId = req.params.id;
+    let donation = null;
+    if (mongoose.Types.ObjectId.isValid(targetId)) {
+      donation = await Donation.findById(targetId).lean();
+    }
+    if (!donation) {
+      donation = await Donation.findOne({
+        $or: [
+          { trackingNumber: targetId },
+          { trackingNumber: targetId.toUpperCase() },
+        ],
+      }).lean();
+    }
+    if (!donation) return res.status(404).json({ message: 'عطیہ نہیں ملا' });
+    res.json(donation);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

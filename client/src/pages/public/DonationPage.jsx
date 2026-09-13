@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { submitDonation } from '../../services/api';
 import { FiUpload, FiCheckCircle, FiCopy, FiHeart, FiDollarSign, FiSmartphone, FiX } from 'react-icons/fi';
 import SEOHead from '../../components/common/SEOHead';
+import { compressImage } from '../../utils/imageCompressor';
 import './PublicPages.css';
 
 export default function DonationPage() {
@@ -26,27 +27,42 @@ export default function DonationPage() {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setForm({ ...form, screenshot: file });
-      const reader = new FileReader();
-      reader.onloadend = () => setScreenshotPreview(reader.result);
-      reader.readAsDataURL(file);
+      try {
+        const { file: compressed, dataUrl } = await compressImage(file, { maxWidth: 1200, maxHeight: 1200, quality: 0.75 });
+        setForm((prev) => ({ ...prev, screenshot: compressed }));
+        setScreenshotPreview(dataUrl);
+      } catch {
+        setForm((prev) => ({ ...prev, screenshot: file }));
+        const reader = new FileReader();
+        reader.onloadend = () => setScreenshotPreview(reader.result);
+        reader.readAsDataURL(file);
+      }
       if (errors.screenshot) {
-        setErrors({ ...errors, screenshot: '' });
+        setErrors((prev) => ({ ...prev, screenshot: '' }));
       }
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file && file.type.startsWith('image/')) {
-      setForm({ ...form, screenshot: file });
-      const reader = new FileReader();
-      reader.onloadend = () => setScreenshotPreview(reader.result);
-      reader.readAsDataURL(file);
+      try {
+        const { file: compressed, dataUrl } = await compressImage(file, { maxWidth: 1200, maxHeight: 1200, quality: 0.75 });
+        setForm((prev) => ({ ...prev, screenshot: compressed }));
+        setScreenshotPreview(dataUrl);
+      } catch {
+        setForm((prev) => ({ ...prev, screenshot: file }));
+        const reader = new FileReader();
+        reader.onloadend = () => setScreenshotPreview(reader.result);
+        reader.readAsDataURL(file);
+      }
+      if (errors.screenshot) {
+        setErrors((prev) => ({ ...prev, screenshot: '' }));
+      }
     }
   };
 

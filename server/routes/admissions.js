@@ -127,7 +127,7 @@ router.get('/track/:trackingNumber', async (req, res) => {
         { trackingNumber: tracking.toUpperCase() },
         { trackingNumber: new RegExp(`^${tracking}$`, 'i') },
       ],
-    });
+    }).select('-screenshotData -studentPhotoData').lean();
 
     if (!application) {
       return res.status(404).json({ message: 'کوئی ریکارڈ نہیں ملا' });
@@ -140,15 +140,43 @@ router.get('/track/:trackingNumber', async (req, res) => {
 });
 
 // @route   GET /api/admissions
-// @desc    Get all admission applications (admin)
+// @desc    Get all admission applications (admin) - excludes photos for instant loading
 // @access  Admin
 router.get('/', protect, authorize('master_admin'), async (req, res) => {
   try {
     const filter = {};
     if (req.query.status && req.query.status !== 'all') filter.status = req.query.status;
 
-    const applications = await AdmissionApplication.find(filter).sort('-createdAt');
+    const applications = await AdmissionApplication.find(filter)
+      .select('-screenshotData -studentPhotoData')
+      .sort('-createdAt')
+      .lean();
     res.json(applications);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/admissions/:id
+// @desc    Get single admission application with full photos/screenshot (admin)
+// @access  Admin
+router.get('/:id', protect, authorize('master_admin'), async (req, res) => {
+  try {
+    const targetId = req.params.id;
+    let application = null;
+    if (mongoose.Types.ObjectId.isValid(targetId)) {
+      application = await AdmissionApplication.findById(targetId).lean();
+    }
+    if (!application) {
+      application = await AdmissionApplication.findOne({
+        $or: [
+          { trackingNumber: targetId },
+          { trackingNumber: targetId.toUpperCase() },
+        ],
+      }).lean();
+    }
+    if (!application) return res.status(404).json({ message: 'درخواست نہیں ملی' });
+    res.json(application);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

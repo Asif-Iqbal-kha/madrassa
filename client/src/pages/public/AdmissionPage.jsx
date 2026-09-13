@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi';
 import './PublicPages.css';
 import SEOHead from '../../components/common/SEOHead';
+import { compressImage } from '../../utils/imageCompressor';
 
 export default function AdmissionPage() {
   const [form, setForm] = useState({
@@ -90,33 +91,46 @@ export default function AdmissionPage() {
     }
   };
 
-  const handlePhotoChange = (file) => {
+  const handlePhotoChange = async (file) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       alert('برائے مہربانی صرف تصویر (JPG یا PNG) منتخب فرمائیں');
       return;
     }
-    setStudentPhoto(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhotoPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const { file: compressed, dataUrl } = await compressImage(file, { maxWidth: 600, maxHeight: 800, quality: 0.8 });
+      setStudentPhoto(compressed);
+      setPhotoPreview(dataUrl);
+    } catch {
+      setStudentPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleProofChange = (file) => {
+  const handleProofChange = async (file) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       setErrors((prev) => ({ ...prev, paymentProof: 'برائے مہربانی صرف تصویری فائل منتخب فرمائیں' }));
       return;
     }
-    setPaymentProof(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProofPreview(reader.result);
+    try {
+      const { file: compressed, dataUrl } = await compressImage(file, { maxWidth: 1200, maxHeight: 1200, quality: 0.75 });
+      setPaymentProof(compressed);
+      setProofPreview(dataUrl);
       setErrors((prev) => ({ ...prev, paymentProof: '' }));
-    };
-    reader.readAsDataURL(file);
+    } catch {
+      setPaymentProof(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProofPreview(reader.result);
+        setErrors((prev) => ({ ...prev, paymentProof: '' }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const scrollToField = (fieldId) => {

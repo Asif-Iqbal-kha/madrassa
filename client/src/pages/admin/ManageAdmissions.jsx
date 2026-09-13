@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAdmissions, updateAdmissionStatus } from '../../services/api';
+import { getAdmissions, getAdmissionById, updateAdmissionStatus } from '../../services/api';
 import { FiCheckCircle, FiXCircle, FiEye, FiX, FiSearch } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
@@ -20,6 +20,7 @@ const STATUS_BADGE = {
 export default function ManageAdmissions() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showDetail, setShowDetail] = useState(null);
@@ -74,10 +75,28 @@ export default function ManageAdmissions() {
     }
   };
 
-  const openDetail = (app) => {
+  const openDetail = async (app) => {
     setShowDetail(app);
     setAdminNote(app.adminNotes || '');
     setActionError('');
+
+    if ((!app.screenshotData && !app.studentPhotoData) && (app._id || app.trackingNumber)) {
+      setLoadingDetail(true);
+      try {
+        const full = await getAdmissionById(app._id || app.trackingNumber);
+        if (full) {
+          setShowDetail((prev) =>
+            prev && (prev._id === app._id || prev.trackingNumber === app.trackingNumber)
+              ? { ...prev, ...full }
+              : prev
+          );
+        }
+      } catch (err) {
+        console.warn('Failed to load full admission detail:', err);
+      } finally {
+        setLoadingDetail(false);
+      }
+    }
   };
 
   return (
@@ -275,7 +294,20 @@ export default function ManageAdmissions() {
                   <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: '8px' }}>
                     ادائیگی کا تصدیقی ثبوت (Payment Receipt):
                   </span>
-                  {showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
+                  {loadingDetail ? (
+                    <div style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '6px',
+                      padding: '20px',
+                      textAlign: 'center',
+                      background: '#fff',
+                      fontSize: '0.85rem',
+                      color: 'var(--color-text-muted)',
+                    }}>
+                      <div className="admin-loading-spinner" style={{ width: '22px', height: '22px', margin: '0 auto 6px' }}></div>
+                      رسید لوڈ ہو رہی ہے...
+                    </div>
+                  ) : showDetail.screenshotData || (showDetail.screenshotPath && showDetail.screenshotPath.startsWith('data:')) ? (
                     <div style={{
                       border: '1px solid #e2e8f0',
                       borderRadius: '6px',
@@ -336,7 +368,11 @@ export default function ManageAdmissions() {
               </div>
 
               {/* Student Photo & Identity if present */}
-              {showDetail.studentPhotoData && (
+              {loadingDetail && !showDetail.studentPhotoData ? (
+                <div style={{ textAlign: 'center', marginBottom: '16px', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
+                  طالب علم کی تصویر لوڈ ہو رہی ہے...
+                </div>
+              ) : showDetail.studentPhotoData ? (
                 <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                   <img
                     src={showDetail.studentPhotoData}
@@ -345,7 +381,7 @@ export default function ManageAdmissions() {
                   />
                   <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '2px' }}>طالب علم کی تازہ تصویر</div>
                 </div>
-              )}
+              ) : null}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px', fontSize: '0.88rem' }}>
                 <div>

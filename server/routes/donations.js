@@ -97,26 +97,52 @@ router.get('/track/:trackingNumber', async (req, res) => {
 });
 
 // @route   GET /api/donations
-// @desc    Get all donations (admin)
+// @desc    Get all donations (admin) - excludes large base64 screenshot for instant loading
 // @access  Admin
 router.get('/', protect, authorize('master_admin'), async (req, res) => {
   try {
-    const count = await Donation.countDocuments();
-    if (count === 0) {
-      try {
-        await Donation.insertMany(defaultDonations);
-      } catch (seedErr) {
-        console.warn('Auto seed donations warning:', seedErr.message);
-      }
-    }
-
     const filter = {};
     if (req.query.status && req.query.status !== 'all') filter.status = req.query.status;
 
-    const donations = await Donation.find(filter).sort('-createdAt');
+    const donations = await Donation.find(filter)
+      .select('-screenshotData')
+      .sort('-createdAt')
+      .lean();
     res.json(donations);
   } catch (error) {
     console.error('Get donations error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/donations/:id
+// @desc    Get single donation by ID or trackingNumber with full details/screenshot (admin)
+// @access  Admin
+router.get('/:id', protect, authorize('master_admin'), async (req, res) => {
+  try {
+    const targetId = req.params.id;
+    let donation = null;
+    if (mongoose.Types.ObjectId.isValid(targetId)) {
+      donation = await Donation.findById(targetId).lean();
+    }
+    if (!donation) {
+      donation = await Donation.findOne({
+        $or: [
+          { trackingNumber: targetId },
+          { trackingNumber: targetId.toUpperCase() },
+        ],
+      }).lean();
+    }
+    if (!donation) {
+      const mockItem = defaultDonations.find(
+        (d) => d.trackingNumber === targetId || d.trackingNumber === targetId.toUpperCase()
+      );
+      if (mockItem) donation = mockItem;
+    }
+    if (!donation) return res.status(404).json({ message: 'عطیہ نہیں ملا' });
+    res.json(donation);
+  } catch (error) {
+    console.error('Get donation by id error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

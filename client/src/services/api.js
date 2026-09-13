@@ -551,6 +551,18 @@ export async function getDonations(statusFilter = 'all') {
   return [];
 }
 
+export async function getDonationById(id) {
+  try {
+    const res = await fetch(`${API_BASE}/donations/${encodeURIComponent(id)}`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getDonationById API error:', err);
+  }
+  return null;
+}
+
 export async function updateDonationStatus(id, newStatus, adminNotes = '') {
   const res = await fetch(`${API_BASE}/donations/${id}/status`, {
     method: 'PUT',
@@ -616,6 +628,18 @@ export async function getAdmissions(statusFilter = 'all') {
     console.warn('getAdmissions API error:', err);
   }
   return [];
+}
+
+export async function getAdmissionById(id) {
+  try {
+    const res = await fetch(`${API_BASE}/admissions/${encodeURIComponent(id)}`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getAdmissionById API error:', err);
+  }
+  return null;
 }
 
 export async function updateAdmissionStatus(id, newStatus, adminNotes = '') {
