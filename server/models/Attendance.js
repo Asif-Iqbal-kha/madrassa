@@ -34,5 +34,6 @@ const attendanceSchema = new mongoose.Schema({
 
 // Compound index to prevent duplicate attendance for same class on same date
 attendanceSchema.index({ date: 1, class: 1 }, { unique: true });
+attendanceSchema.index({ date: -1 });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

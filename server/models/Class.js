@@ -26,4 +26,7 @@ const classSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+classSchema.index({ name: 1 });
+classSchema.index({ isActive: 1 });
+
 module.exports = mongoose.model('Class', classSchema);

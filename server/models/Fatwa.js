@@ -43,4 +43,7 @@ const fatwaSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+fatwaSchema.index({ status: 1, publishedAt: -1 });
+fatwaSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Fatwa', fatwaSchema);

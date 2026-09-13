@@ -21,4 +21,7 @@ const gallerySchema = new mongoose.Schema(
   }
 );
 
+gallerySchema.index({ createdAt: -1 });
+gallerySchema.index({ category: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Gallery', gallerySchema);

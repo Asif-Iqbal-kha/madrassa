@@ -31,4 +31,7 @@ const newsSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+newsSchema.index({ isPublished: 1, publishDate: -1 });
+newsSchema.index({ isPopup: 1, isPublished: 1, publishDate: -1 });
+
 module.exports = mongoose.model('News', newsSchema);

@@ -26,4 +26,7 @@ const examSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+examSchema.index({ class: 1, isPublished: 1 });
+examSchema.index({ year: -1 });
+
 module.exports = mongoose.model('Exam', examSchema);

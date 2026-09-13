@@ -54,4 +54,9 @@ const resultSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+resultSchema.index({ rollNumber: 1, year: -1 });
+resultSchema.index({ exam: 1 });
+resultSchema.index({ className: 1 });
+resultSchema.index({ student: 1 });
+
 module.exports = mongoose.models.Result || mongoose.model('Result', resultSchema);

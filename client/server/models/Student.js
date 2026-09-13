@@ -126,4 +126,9 @@ const studentSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+studentSchema.index({ status: 1 });
+studentSchema.index({ class: 1, status: 1 });
+studentSchema.index({ className: 1 });
+studentSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Student', studentSchema);

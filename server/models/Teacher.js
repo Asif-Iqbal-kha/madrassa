@@ -33,4 +33,7 @@ const teacherSchema = new mongoose.Schema({
   timestamps: true,
 });
 
+teacherSchema.index({ name: 1 });
+teacherSchema.index({ isActive: 1 });
+
 module.exports = mongoose.model('Teacher', teacherSchema);
