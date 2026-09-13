@@ -15,8 +15,8 @@
   src: local('Jameel Noori Nastaleeq'),
        local('Jameel Noori Nastaliq'),
        local('JameelNooriNastaliq'),
-       url('/fonts/jameel-noori.woff2') format('woff2'),
-       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
+       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2'),
+       url('https://unpkg.com/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -27,7 +27,6 @@
   src: local('Jameel Noori Nastaleeq Bold'),
        local('Jameel Noori Nastaleeq'),
        local('Jameel Noori Nastaliq'),
-       url('/fonts/jameel-noori.woff2') format('woff2'),
        url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
@@ -60,7 +59,7 @@
   /* Typography */
   --font-urdu: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
   --font-heading: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
-  --font-body: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Arial', sans-serif;
+  --font-body: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Naskh Arabic', 'Arial', sans-serif;
   --font-english: 'Inter', sans-serif;
 
   /* Spacing */
