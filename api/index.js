@@ -48,13 +48,9 @@ async function connectToDatabase() {
     });
     isConnected = db.connections[0].readyState === 1;
 
-    // Check if initial seeding is needed
+    // Check if initial admin seeding is needed
     const User = require('../server/models/User');
-    const Donation = require('../server/models/Donation');
-    const Student = require('../server/models/Student');
     const userCount = await User.countDocuments();
-    const donationCount = await Donation.countDocuments();
-    const studentCount = await Student.countDocuments();
 
     if (userCount === 0) {
       const User = require('../server/models/User');

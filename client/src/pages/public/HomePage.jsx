@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SEOHead from '../../components/common/SEOHead';
 import { Link } from 'react-router-dom';
-import { getNews, getStats, getClasses, getStudents, getTeachers } from '../../services/api';
+import { getNews, getStats, getClasses } from '../../services/api';
 import {
   FiUsers,
   FiBookOpen,
@@ -24,33 +24,37 @@ export default function HomePage() {
   const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    async function loadHomeData() {
-      try {
-        const [newsData, statsData, classesData, studentsData, teachersData] = await Promise.all([
-          getNews(true),
-          getStats(),
-          getClasses(),
-          getStudents().catch(() => []),
-          getTeachers().catch(() => []),
-        ]);
-        if (newsData && Array.isArray(newsData)) setNews(newsData.slice(0, 3));
-        if (classesData && Array.isArray(classesData)) setClasses(classesData);
+    // 1. Fetch Aggregated Statistics (students, teachers, classes, attendance)
+    getStats()
+      .then((data) => {
+        if (data && typeof data === 'object') {
+          setStats({
+            totalStudents: data.totalStudents || 0,
+            totalTeachers: data.totalTeachers || 0,
+            totalClasses: data.totalClasses || 0,
+            attendancePercentage: data.attendancePercentage || 0,
+          });
+        }
+      })
+      .catch((err) => console.warn('Home stats load error:', err));
 
-        const realStudentsCount = statsData?.totalStudents ?? studentsData?.length ?? 0;
-        const realTeachersCount = statsData?.totalTeachers ?? teachersData?.length ?? 0;
-        const realClassesCount = statsData?.totalClasses ?? classesData?.length ?? 0;
+    // 2. Fetch Active Classes
+    getClasses()
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          setClasses(data);
+        }
+      })
+      .catch((err) => console.warn('Home classes load error:', err));
 
-        setStats({
-          totalStudents: realStudentsCount,
-          totalTeachers: realTeachersCount,
-          totalClasses: realClassesCount,
-          attendancePercentage: statsData?.attendancePercentage ?? 0,
-        });
-      } catch (e) {
-        console.warn('Home data load error:', e);
-      }
-    }
-    loadHomeData();
+    // 3. Fetch Latest News & Announcements
+    getNews(true)
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          setNews(data.slice(0, 3));
+        }
+      })
+      .catch((err) => console.warn('Home news load error:', err));
   }, []);
 
   return (
