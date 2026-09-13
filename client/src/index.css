@@ -58,9 +58,9 @@
   --color-info: #1565C0;
 
   /* Typography */
-  --font-urdu: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
-  --font-heading: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
-  --font-body: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Arial', sans-serif;
+  --font-urdu: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', serif;
+  --font-heading: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', serif;
+  --font-body: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', 'Noto Naskh Arabic', 'Arial', sans-serif;
   --font-english: 'Inter', sans-serif;
 
   /* Spacing */
