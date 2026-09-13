@@ -135,7 +135,7 @@ export default function DonationPage() {
       />
       <div className="page-header">
         <div className="container">
-          <h1>عطیات</h1>
+          <h1>عطیات و صدقات</h1>
           <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ کے لیے عطیہ دیں</p>
         </div>
       </div>

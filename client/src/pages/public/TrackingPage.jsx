@@ -81,7 +81,7 @@ export default function TrackingPage() {
       />
       <div className="page-header">
         <div className="container">
-          <h1>ٹریکنگ</h1>
+          <h1>آن لائن درخواست و عطیہ ٹریکنگ پورٹل</h1>
           <p>اپنے عطیہ یا داخلہ درخواست کی حالت جانیں</p>
         </div>
       </div>

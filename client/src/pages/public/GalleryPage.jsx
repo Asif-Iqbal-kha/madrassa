@@ -78,7 +78,7 @@ export default function GalleryPage() {
                 {item.imagePath ? (
                   <img
                     src={item.imagePath.startsWith('data:') ? item.imagePath : `/uploads/${item.imagePath}`}
-                    alt={item.title}
+                    alt={item.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -86,7 +86,7 @@ export default function GalleryPage() {
                     }}
                   />
                 ) : item.imagePreview ? (
-                  <img src={item.imagePreview} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={item.imagePreview} alt={item.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : null}
                 <div style={{
                   display: item.imagePath || item.imagePreview ? 'none' : 'flex',
@@ -146,13 +146,13 @@ export default function GalleryPage() {
               {lightboxImage.imagePath ? (
                 <img
                   src={lightboxImage.imagePath.startsWith('data:') ? lightboxImage.imagePath : `/uploads/${lightboxImage.imagePath}`}
-                  alt={lightboxImage.title}
+                  alt={lightboxImage.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'}
                   style={{ maxHeight: '500px', maxWidth: '100%', objectFit: 'contain' }}
                 />
               ) : lightboxImage.imagePreview ? (
                 <img
                   src={lightboxImage.imagePreview}
-                  alt={lightboxImage.title}
+                  alt={lightboxImage.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'}
                   style={{ maxHeight: '500px', maxWidth: '100%', objectFit: 'contain' }}
                 />
               ) : (

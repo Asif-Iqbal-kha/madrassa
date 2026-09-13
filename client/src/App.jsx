@@ -71,8 +71,8 @@ function App() {
             <Route path="/exams" element={<ExamsPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/news" element={<NewsPage />} />
-            <Route path="/fitwat" element={<FitwatPage />} />
             <Route path="/fatwa" element={<FitwatPage />} />
+            <Route path="/fitwat" element={<Navigate to="/fatwa" replace />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Route>

@@ -23,6 +23,7 @@ export default function SEOHead({ titleEn, titleUr, descEn, descUr, path = '', n
 
   return (
     <Helmet>
+      <html lang="ur-PK" dir="rtl" />
       <title>{fullTitle}</title>
       <meta name="description" content={fullDesc} />
       <link rel="canonical" href={canonicalUrl} />
@@ -35,6 +36,7 @@ export default function SEOHead({ titleEn, titleUr, descEn, descUr, path = '', n
       <meta property="og:description" content={fullDesc} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={`${BASE_URL}/logo.png`} />
+      <meta property="og:locale" content="ur_PK" />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary" />

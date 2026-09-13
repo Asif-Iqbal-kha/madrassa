@@ -22,7 +22,7 @@ export default function Header() {
     { path: '/exams', label: 'امتحانات' },
     { path: '/results', label: 'امتحانی نتائج' },
     { path: '/news', label: 'اعلانات' },
-    { path: '/fitwat', label: 'فتاویٰ' },
+    { path: '/fatwa', label: 'فتاویٰ' },
     { path: '/gallery', label: 'تصاویر' },
     { path: '/contact', label: 'رابطہ' },
     { path: '/track', label: 'ٹریکنگ' },
@@ -58,7 +58,7 @@ export default function Header() {
           <Link to="/" className="header-brand">
             <img src="/logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="header-logo-img" />
             <div className="header-title-group">
-              <h1 className="header-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h1>
+              <span className="header-title">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</span>
               <p className="header-subtitle">
                 <a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
                   صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان
@@ -95,7 +95,7 @@ export default function Header() {
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`nav-link ${isActive(link.path) ? 'nav-active' : ''} ${link.path === '/fitwat' ? 'nav-fatwa-highlight' : ''}`}
+                  className={`nav-link ${isActive(link.path) ? 'nav-active' : ''} ${link.path === '/fatwa' ? 'nav-fatwa-highlight' : ''}`}
                   onClick={() => setMenuOpen(false)}
                 >
                   {link.label}

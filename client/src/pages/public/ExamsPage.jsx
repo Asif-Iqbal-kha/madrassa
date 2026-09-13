@@ -15,7 +15,7 @@ export default function ExamsPage() {
       />
       <div className="page-header">
         <div className="container">
-          <h1>امتحانات</h1>
+          <h1>امتحانات اور تعلیمی شیڈول</h1>
           <p>امتحانات کا شیڈول اور تعلیمی معلومات</p>
         </div>
       </div>

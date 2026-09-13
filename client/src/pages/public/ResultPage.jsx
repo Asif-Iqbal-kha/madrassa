@@ -100,7 +100,7 @@ export default function ResultPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="container">
-          <h1>امتحانی نتائج</h1>
+          <h1>امتحانی نتائج و کشف الدرجات</h1>
           <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ — کشف الدرجات و امتحانی رزلٹ پورٹل</p>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function ResultPage() {
                   <div key={resItem._id || idx} className="official-result-card print-target">
                     {/* Background Watermark */}
                     <div className="result-watermark">
-                      <img src="/logo.png" alt="مدرسہ واٹرمارک" />
+                      <img src="/logo.png" alt="واٹرمارک مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" />
                     </div>
 
                     {/* Bismillah & Calligraphic Ornament */}
@@ -223,7 +223,7 @@ export default function ResultPage() {
 
                     {/* Official Madrassa Header */}
                     <div className="result-madrassa-header">
-                      <img src="/logo.png" alt="لوگو مدرسہ" className="result-madrassa-logo" />
+                      <img src="/logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" className="result-madrassa-logo" />
                       <div className="result-madrassa-info">
                         <h3 className="result-madrassa-name">مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h3>
                         <p className="result-madrassa-sub">صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>

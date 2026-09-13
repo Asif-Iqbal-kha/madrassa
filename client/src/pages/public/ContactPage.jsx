@@ -13,7 +13,7 @@ export default function ContactPage() {
       />
       <div className="page-header">
         <div className="container">
-          <h1>رابطہ</h1>
+          <h1>رابطہ و پتہ</h1>
           <p>ہم سے رابطہ کریں</p>
         </div>
       </div>

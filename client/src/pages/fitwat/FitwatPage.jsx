@@ -115,7 +115,7 @@ export default function FitwatPage() {
         />
         <div className="page-header">
           <div className="container">
-            <h1>فتاویٰ</h1>
+            <h1>شرعی فتویٰ و رہنمائی</h1>
             <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ — اسلامی مسائل و احکام</p>
           </div>
         </div>
@@ -183,7 +183,7 @@ export default function FitwatPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="container">
-          <h1>فتاویٰ</h1>
+          <h1>آن لائن دار الافتاء و شرعی فتاویٰ</h1>
           <p>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ — اسلامی مسائل و احکام</p>
         </div>
       </div>

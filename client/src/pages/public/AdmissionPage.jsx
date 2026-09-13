@@ -360,7 +360,7 @@ export default function AdmissionPage() {
 
                 {/* Madrassa Logo (Right) */}
                 <div className="sheet-logo-box">
-                  <img src="/logo.png" alt="جامعہ لوگو" />
+                  <img src="/logo.png" alt="لوگو مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ" />
                 </div>
               </div>
 
