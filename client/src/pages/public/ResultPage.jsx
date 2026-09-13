@@ -12,6 +12,7 @@ import {
   FiAlertCircle,
 } from 'react-icons/fi';
 import './PublicPages.css';
+import SEOHead from '../../components/common/SEOHead';
 
 export default function ResultPage() {
   const [searchParams] = useSearchParams();
@@ -89,6 +90,13 @@ export default function ResultPage() {
 
   return (
     <div className="results-page">
+      <SEOHead
+        titleEn="Student Examination Results Portal"
+        titleUr="امتحانی نتائج و کشف الدرجات"
+        descEn="Check and print online student annual and bi-annual examination result cards by roll number - Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="طلباء کے سالانہ اور ششماہی امتحانی نتائج اور کشف الدرجات آن لائن رول نمبر کے ذریعے معلوم اور پرنٹ کریں - مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان۔"
+        path="/results"
+      />
       {/* Page Header */}
       <div className="page-header">
         <div className="container">

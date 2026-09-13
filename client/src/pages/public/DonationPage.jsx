@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { submitDonation } from '../../services/api';
-import { FiUpload, FiCheckCircle, FiCopy, FiHeart, FiDollarSign, FiSmartphone, FiX } from 'react-icons/fi';
 import './PublicPages.css';
+import SEOHead from '../../components/common/SEOHead';
 
 export default function DonationPage() {
   const [form, setForm] = useState({
@@ -109,6 +109,13 @@ export default function DonationPage() {
 
   return (
     <div>
+      <SEOHead
+        titleEn="Donations & Charity (Zakat / Sadaqat)"
+        titleUr="عطیات و صدقات"
+        descEn="Donate to Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Support Quran students, Hifz education, and Islamic seminary through Zakat, Sadaqah, and donations."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کو زکوٰۃ، صدقات اور عطیات دیں۔ طلباء کی کفالت میں حصہ ڈالیں۔"
+        path="/donation"
+      />
       <div className="page-header">
         <div className="container">
           <h1>عطیات</h1>

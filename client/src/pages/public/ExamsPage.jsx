@@ -1,10 +1,18 @@
 import { Link } from 'react-router-dom';
 import { FiSearch, FiFileText } from 'react-icons/fi';
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function ExamsPage() {
   return (
     <div>
+      <SEOHead
+        titleEn="Examinations & Schedule"
+        titleUr="امتحانات اور شیڈول"
+        descEn="Examination schedule, test criteria, and educational calendar of Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کا امتحانی شیڈول، سالانہ و ششماہی امتحانات اور تعلیمی نظام۔"
+        path="/exams"
+      />
       <div className="page-header">
         <div className="container">
           <h1>امتحانات</h1>

@@ -1,8 +1,16 @@
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function ContactPage() {
   return (
     <div>
+      <SEOHead
+        titleEn="Contact Us & Location (Google Maps)"
+        titleUr="رابطہ و پتہ"
+        descEn="Contact Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Phone: 0315 3044992. Address: Siddiq Akbar Colony, Charsadda Road, Mardan, KPK, Pakistan."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان سے رابطہ کریں۔ فون و واٹس ایپ: 03153044992۔ پتہ: صدیق اکبر کالونی، چارسدہ روڈ مردان۔"
+        path="/contact"
+      />
       <div className="page-header">
         <div className="container">
           <h1>رابطہ</h1>

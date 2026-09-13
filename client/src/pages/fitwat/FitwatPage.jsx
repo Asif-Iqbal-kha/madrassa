@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getFatwas, submitFatwaQuestion } from '../../services/api';
 import { FiSearch, FiSend, FiChevronRight, FiChevronLeft, FiEye, FiBook } from 'react-icons/fi';
+import SEOHead from '../../components/common/SEOHead';
 import './FitwatPage.css';
 
 const CATEGORIES = ['تمام', 'طہارت', 'نماز', 'زکوٰۃ', 'روزہ', 'حج', 'نکاح و طلاق', 'تجارت', 'کھانا پینا', 'متفرقات'];
@@ -105,6 +106,13 @@ export default function FitwatPage() {
   if (selectedFatwa) {
     return (
       <div>
+        <SEOHead
+          titleEn={`Islamic Fatwa - ${selectedFatwa.question ? selectedFatwa.question.substring(0, 50) : 'Ruling'}`}
+          titleUr={`دار الافتاء - ${selectedFatwa.question ? selectedFatwa.question.substring(0, 50) : 'مسئلہ'}`}
+          descEn={`Islamic ruling and fatwa by Darul Ifta Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Question: ${selectedFatwa.question ? selectedFatwa.question.substring(0, 100) : ''}`}
+          descUr={`دار الافتاء مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کا شرعی فتویٰ اور رہنمائی۔`}
+          path="/fatwa"
+        />
         <div className="page-header">
           <div className="container">
             <h1>فتاویٰ</h1>
@@ -165,6 +173,13 @@ export default function FitwatPage() {
   // -------- LIST / HOME VIEW --------
   return (
     <div>
+      <SEOHead
+        titleEn="Online Fatwa & Islamic Rulings (Darul Ifta)"
+        titleUr="آن لائن دار الافتاء و شرعی فتاویٰ"
+        descEn="Search Islamic rulings, ask religious questions, and browse verified Fatwas issued by Darul Ifta Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="دار الافتاء مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان — آن لائن شرعی مسائل دریافت کریں اور تصدیق شدہ فتاویٰ کا مطالعہ فرمائیں۔"
+        path="/fatwa"
+      />
       {/* Page Header */}
       <div className="page-header">
         <div className="container">

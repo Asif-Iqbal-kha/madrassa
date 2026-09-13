@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getNews } from '../../services/api';
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function NewsPage() {
@@ -26,6 +27,13 @@ export default function NewsPage() {
 
   return (
     <div>
+      <SEOHead
+        titleEn="News & Announcements"
+        titleUr="اعلانات و خبریں"
+        descEn="Latest news, events, academic announcements and notifications from Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کے تازہ ترین اعلانات، تقریبات اور تعلیمی خبریں۔"
+        path="/news"
+      />
       <div className="page-header">
         <div className="container">
           <h1>اعلانات و خبریں</h1>

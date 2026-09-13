@@ -13,6 +13,7 @@ import {
   FiLoader,
 } from 'react-icons/fi';
 import './PublicPages.css';
+import SEOHead from '../../components/common/SEOHead';
 
 export default function AdmissionPage() {
   const [form, setForm] = useState({
@@ -253,6 +254,13 @@ export default function AdmissionPage() {
 
   return (
     <div>
+      <SEOHead
+        titleEn="Online Admission Form"
+        titleUr="آن لائن داخلہ فارم"
+        descEn="Apply online for admission in Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Courses: Hifz-ul-Quran, Nazira, Dars-e-Nizami."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان میں آن لائن داخلہ فارم پر کریں۔ حفظ، ناظرہ، اور درس نظامی کے شعبہ جات۔"
+        path="/admission"
+      />
       {/* Page Header */}
       <div className="page-header no-print">
         <div className="container">

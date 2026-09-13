@@ -1,9 +1,17 @@
 import { FiBookOpen, FiShield, FiUsers, FiAward } from 'react-icons/fi';
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function AboutPage() {
   return (
     <div>
+      <SEOHead
+        titleEn="About Us & Objectives"
+        titleUr="تعارف و مقاصد"
+        descEn="Introduction, aims and curriculum of Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Affiliated with Wifaq ul Madaris Al-Arabia Pakistan."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کا تعارف، نصاب، اور اغراض و مقاصد۔ وفاق المدارس العربیہ پاکستان سے الحاق شدہ ادارہ۔"
+        path="/about"
+      />
       {/* Page Header */}
       <div className="page-header">
         <div className="container">

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SEOHead from '../../components/common/SEOHead';
 import { Link } from 'react-router-dom';
 import { getNews, getStats, getClasses, getStudents, getTeachers } from '../../services/api';
 import {
@@ -54,6 +55,13 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
+      <SEOHead
+        titleEn="Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan"
+        titleUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان"
+        descEn="Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan KPK Pakistan - Wifaq ul Madaris affiliated. Quran Hifz, Nazira, Dars-e-Nizami Islamic education."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان - وفاق المدارس العربیہ پاکستان سے الحاق شدہ۔ حفظ قرآن، ناظرہ، درس نظامی"
+        path="/"
+      />
       {/* Hero Banner */}
       <section className="hero">
         <div className="hero-overlay"></div>

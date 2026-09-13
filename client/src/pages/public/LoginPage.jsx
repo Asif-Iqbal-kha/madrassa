@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiArrowRight, FiHome } from 'react-icons/fi';
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function LoginPage() {
@@ -43,13 +44,15 @@ export default function LoginPage() {
           setError('طلباء کے لیے لاگ ان پورٹل دستیاب نہیں ہے');
           return;
         }
-        const paths = {
-          master_admin: '/admin/dashboard',
-          teacher: '/teacher/dashboard',
-        };
-        navigate(paths[result.role] || '/');
+        if (result.user?.role === 'master_admin') {
+          navigate('/admin/dashboard');
+        } else if (result.user?.role === 'teacher') {
+          navigate('/teacher/dashboard');
+        } else {
+          navigate('/');
+        }
       } else {
-        setError(result.message);
+        setError(result.message || 'غلط صارف نام یا پاسورڈ');
       }
     } catch (err) {
       setError('لاگ ان میں خرابی پیش آگئی');
@@ -60,6 +63,14 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
+      <SEOHead
+        titleEn="Portal Login"
+        titleUr="پورٹل لاگ ان"
+        descEn="Staff and Administration Login Portal - Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="انتظامیہ اور اساتذہ کا لاگ ان پورٹل"
+        path="/login"
+        noindex={true}
+      />
       <div className="login-container">
         <Link to="/" className="login-return-btn" title="مین ویب سائٹ پر واپس جائیں">
           <FiArrowRight size={18} />

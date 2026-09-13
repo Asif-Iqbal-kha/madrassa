@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { trackDonation, trackAdmission } from '../../services/api';
-import { FiSearch, FiCheckCircle, FiClock, FiXCircle, FiEye, FiHash, FiUser, FiPhone, FiDollarSign, FiCalendar, FiBookOpen } from 'react-icons/fi';
 import './PublicPages.css';
+import SEOHead from '../../components/common/SEOHead';
 
 const STATUS_CONFIG = {
   // Donation statuses
@@ -71,6 +71,13 @@ export default function TrackingPage() {
 
   return (
     <div>
+      <SEOHead
+        titleEn="Application & Donation Status Tracking"
+        titleUr="آن لائن ٹریکنگ پورٹل"
+        descEn="Track admission application and donation payment verification status online for Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان میں داخلہ درخواست اور عطیہ تصدیق کی حالت آن لائن ٹریک کریں۔"
+        path="/track"
+      />
       <div className="page-header">
         <div className="container">
           <h1>ٹریکنگ</h1>

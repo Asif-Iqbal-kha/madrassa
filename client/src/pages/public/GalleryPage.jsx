@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getGalleryItems } from '../../services/api';
 import { FiImage, FiZoomIn, FiX } from 'react-icons/fi';
+import SEOHead from '../../components/common/SEOHead';
 import './PublicPages.css';
 
 export default function GalleryPage() {
@@ -27,6 +28,13 @@ export default function GalleryPage() {
 
   return (
     <div>
+      <SEOHead
+        titleEn="Photo Gallery & Campus Life"
+        titleUr="تصاویر و گیلری"
+        descEn="Photo gallery of Madrasa Arabia Syedna Siddiq Akbar (RA) Mardan. Campus building, classes, events, students, and activities."
+        descUr="مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ مردان کی تصاویر، عمارت، تعلیمی سرگرمیاں اور سالانہ تقریبات۔"
+        path="/gallery"
+      />
       <div className="page-header">
         <div className="container">
           <h1>تصاویر و گیلری</h1>
