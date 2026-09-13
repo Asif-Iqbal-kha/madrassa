@@ -17,7 +17,10 @@ import {
   FiFileText,
   FiCheckCircle,
   FiXCircle,
+  FiCamera,
+  FiUpload,
 } from 'react-icons/fi';
+import { compressImage } from '../../utils/imageCompressor';
 import '../dashboard/DashboardPages.css';
 
 export default function ManageStudents() {
@@ -28,11 +31,10 @@ export default function ManageStudents() {
   const [classFilter, setClassFilter] = useState('all');
   const [statusTab, setStatusTab] = useState('all'); // 'all', 'active', 'present', 'graduated'
   const [todayPresentData, setTodayPresentData] = useState({ date: '', totalPresent: 0, students: [] });
-  const [printReportType, setPrintReportType] = useState(null); // 'present_list' | 'graduates_list' | 'active_list'
-
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [printReportType, setPrintReportType] = useState('all'); // 'all' or 'present_list'
 
   const [newStudent, setNewStudent] = useState({
     name: '',
@@ -55,6 +57,7 @@ export default function ManageStudents() {
     guardianPermanentAddress: '',
     guardianCurrentAddress: '',
     mardanRelative: '',
+    studentPhotoData: '',
     admissionFee: 1000,
     paymentMethod: 'JazzCash',
   });
@@ -217,6 +220,50 @@ export default function ManageStudents() {
       }
     } catch (err) {
       alert('حذف کرنے میں خرابی: ' + (err.message || 'سرور ایرر'));
+    }
+  };
+
+  const handlePhotoUpload = async (file, isEditing = false) => {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('برائے مہربانی درست تصویری فائل منتخب کریں');
+      return;
+    }
+    try {
+      const { dataUrl } = await compressImage(file, { maxWidth: 600, maxHeight: 800, quality: 0.8 });
+      if (isEditing) {
+        setEditingStudent((prev) => ({ ...prev, studentPhotoData: dataUrl }));
+      } else {
+        setNewStudent((prev) => ({ ...prev, studentPhotoData: dataUrl }));
+      }
+    } catch (err) {
+      console.warn('Image compression fallback:', err);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (isEditing) {
+          setEditingStudent((prev) => ({ ...prev, studentPhotoData: reader.result }));
+        } else {
+          setNewStudent((prev) => ({ ...prev, studentPhotoData: reader.result }));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfilePhotoChange = async (file) => {
+    if (!file || !file.type.startsWith('image/') || !selectedStudent) return;
+    try {
+      const { dataUrl } = await compressImage(file, { maxWidth: 600, maxHeight: 800, quality: 0.8 });
+      await updateStudent(selectedStudent._id, {
+        ...selectedStudent,
+        studentPhotoData: dataUrl,
+      });
+      setSelectedStudent((prev) => ({ ...prev, studentPhotoData: dataUrl }));
+      setStudents((prev) =>
+        prev.map((s) => (s._id === selectedStudent._id ? { ...s, studentPhotoData: dataUrl } : s))
+      );
+    } catch (err) {
+      console.error('Failed to update student photo:', err);
+      alert('تصویر اپلوڈ کرنے میں خرابی ہوئی');
     }
   };
 
@@ -609,12 +656,43 @@ export default function ManageStudents() {
             {/* Header Banner with Student Photo / Avatar */}
             <div className="student-profile-header-banner">
               <div className="student-profile-identity">
-                <div className="student-profile-avatar">
+                <div className="student-profile-avatar" style={{ position: 'relative' }}>
                   {selectedStudent.studentPhotoData ? (
                     <img src={selectedStudent.studentPhotoData} alt={selectedStudent.name} />
                   ) : (
                     <span>{selectedStudent.name.charAt(0)}</span>
                   )}
+                  <label
+                    className="no-print"
+                    title="طالب علم کی تصویر تبدیل کریں (خودکار کمپریشن)"
+                    style={{
+                      position: 'absolute',
+                      bottom: '-6px',
+                      left: '-6px',
+                      background: 'var(--color-primary)',
+                      color: '#fff',
+                      borderRadius: '50%',
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    <FiCamera size={12} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleProfilePhotoChange(e.target.files[0]);
+                        }
+                      }}
+                    />
+                  </label>
                 </div>
                 <div className="student-profile-titles">
                   <h3>{selectedStudent.name}</h3>
@@ -877,6 +955,46 @@ export default function ManageStudents() {
                 </div>
               )}
 
+              {/* Photo Upload with Automatic Compression */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '14px', padding: '12px', background: 'var(--color-bg-alt)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                <div style={{ width: '64px', height: '76px', borderRadius: '6px', border: '2px dashed var(--color-primary)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', flexShrink: 0 }}>
+                  {newStudent.studentPhotoData ? (
+                    <img src={newStudent.studentPhotoData} alt="Student" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <FiCamera size={24} style={{ color: 'var(--color-text-muted)' }} />
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: '4px' }}>طالب علم کی تازہ تصویر (خودکار کمپریشن)</span>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0, padding: '4px 12px', fontSize: '0.8rem' }}>
+                      <FiUpload size={13} style={{ marginLeft: '4px' }} />
+                      {newStudent.studentPhotoData ? 'تصویر تبدیل کریں' : 'تصویر منتخب کریں'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handlePhotoUpload(e.target.files[0], false);
+                          }
+                        }}
+                      />
+                    </label>
+                    {newStudent.studentPhotoData && (
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)', padding: '4px 10px', fontSize: '0.8rem' }}
+                        onClick={() => setNewStudent((prev) => ({ ...prev, studentPhotoData: '' }))}
+                      >
+                        حذف کریں
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <h4 style={{ margin: '0 0 10px', color: 'var(--color-primary)', fontSize: '0.95rem', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>
                 طالب علم کے کوائف:
               </h4>
@@ -996,6 +1114,46 @@ export default function ManageStudents() {
                   {error}
                 </div>
               )}
+
+              {/* Photo Upload with Automatic Compression */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '14px', padding: '12px', background: 'var(--color-bg-alt)', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                <div style={{ width: '64px', height: '76px', borderRadius: '6px', border: '2px dashed var(--color-primary)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', flexShrink: 0 }}>
+                  {editingStudent.studentPhotoData ? (
+                    <img src={editingStudent.studentPhotoData} alt={editingStudent.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <FiCamera size={24} style={{ color: 'var(--color-text-muted)' }} />
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--color-text)', display: 'block', marginBottom: '4px' }}>طالب علم کی تصویر (خودکار کمپریشن)</span>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0, padding: '4px 12px', fontSize: '0.8rem' }}>
+                      <FiUpload size={13} style={{ marginLeft: '4px' }} />
+                      {editingStudent.studentPhotoData ? 'تصویر تبدیل کریں' : 'تصویر اپلوڈ کریں'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handlePhotoUpload(e.target.files[0], true);
+                          }
+                        }}
+                      />
+                    </label>
+                    {editingStudent.studentPhotoData && (
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)', padding: '4px 10px', fontSize: '0.8rem' }}
+                        onClick={() => setEditingStudent((prev) => ({ ...prev, studentPhotoData: '' }))}
+                      >
+                        حذف کریں
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="form-group">
