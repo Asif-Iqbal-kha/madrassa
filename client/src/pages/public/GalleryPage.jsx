@@ -79,6 +79,8 @@ export default function GalleryPage() {
                   <img
                     src={item.imagePath.startsWith('data:') ? item.imagePath : `/uploads/${item.imagePath}`}
                     alt={item.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'}
+                    loading="lazy"
+                    decoding="async"
                     style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -86,7 +88,13 @@ export default function GalleryPage() {
                     }}
                   />
                 ) : item.imagePreview ? (
-                  <img src={item.imagePreview} alt={item.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img
+                    src={item.imagePreview}
+                    alt={item.title || 'تصویر مدرسہ عربیہ سیدنا صدیق اکبر'}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 ) : null}
                 <div style={{
                   display: item.imagePath || item.imagePreview ? 'none' : 'flex',

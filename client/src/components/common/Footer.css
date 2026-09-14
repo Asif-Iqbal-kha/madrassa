@@ -83,17 +83,53 @@
 .footer-credits {
   font-size: 0.8125rem;
   color: var(--color-text-on-dark-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.2px;
+  margin-top: 4px;
+}
+
+.footer-credits .credit-highlight {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.footer-credits .credit-badge {
+  display: inline-block;
+  background: rgba(184, 150, 12, 0.15);
+  color: var(--color-accent-light);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 8px;
+  border: 1px solid rgba(184, 150, 12, 0.35);
+  letter-spacing: 0.4px;
+  vertical-align: middle;
+}
+
+.footer-credits-dot {
+  color: rgba(255, 255, 255, 0.25);
+  user-select: none;
 }
 
 .footer-credits-link {
   color: var(--color-accent-light);
+  font-weight: 600;
   text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color var(--transition-fast);
+  text-underline-offset: 3px;
+  transition: all var(--transition-fast);
 }
 
 .footer-credits-link:hover {
   color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
 }
 
 @media (max-width: 1024px) {

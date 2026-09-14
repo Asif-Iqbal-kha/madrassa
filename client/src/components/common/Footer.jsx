@@ -50,7 +50,7 @@ export default function Footer() {
                   </a>
                 </p>
                 <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
-                <p>ای میل: info@madrassasadeeq.pk</p>
+                <p>ای میل: infomadrassasadeeqoffice@gmail.com</p>
               </div>
             </div>
           </div>
@@ -60,18 +60,21 @@ export default function Footer() {
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
           <p>جملہ حقوق محفوظ ہیں &copy; {new Date().getFullYear()} مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ، مردان</p>
-          <p className="footer-credits" dir="ltr">
-            Developed by Engr Asif Iqbal and co-Developed and tested by{' '}
-            <a
-              href="https://www.facebook.com/shoaibkhattak911/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-credits-link"
-            >
-              Shoaib Ali
-            </a>
-            .
-          </p>
+          <div className="footer-credits" dir="ltr">
+            <span>Developed by <strong className="credit-highlight">Engr Asif Iqbal</strong></span>
+            <span className="footer-credits-dot">•</span>
+            <span>
+              Co-Developed by <span className="credit-badge">AI Engr</span>{' '}
+              <a
+                href="https://www.facebook.com/shoaibkhattak911/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-credits-link"
+              >
+                Shoaib Ali
+              </a>
+            </span>
+          </div>
         </div>
       </div>
     </footer>

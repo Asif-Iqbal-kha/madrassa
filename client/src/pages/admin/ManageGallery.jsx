@@ -118,6 +118,8 @@ export default function ManageGallery() {
                 <img
                   src={item.imagePath.startsWith('data:') ? item.imagePath : `/uploads/${item.imagePath}`}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   onError={(e) => {
                     e.target.style.display = 'none';
@@ -125,7 +127,13 @@ export default function ManageGallery() {
                   }}
                 />
               ) : item.imagePreview ? (
-                <img src={item.imagePreview} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img
+                  src={item.imagePreview}
+                  alt={item.title}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               ) : null}
               <div style={{ display: item.imagePath || item.imagePreview ? 'none' : 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--color-text-muted)' }}>
                 <FiImage size={40} />
