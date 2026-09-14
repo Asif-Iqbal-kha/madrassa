@@ -978,6 +978,19 @@
     font-family: var(--font-urdu), 'Jameel Noori Nastaleeq', Arial, sans-serif !important;
     direction: rtl !important;
     color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-only-attendance thead tr {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-only-attendance thead th {
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
 

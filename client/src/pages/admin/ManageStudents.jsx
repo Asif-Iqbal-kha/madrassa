@@ -1286,12 +1286,12 @@ export default function ManageStudents() {
 
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
             <thead>
-              <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #000' }}>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '8%' }}>شمار</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>رول نمبر</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '35%' }}>طالب علم کا نام</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '22%' }}>درجہ</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '20%' }}>کیفیت</th>
+              <tr style={{ background: '#060a13', color: '#ffffff', borderBottom: '2px solid #000' }}>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '8%', color: '#ffffff' }}>شمار</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>رول نمبر</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '35%', color: '#ffffff' }}>طالب علم کا نام</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '22%', color: '#ffffff' }}>درجہ</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '20%', color: '#ffffff' }}>کیفیت</th>
               </tr>
             </thead>
             <tbody>
@@ -1353,13 +1353,13 @@ export default function ManageStudents() {
 
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
             <thead>
-              <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #000' }}>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '8%' }}>شمار</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>رول نمبر</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '25%' }}>نام فارغ التحصیل</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '22%' }}>والد کا نام</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>شعبہ / درجہ</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>حالت</th>
+              <tr style={{ background: '#000000', color: '#ffffff', borderBottom: '2px solid #000' }}>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '8%', color: '#ffffff' }}>شمار</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>رول نمبر</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '25%', color: '#ffffff' }}>نام فارغ التحصیل</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '22%', color: '#ffffff' }}>والد کا نام</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>شعبہ / درجہ</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>حالت</th>
               </tr>
             </thead>
             <tbody>
@@ -1424,14 +1424,14 @@ export default function ManageStudents() {
 
           <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
             <thead>
-              <tr style={{ background: '#f3f4f6', borderBottom: '2px solid #000' }}>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '6%' }}>شمار</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '12%' }}>رول نمبر</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '22%' }}>نام طالب علم</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '20%' }}>والد کا نام</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>درجہ</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '15%' }}>رابطہ نمبر</th>
-                <th style={{ border: '1px solid #000', padding: '8px', width: '10%' }}>حالت</th>
+              <tr style={{ background: '#030508', color: '#ffffff', borderBottom: '2px solid #000' }}>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '6%', color: '#ffffff' }}>شمار</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '12%', color: '#ffffff' }}>رول نمبر</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '22%', color: '#ffffff' }}>نام طالب علم</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '20%', color: '#ffffff' }}>والد کا نام</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>درجہ</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '15%', color: '#ffffff' }}>رابطہ نمبر</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '10%', color: '#ffffff' }}>حالت</th>
               </tr>
             </thead>
             <tbody>
