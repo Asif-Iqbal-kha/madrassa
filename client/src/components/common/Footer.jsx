@@ -64,7 +64,7 @@ export default function Footer() {
             <span>Developed by <strong className="credit-highlight">Engr Asif Iqbal</strong></span>
             <span className="footer-credits-dot">•</span>
             <span>
-              Co-Developed by <span className="credit-badge">AI Engr</span>{' '}
+              Co-Developed by AI Engr{' '}
               <a
                 href="https://www.facebook.com/shoaibkhattak911/"
                 target="_blank"
