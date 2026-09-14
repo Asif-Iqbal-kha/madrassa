@@ -60,6 +60,18 @@ export default function Footer() {
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
           <p>جملہ حقوق محفوظ ہیں &copy; {new Date().getFullYear()} مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ، مردان</p>
+          <p className="footer-credits" dir="ltr">
+            Developed by Engr Asif Iqbal and co-Developed and tested by{' '}
+            <a
+              href="https://www.facebook.com/shoaibkhattak911/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-credits-link"
+            >
+              Shoaib Ali
+            </a>
+            .
+          </p>
         </div>
       </div>
     </footer>

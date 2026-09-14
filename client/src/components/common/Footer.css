@@ -68,12 +68,32 @@
 
 .footer-bottom-inner {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
 }
 
 .footer-bottom p {
   color: var(--color-text-on-dark-muted);
   font-size: 0.8125rem;
   margin: 0;
+}
+
+.footer-credits {
+  font-size: 0.8125rem;
+  color: var(--color-text-on-dark-muted);
+}
+
+.footer-credits-link {
+  color: var(--color-accent-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition-fast);
+}
+
+.footer-credits-link:hover {
+  color: #ffffff;
 }
 
 @media (max-width: 1024px) {
