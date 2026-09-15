@@ -19,6 +19,7 @@ import {
   FiXCircle,
   FiCamera,
   FiUpload,
+  FiLoader,
 } from 'react-icons/fi';
 import { compressImage } from '../../utils/imageCompressor';
 import '../dashboard/DashboardPages.css';
@@ -34,9 +35,18 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentDetailsCache, setStudentDetailsCache] = useState({});
   const [loadingStudentDetail, setLoadingStudentDetail] = useState(false);
+  const [photoLoading, setPhotoLoading] = useState(true);
+  const [screenshotLoading, setScreenshotLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [printReportType, setPrintReportType] = useState('all'); // 'all' or 'present_list'
+
+  useEffect(() => {
+    if (selectedStudent) {
+      setPhotoLoading(true);
+      setScreenshotLoading(true);
+    }
+  }, [selectedStudent?._id, selectedStudent?.studentPhotoData, selectedStudent?.screenshotData]);
 
   const [newStudent, setNewStudent] = useState({
     name: '',
@@ -712,10 +722,25 @@ export default function ManageStudents() {
             <div className="student-profile-header-banner">
               <div className="student-profile-identity">
                 <div className="student-profile-avatar" style={{ position: 'relative' }}>
-                  {selectedStudent.studentPhotoData ? (
-                    <img src={selectedStudent.studentPhotoData} alt={selectedStudent.name} />
-                  ) : loadingStudentDetail ? (
-                    <span style={{ fontSize: '0.7rem', color: '#fff', textAlign: 'center', padding: '4px' }}>لوڈ ہو رہا ہے...</span>
+                  {loadingStudentDetail ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                      <FiLoader size={26} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--color-primary)' }} />
+                    </div>
+                  ) : selectedStudent.studentPhotoData ? (
+                    <>
+                      {photoLoading && (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, background: '#FFFFFF', zIndex: 1 }}>
+                          <FiLoader size={26} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--color-primary)' }} />
+                        </div>
+                      )}
+                      <img
+                        src={selectedStudent.studentPhotoData}
+                        alt={selectedStudent.name}
+                        onLoad={() => setPhotoLoading(false)}
+                        onError={() => setPhotoLoading(false)}
+                        style={{ display: photoLoading ? 'none' : 'block' }}
+                      />
+                    </>
                   ) : (
                     <span>{selectedStudent.name.charAt(0)}</span>
                   )}
@@ -931,20 +956,61 @@ export default function ManageStudents() {
                 </div>
 
                 {/* Screenshot if available */}
-                {selectedStudent.screenshotData && (
+                {loadingStudentDetail ? (
                   <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #ddd' }}>
                     <span className="student-info-label" style={{ display: 'block', marginBottom: '6px' }}>
                       فیس کی تصدیقی رسید / اسکرین شاٹ:
                     </span>
-                    <a href={selectedStudent.screenshotData} target="_blank" rel="noreferrer">
-                      <img
-                        src={selectedStudent.screenshotData}
-                        alt="رسید"
-                        style={{ maxHeight: '150px', maxWidth: '250px', borderRadius: '6px', border: '1px solid #ccc' }}
-                      />
-                    </a>
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '160px',
+                      height: '100px',
+                      borderRadius: '6px',
+                      border: '1px solid #e5e7eb',
+                      background: 'var(--color-bg-alt, #f9fafb)'
+                    }}>
+                      <FiLoader size={24} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--color-primary)' }} />
+                    </div>
                   </div>
-                )}
+                ) : selectedStudent.screenshotData ? (
+                  <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #ddd' }}>
+                    <span className="student-info-label" style={{ display: 'block', marginBottom: '6px' }}>
+                      فیس کی تصدیقی رسید / اسکرین شاٹ:
+                    </span>
+                    <div style={{ position: 'relative', display: 'inline-block' }}>
+                      {screenshotLoading && (
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '160px',
+                          height: '100px',
+                          borderRadius: '6px',
+                          border: '1px solid #e5e7eb',
+                          background: 'var(--color-bg-alt, #f9fafb)'
+                        }}>
+                          <FiLoader size={24} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--color-primary)' }} />
+                        </div>
+                      )}
+                      <a
+                        href={selectedStudent.screenshotData}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ display: screenshotLoading ? 'none' : 'inline-block' }}
+                      >
+                        <img
+                          src={selectedStudent.screenshotData}
+                          alt="رسید"
+                          onLoad={() => setScreenshotLoading(false)}
+                          onError={() => setScreenshotLoading(false)}
+                          style={{ maxHeight: '150px', maxWidth: '250px', borderRadius: '6px', border: '1px solid #ccc' }}
+                        />
+                      </a>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {/* Official Signatures for Print Only */}
