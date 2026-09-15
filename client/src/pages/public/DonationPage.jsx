@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { submitDonation } from '../../services/api';
-import { FiUpload, FiCheckCircle, FiCopy, FiHeart, FiDollarSign, FiSmartphone, FiX } from 'react-icons/fi';
+import { FiUpload, FiCheckCircle, FiCopy, FiHeart, FiDollarSign, FiSmartphone, FiX, FiLoader, FiAlertCircle } from 'react-icons/fi';
 import SEOHead from '../../components/common/SEOHead';
 import { compressImage } from '../../utils/imageCompressor';
 import './PublicPages.css';
@@ -19,11 +19,15 @@ export default function DonationPage() {
   const [copied, setCopied] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
+    }
+    if (submitError) {
+      setSubmitError('');
     }
   };
 
@@ -79,6 +83,8 @@ export default function DonationPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitError('');
     if (!validate()) return;
 
     setSubmitting(true);
@@ -96,9 +102,12 @@ export default function DonationPage() {
       if (res.success) {
         setTrackingNumber(res.trackingNumber);
         setShowSuccess(true);
+      } else {
+        setSubmitError(res.message || 'عطیہ جمع کرنے میں خرابی ہوئی، براہ کرم دوبارہ کوشش فرمائیں۔');
       }
     } catch (err) {
       console.error('Submit error:', err);
+      setSubmitError(err.message || 'سرور سے رابطہ نہیں ہو سکا۔ برائے مہربانی اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔');
     } finally {
       setSubmitting(false);
     }
@@ -116,6 +125,7 @@ export default function DonationPage() {
     setShowSuccess(false);
     setTrackingNumber('');
     setErrors({});
+    setSubmitError('');
   };
 
   const paymentMethods = [
@@ -281,11 +291,48 @@ export default function DonationPage() {
                   {errors.screenshot && <span className="form-error-text">{errors.screenshot}</span>}
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
-                  <FiDollarSign size={18} />
-                  عطیہ جمع کروائیں
-                </button>
-              </form>
+                  {/* Error Alert */}
+                  {submitError && (
+                    <div className="donation-error-banner" role="alert">
+                      <FiAlertCircle size={20} style={{ flexShrink: 0 }} />
+                      <span>{submitError}</span>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-lg donation-submit-btn"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <FiLoader size={20} className="donation-submit-spinner" />
+                        <span>عطیہ جمع کیا جا رہا ہے... برائے مہربانی انتظار فرمائیں</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiDollarSign size={18} />
+                        <span>عطیہ جمع کروائیں</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Processing Status Banner */}
+                  {submitting && (
+                    <div className="donation-processing-notice">
+                      <div className="donation-processing-header">
+                        <span className="donation-pulsing-dot" />
+                        <strong>درخواست پروسیس کی جا رہی ہے... (Processing)</strong>
+                      </div>
+                      <p>
+                        آپ کی عطیہ کی تفصیلات اور رسید محفوظ ہو رہی ہیں۔ برائے مہربانی صفحہ بند نہ کریں اور چند لمحے انتظار فرمائیں۔
+                      </p>
+                      <div className="donation-progress-bar-track">
+                        <div className="donation-progress-bar-fill" />
+                      </div>
+                    </div>
+                  )}
+                </form>
             </div>
           </div>
         </div>
