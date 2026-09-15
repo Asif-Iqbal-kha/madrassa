@@ -74,6 +74,19 @@ export async function getStudents(filter = {}) {
   return [];
 }
 
+// Fetch complete single student data including full photo/documents on demand
+export async function getStudentById(id) {
+  try {
+    const res = await fetch(`${API_BASE}/students/${id}`, { headers: getAuthHeaders() });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn(`getStudentById(${id}) failed:`, err);
+  }
+  return null;
+}
+
 // Throws on failure — caller must handle and show error to user
 export async function createStudent(studentData) {
   const res = await fetch(`${API_BASE}/students`, {
@@ -767,3 +780,26 @@ export async function deleteFatwa(id) {
   });
   return handleResponse(res);
 }
+
+// ----------------- DATABASE OPERATIONS API -----------------
+
+export async function optimizeDatabase() {
+  const res = await fetch(`${API_BASE}/database/optimize`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(res);
+}
+
+export async function getDatabaseIndexStatus() {
+  try {
+    const res = await fetch(`${API_BASE}/database/status`, {
+      headers: getAuthHeaders(),
+    });
+    if (res.ok) return await res.json();
+  } catch (err) {
+    console.warn('getDatabaseIndexStatus failed:', err);
+  }
+  return null;
+}
+

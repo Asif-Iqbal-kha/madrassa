@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getStudents, createStudent, updateStudent, deleteStudent, getClasses, getTodayPresentStudents } from '../../services/api';
+import { getStudents, getStudentById, createStudent, updateStudent, deleteStudent, getClasses, getTodayPresentStudents } from '../../services/api';
 import { Link } from 'react-router-dom';
 import {
   FiTrendingUp,
@@ -32,6 +32,8 @@ export default function ManageStudents() {
   const [statusTab, setStatusTab] = useState('all'); // 'all', 'active', 'present', 'graduated'
   const [todayPresentData, setTodayPresentData] = useState({ date: '', totalPresent: 0, students: [] });
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [studentDetailsCache, setStudentDetailsCache] = useState({});
+  const [loadingStudentDetail, setLoadingStudentDetail] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [printReportType, setPrintReportType] = useState('all'); // 'all' or 'present_list'
@@ -175,13 +177,59 @@ export default function ManageStudents() {
     }
   };
 
-  const handleEditOpen = (student) => {
+  const handleSelectStudent = async (student) => {
+    if (!student) return;
+    const cached = studentDetailsCache[student._id];
+    if (cached) {
+      setSelectedStudent(cached);
+      return;
+    }
+
+    setSelectedStudent(student);
+
+    // If studentPhotoData not loaded yet, lazily fetch complete single-student data
+    if (student.studentPhotoData === undefined) {
+      setLoadingStudentDetail(true);
+      try {
+        const fullData = await getStudentById(student._id);
+        if (fullData) {
+          setSelectedStudent(fullData);
+          setStudentDetailsCache((prev) => ({ ...prev, [student._id]: fullData }));
+        }
+      } catch (err) {
+        console.warn('Lazy-load student photo failed:', err);
+      } finally {
+        setLoadingStudentDetail(false);
+      }
+    }
+  };
+
+  const handleEditOpen = async (student) => {
+    const cached = studentDetailsCache[student._id];
+    const baseStudent = cached || student;
+
     setEditingStudent({
-      ...student,
-      className: student.className || student.class?.name || student.class || '',
+      ...baseStudent,
+      className: baseStudent.className || baseStudent.class?.name || baseStudent.class || '',
     });
     setError('');
     setShowEditModal(true);
+
+    // If full data with photo not yet loaded, lazily fetch it for edit modal
+    if (baseStudent.studentPhotoData === undefined) {
+      try {
+        const fullData = await getStudentById(student._id);
+        if (fullData) {
+          setEditingStudent((prev) => (prev && prev._id === student._id ? {
+            ...fullData,
+            className: fullData.className || fullData.class?.name || fullData.class || '',
+          } : prev));
+          setStudentDetailsCache((prev) => ({ ...prev, [student._id]: fullData }));
+        }
+      } catch (err) {
+        console.warn('Lazy-load student for edit failed:', err);
+      }
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -191,15 +239,18 @@ export default function ManageStudents() {
     const selectedCls = classes.find((c) => c.name === editingStudent.className);
 
     try {
-      await updateStudent(editingStudent._id, {
+      const updated = await updateStudent(editingStudent._id, {
         ...editingStudent,
         class: selectedCls ? selectedCls._id : undefined,
       });
 
       setShowEditModal(false);
-      // Also update selectedStudent if open
-      if (selectedStudent && selectedStudent._id === editingStudent._id) {
-        setSelectedStudent({ ...editingStudent });
+      // Keep cache and selected student synced
+      if (updated) {
+        setStudentDetailsCache((prev) => ({ ...prev, [editingStudent._id]: updated }));
+        if (selectedStudent && selectedStudent._id === editingStudent._id) {
+          setSelectedStudent(updated);
+        }
       }
       setEditingStudent(null);
       await loadData();
@@ -215,6 +266,11 @@ export default function ManageStudents() {
     try {
       await deleteStudent(id);
       setStudents(students.filter((s) => s._id !== id));
+      setStudentDetailsCache((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
       if (selectedStudent && selectedStudent._id === id) {
         setSelectedStudent(null);
       }
@@ -253,14 +309,13 @@ export default function ManageStudents() {
     if (!file || !file.type.startsWith('image/') || !selectedStudent) return;
     try {
       const { dataUrl } = await compressImage(file, { maxWidth: 600, maxHeight: 800, quality: 0.8 });
-      await updateStudent(selectedStudent._id, {
+      const updated = await updateStudent(selectedStudent._id, {
         ...selectedStudent,
         studentPhotoData: dataUrl,
       });
-      setSelectedStudent((prev) => ({ ...prev, studentPhotoData: dataUrl }));
-      setStudents((prev) =>
-        prev.map((s) => (s._id === selectedStudent._id ? { ...s, studentPhotoData: dataUrl } : s))
-      );
+      const studentWithPhoto = updated || { ...selectedStudent, studentPhotoData: dataUrl };
+      setSelectedStudent(studentWithPhoto);
+      setStudentDetailsCache((prev) => ({ ...prev, [selectedStudent._id]: studentWithPhoto }));
     } catch (err) {
       console.error('Failed to update student photo:', err);
       alert('تصویر اپلوڈ کرنے میں خرابی ہوئی');
@@ -543,7 +598,7 @@ export default function ManageStudents() {
                 <tr
                   key={student._id}
                   style={{ cursor: 'pointer' }}
-                  onClick={() => setSelectedStudent(student)}
+                  onClick={() => handleSelectStudent(student)}
                   title="طالب علم و والد کے مکمل کوائف دیکھنے کے لیے کلک کریں"
                 >
                   <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700 }}>{student.rollNumber}</td>
@@ -584,7 +639,7 @@ export default function ManageStudents() {
                     <div className="action-btns">
                       <button
                         className="action-btn action-btn-primary"
-                        onClick={() => setSelectedStudent(student)}
+                        onClick={() => handleSelectStudent(student)}
                         title="مکمل کوائف دیکھیں"
                         style={{ padding: '6px' }}
                       >
@@ -593,8 +648,8 @@ export default function ManageStudents() {
                       <button
                         className="action-btn action-btn-outline"
                         onClick={() => {
-                          setSelectedStudent(student);
-                          setTimeout(() => window.print(), 150);
+                          handleSelectStudent(student);
+                          setTimeout(() => window.print(), 250);
                         }}
                         title={student.status === 'graduated' ? 'سندِ فراغت پرنٹ کریں' : 'کوائف پرنٹ کریں'}
                         style={{ padding: '6px' }}
@@ -659,6 +714,8 @@ export default function ManageStudents() {
                 <div className="student-profile-avatar" style={{ position: 'relative' }}>
                   {selectedStudent.studentPhotoData ? (
                     <img src={selectedStudent.studentPhotoData} alt={selectedStudent.name} />
+                  ) : loadingStudentDetail ? (
+                    <span style={{ fontSize: '0.7rem', color: '#fff', textAlign: 'center', padding: '4px' }}>لوڈ ہو رہا ہے...</span>
                   ) : (
                     <span>{selectedStudent.name.charAt(0)}</span>
                   )}

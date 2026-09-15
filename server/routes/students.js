@@ -56,7 +56,14 @@ router.get('/', async (req, res) => {
       filter.className = { $in: aliases };
     }
 
-    const students = await Student.find(filter)
+    let query = Student.find(filter);
+
+    // Exclude large image Base64 payloads from list queries to keep responses lightweight & fast
+    if (req.query.includeImages !== 'true') {
+      query = query.select('-studentPhotoData -screenshotData');
+    }
+
+    const students = await query
       .populate('class', 'name year')
       .sort({ rollNumber: 1 })
       .collation({ locale: 'en_US', numericOrdering: true });

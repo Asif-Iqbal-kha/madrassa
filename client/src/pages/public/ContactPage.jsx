@@ -30,7 +30,7 @@ export default function ContactPage() {
                 </a>
               </p>
               <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992"><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
-              <p><strong>ای میل: </strong>info@madrassasadeeq.pk</p>
+              <p><strong>ای میل: </strong>infomadrassasadeeqoffice@gmail.com</p>
               <div style={{ marginTop: '12px' }}>
                 <a
                   href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7"

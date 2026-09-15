@@ -7,8 +7,20 @@ import {
   getTeachers,
   getDonations,
   getAdmissions,
+  optimizeDatabase,
 } from '../../services/api';
-import { FiUsers, FiUser, FiBookOpen, FiCheckSquare, FiHeart, FiUserPlus } from 'react-icons/fi';
+import {
+  FiUsers,
+  FiUser,
+  FiBookOpen,
+  FiCheckSquare,
+  FiHeart,
+  FiUserPlus,
+  FiDatabase,
+  FiCheckCircle,
+  FiRefreshCw,
+  FiZap,
+} from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import '../dashboard/DashboardPages.css';
 
@@ -24,6 +36,9 @@ export default function AdminDashboard() {
   const [recentNews, setRecentNews] = useState([]);
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [optimizing, setOptimizing] = useState(false);
+  const [optimizationResult, setOptimizationResult] = useState(null);
+  const [optimizationError, setOptimizationError] = useState('');
 
   useEffect(() => {
     async function loadDashboard() {
@@ -64,6 +79,19 @@ export default function AdminDashboard() {
     }
     loadDashboard();
   }, []);
+
+  const handleRunOptimization = async () => {
+    setOptimizing(true);
+    setOptimizationError('');
+    try {
+      const res = await optimizeDatabase();
+      setOptimizationResult(res);
+    } catch (err) {
+      setOptimizationError(err.message || 'ڈیٹا بیس آپٹیمائزیشن میں خرابی ہوئی');
+    } finally {
+      setOptimizing(false);
+    }
+  };
 
   return (
     <div>
@@ -194,6 +222,114 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Database Operations & Optimization Section */}
+      <div className="dash-card" style={{ marginTop: '24px' }}>
+        <div className="dash-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FiDatabase size={20} style={{ color: 'var(--color-primary)' }} />
+            <span>ڈیٹا بیس آپریشنز (Database Operations)</span>
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={handleRunOptimization}
+            disabled={optimizing}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            {optimizing ? (
+              <>
+                <FiRefreshCw size={14} className="spin" />
+                <span>انڈیکسنگ ہو رہی ہے...</span>
+              </>
+            ) : (
+              <>
+                <FiZap size={14} />
+                <span>Database Indexing & Optimization چلائیں</span>
+              </>
+            )}
+          </button>
+        </div>
+        <div className="dash-card-body">
+          <p style={{ margin: '0 0 14px', fontSize: '0.875rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+            یہ محفوظ عمل طلباء کے ریکارڈ، رول نمبر، درجات، اور حاضری کے ضروری ڈیٹا بیس انڈیکس کو چیک اور تیار کرتا ہے۔ یہ آپریشن بغیر کسی ڈیٹا کو ضائع یا تبدیل کیے بار بار محفوظ طریقے سے چلایا جا سکتا ہے۔
+          </p>
+
+          {optimizationError && (
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid var(--color-error)',
+              color: 'var(--color-error)',
+              fontSize: '0.875rem',
+              marginBottom: '12px',
+            }}>
+              {optimizationError}
+            </div>
+          )}
+
+          {optimizationResult && (
+            <div style={{
+              background: 'var(--color-bg-alt)',
+              borderRadius: '8px',
+              padding: '16px',
+              border: '1px solid var(--color-border)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <FiCheckCircle size={18} style={{ color: 'var(--color-success)' }} />
+                <strong style={{ color: 'var(--color-primary-dark)', fontSize: '0.95rem' }}>
+                  {optimizationResult.message}
+                </strong>
+                <span style={{ marginRight: 'auto', fontSize: '0.75rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-english)' }}>
+                  {optimizationResult.durationMs}ms
+                </span>
+              </div>
+
+              {/* Summary Badges */}
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '14px' }}>
+                <div style={{ background: '#fff', border: '1px solid var(--color-border)', borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem' }}>
+                  کل چیک شدہ: <strong style={{ fontFamily: 'var(--font-english)' }}>{optimizationResult.summary?.totalChecked}</strong>
+                </div>
+                <div style={{ background: '#ecfdf5', border: '1px solid #10b981', borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem', color: '#047857' }}>
+                  نئے بنائے گئے انڈیکس: <strong style={{ fontFamily: 'var(--font-english)' }}>{optimizationResult.summary?.created}</strong>
+                </div>
+                <div style={{ background: '#eff6ff', border: '1px solid #3b82f6', borderRadius: '6px', padding: '6px 12px', fontSize: '0.8rem', color: '#1d4ed8' }}>
+                  پہلے سے موجود انڈیکس: <strong style={{ fontFamily: 'var(--font-english)' }}>{optimizationResult.summary?.alreadyExists}</strong>
+                </div>
+              </div>
+
+              {/* Details list */}
+              {Array.isArray(optimizationResult.details) && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {optimizationResult.details.map((item, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '8px 12px',
+                        background: '#fff',
+                        borderRadius: '6px',
+                        border: '1px solid var(--color-border-light)',
+                        fontSize: '0.82rem',
+                        gap: '8px',
+                      }}
+                    >
+                      <div>
+                        <strong style={{ color: 'var(--color-primary)' }}>{item.displayName || item.collection}</strong>: {item.description}
+                      </div>
+                      <span className={`badge ${item.action === 'created' ? 'badge-success' : 'badge-info'}`}>
+                        {item.action === 'created' ? 'نیا انڈیکس تیار شدہ' : 'پہلے سے موجود'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       </>

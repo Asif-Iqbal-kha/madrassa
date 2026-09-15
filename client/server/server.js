@@ -35,6 +35,7 @@ app.use('/api/donations', require('./routes/donations'));
 app.use('/api/admissions', require('./routes/admissions'));
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/stats', require('./routes/stats'));
+app.use('/api/database', require('./routes/databaseOperations'));
 
 // Health check
 app.get('/api/health', (req, res) => {

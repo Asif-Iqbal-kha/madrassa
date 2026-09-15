@@ -96,6 +96,7 @@ const donationRoutes = require('../server/routes/donations');
 const admissionRoutes = require('../server/routes/admissions');
 const galleryRoutes = require('../server/routes/gallery');
 const statsRoutes = require('../server/routes/stats');
+const databaseRoutes = require('../server/routes/databaseOperations');
 
 // Mount routes for BOTH '/api/...' and '/...' so Vercel path rewrites always match 100%
 const routePairs = [
@@ -111,6 +112,7 @@ const routePairs = [
   ['/admissions', admissionRoutes],
   ['/gallery', galleryRoutes],
   ['/stats', statsRoutes],
+  ['/database', databaseRoutes],
 ];
 
 routePairs.forEach(([path, handler]) => {
