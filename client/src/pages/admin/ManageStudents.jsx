@@ -38,7 +38,7 @@ export default function ManageStudents() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [printReportType, setPrintReportType] = useState('all'); // 'all' or 'present_list'
 
-  const [newStudent, setNewStudent] = useState({
+  const initialStudentForm = {
     name: '',
     fatherName: '',
     className: '',
@@ -62,8 +62,12 @@ export default function ManageStudents() {
     studentPhotoData: '',
     admissionFee: 1000,
     paymentMethod: 'JazzCash',
-  });
+    status: 'active',
+    statusNote: '',
+    remarks: '',
+  };
 
+  const [newStudent, setNewStudent] = useState(initialStudentForm);
   const [editingStudent, setEditingStudent] = useState(null);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -94,6 +98,7 @@ export default function ManageStudents() {
     (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
   );
   const graduatedStudents = students.filter((s) => s.status === 'graduated');
+  const inactiveStudents = students.filter((s) => s.status === 'inactive');
 
   const activeStudentsToPrint = classFilter === 'all'
     ? activeStudents
@@ -114,6 +119,8 @@ export default function ManageStudents() {
       matchesTab = s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated');
     } else if (statusTab === 'graduated') {
       matchesTab = s.status === 'graduated';
+    } else if (statusTab === 'inactive') {
+      matchesTab = s.status === 'inactive';
     }
 
     return matchesSearch && matchesClass && matchesTab;
@@ -164,11 +171,14 @@ export default function ManageStudents() {
         class: selectedCls ? selectedCls._id : undefined,
         guardianName: newStudent.guardianName || newStudent.fatherName,
         guardianPhone: newStudent.guardianPhone || newStudent.phone,
-        status: 'active',
+        status: newStudent.status || 'active',
+        statusNote: newStudent.statusNote || newStudent.remarks || '',
+        remarks: newStudent.statusNote || newStudent.remarks || '',
         enrollmentDate: new Date().toISOString().split('T')[0],
       });
 
       setShowModal(false);
+      setNewStudent(initialStudentForm);
       await loadData();
     } catch (err) {
       setError(err.message || 'طالب علم شامل کرنے میں خرابی ہوئی');
@@ -374,6 +384,12 @@ export default function ManageStudents() {
         >
           🎓 فارغ التحصیل طلباء ({graduatedStudents.length})
         </button>
+        <button
+          className={`btn btn-sm ${statusTab === 'inactive' ? 'btn-primary' : 'btn-outline'}`}
+          onClick={() => setStatusTab('inactive')}
+        >
+          خارج شدہ / معطل ({inactiveStudents.length})
+        </button>
 
         {/* Quick Report Print Buttons */}
         <div style={{ marginRight: 'auto', display: 'flex', gap: '8px' }}>
@@ -574,6 +590,22 @@ export default function ManageStudents() {
             </div>
           )}
 
+          {statusTab === 'inactive' && (
+            <div style={{
+              padding: '12px 18px',
+              background: 'var(--color-bg-alt)',
+              borderBottom: '1px solid var(--color-border)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <strong>خارج شدہ و معطل طلباء کا ریکارڈ:</strong>
+                <span style={{ marginRight: '8px' }}>کل خارج شدہ: {inactiveStudents.length}</span>
+              </div>
+            </div>
+          )}
+
           <table>
             <thead>
               <tr>
@@ -582,7 +614,7 @@ export default function ManageStudents() {
                 <th>والد کا نام</th>
                 <th>درجہ</th>
                 <th>رابطہ نمبر</th>
-                <th>حالت</th>
+                <th>حالت / کیفیت</th>
                 <th>اقدامات</th>
               </tr>
             </thead>
@@ -624,15 +656,15 @@ export default function ManageStudents() {
                     <span className={`badge ${
                       student.status === 'graduated'
                         ? 'badge-info'
-                        : student.status === 'active'
-                        ? 'badge-success'
-                        : 'badge-warning'
+                        : student.status === 'inactive'
+                        ? 'badge-danger'
+                        : 'badge-success'
                     }`}>
                       {student.status === 'graduated'
                         ? 'فارغ التحصیل'
-                        : student.status === 'active'
-                        ? 'فعال'
-                        : 'غیر فعال'}
+                        : student.status === 'inactive'
+                        ? 'خارج شدہ'
+                        : 'زیرِ تعلیم'}
                     </span>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
@@ -761,7 +793,7 @@ export default function ManageStudents() {
                       درجہ: {selectedStudent.className || selectedStudent.class?.name || selectedStudent.class || 'نا معلوم'}
                     </span>
                     <span className="student-pill-badge">
-                      کیفیت: {selectedStudent.status === 'active' ? 'فعال (زیر تعلیم)' : 'غیر فعال'}
+                      کیفیت: {selectedStudent.status === 'graduated' ? '🎓 فارغ التحصیل' : selectedStudent.status === 'inactive' ? '⚠️ خارج شدہ' : 'فعال (زیرِ تعلیم)'}
                     </span>
                   </div>
                 </div>
@@ -779,21 +811,21 @@ export default function ManageStudents() {
                 </button>
                 <button
                   type="button"
-                  className="modal-close"
+                  className="btn btn-sm"
                   onClick={() => setSelectedStudent(null)}
-                  style={{ color: '#fff' }}
+                  style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)' }}
                 >
                   ✕
                 </button>
               </div>
             </div>
 
-            {/* Modal Body: Sections */}
-            <div style={{ padding: '24px 28px' }}>
-              {/* SECTION 1: STUDENT PERSONAL DETAILS */}
+            {/* Modal Scrollable Content */}
+            <div className="student-detail-modal-body">
+              {/* SECTION 1: PERSONAL IDENTIFICATION */}
               <div className="student-detail-section">
                 <h4 className="student-detail-section-title">
-                  <FiUser size={16} /> طالب علم کے ذاتی کوائف (طالب علم ریکارڈ)
+                  <FiFileText size={16} /> بنیادی کوائف و ذاتی شناخت (Personal Details)
                 </h4>
                 <div className="student-detail-grid">
                   <div className="student-info-item">
@@ -849,6 +881,52 @@ export default function ManageStudents() {
                 </div>
               </div>
 
+              {/* SECTION 3: STATUS & HISTORICAL NOTES */}
+              {(selectedStudent.statusNote || selectedStudent.remarks || selectedStudent.status === 'graduated' || selectedStudent.status === 'inactive') && (
+                <div className="student-detail-section" style={{
+                  borderRight: `4px solid ${
+                    selectedStudent.status === 'graduated'
+                      ? 'var(--color-accent, #B8960C)'
+                      : selectedStudent.status === 'inactive'
+                      ? '#ef4444'
+                      : 'var(--color-primary)'
+                  }`,
+                }}>
+                  <h4 className="student-detail-section-title">
+                    <FiFileText size={16} /> طالب علم کی تعلیمی کیفیت و تاریخی ریکارڈ
+                  </h4>
+                  <div className="student-detail-grid">
+                    <div className="student-info-item">
+                      <span className="student-info-label">تعلیمی حیثیت / کیفیت:</span>
+                      <span className="student-info-value" style={{ fontWeight: 700 }}>
+                        {selectedStudent.status === 'graduated'
+                          ? '🎓 فارغ التحصیل (Graduated)'
+                          : selectedStudent.status === 'inactive'
+                          ? '⚠️ خارج شدہ / معطل (Struck Off)'
+                          : 'فعال / زیرِ تعلیم (Currently Enrolled)'}
+                      </span>
+                    </div>
+                    {(selectedStudent.statusNote || selectedStudent.remarks) && (
+                      <div className="student-info-item" style={{ gridColumn: '1 / -1' }}>
+                        <span className="student-info-label">دفتری و تاریخی وضاحتی نوٹ:</span>
+                        <div style={{
+                          background: '#fff',
+                          padding: '10px 14px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--color-border-light, #E5E7EB)',
+                          marginTop: '4px',
+                          fontSize: '0.92rem',
+                          lineHeight: '1.6',
+                          whiteSpace: 'pre-wrap',
+                        }}>
+                          {selectedStudent.statusNote || selectedStudent.remarks}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* SECTION 2: FATHER & GUARDIAN FULL DETAILS */}
               <div className="student-detail-section" style={{ borderRight: '4px solid var(--color-primary)' }}>
                 <h4 className="student-detail-section-title">
@@ -900,7 +978,7 @@ export default function ManageStudents() {
                 </div>
               </div>
 
-              {/* SECTION 3: ADMISSION & FEE RECORD */}
+              {/* SECTION 4: ADMISSION & FEE RECORD */}
               <div className="student-detail-section">
                 <h4 className="student-detail-section-title">
                   <FiDollarSign size={16} /> داخلہ اور فیس کا دفتری ریکارڈ
@@ -1077,6 +1155,51 @@ export default function ManageStudents() {
                   </select>
                 </div>
                 <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>طالب علم کی کیفیت / کیٹیگری *</label>
+                  <select
+                    className="form-select"
+                    value={newStudent.status || 'active'}
+                    onChange={(e) => setNewStudent({ ...newStudent, status: e.target.value })}
+                  >
+                    <option value="active">زیرِ تعلیم / فعال (Currently Enrolled)</option>
+                    <option value="graduated">🎓 فارغ التحصیل (Graduated)</option>
+                    <option value="inactive">خارج شدہ / معطل (Struck Off / Inactive)</option>
+                  </select>
+                </div>
+
+                {/* Conditional Note / Historical Details Field */}
+                {(newStudent.status === 'graduated' || newStudent.status === 'inactive') && (
+                  <div className="form-group" style={{
+                    gridColumn: '1 / -1',
+                    background: newStudent.status === 'graduated' ? '#f0fdf4' : '#fef2f2',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    border: `1px solid ${newStudent.status === 'graduated' ? '#bbf7d0' : '#fecaca'}`,
+                  }}>
+                    <label className="form-label" style={{
+                      fontWeight: 700,
+                      color: newStudent.status === 'graduated' ? '#15803d' : '#b91c1c',
+                      marginBottom: '6px',
+                    }}>
+                      {newStudent.status === 'graduated'
+                        ? '🎓 سالِ فراغت و تاریخی کوائف / نوٹ (Graduation Details / Historical Note) *'
+                        : '⚠️ اخراج / تعطل کی وجہ اور تاریخی نوٹ (Struck Off Reason / Note) *'}
+                    </label>
+                    <textarea
+                      className="form-input"
+                      rows="2"
+                      placeholder={
+                        newStudent.status === 'graduated'
+                          ? 'مثلاً: سالِ فراغت 1445ھ (2024ء)، شعبہ دورہ حدیث / حفظ، امتیازی پوزیشن یا اعزازات درج کریں'
+                          : 'مثلاً: غیر حاضری، نقل مکانی یا دیگر وجوہات کی بنا پر اخراج کی تاریخ و تفصیل درج کریں'
+                      }
+                      value={newStudent.statusNote || newStudent.remarks || ''}
+                      onChange={(e) => setNewStudent({ ...newStudent, statusNote: e.target.value, remarks: e.target.value })}
+                    />
+                  </div>
+                )}
+
+                <div className="form-group">
                   <label className="form-label">تاریخِ پیدائش</label>
                   <input type="date" className="form-input" value={newStudent.dateOfBirth}
                     onChange={(e) => setNewStudent({ ...newStudent, dateOfBirth: e.target.value })} />
@@ -1245,17 +1368,49 @@ export default function ManageStudents() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">کیفیت (حالت)</label>
+                  <label className="form-label" style={{ fontWeight: 600 }}>کیفیت (حالت) *</label>
                   <select
                     className="form-select"
-                    value={editingStudent.status}
+                    value={editingStudent.status || 'active'}
                     onChange={(e) => setEditingStudent({ ...editingStudent, status: e.target.value })}
                   >
-                    <option value="active">فعال (Active)</option>
-                    <option value="inactive">غیر فعال (Inactive)</option>
-                    <option value="graduated">فارغ التحصیل (Graduated)</option>
+                    <option value="active">زیرِ تعلیم / فعال (Currently Enrolled)</option>
+                    <option value="graduated">🎓 فارغ التحصیل (Graduated)</option>
+                    <option value="inactive">خارج شدہ / معطل (Struck Off / Inactive)</option>
                   </select>
                 </div>
+
+                {/* Conditional Note / Historical Details Field */}
+                {(editingStudent.status === 'graduated' || editingStudent.status === 'inactive') && (
+                  <div className="form-group" style={{
+                    gridColumn: '1 / -1',
+                    background: editingStudent.status === 'graduated' ? '#f0fdf4' : '#fef2f2',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    border: `1px solid ${editingStudent.status === 'graduated' ? '#bbf7d0' : '#fecaca'}`,
+                  }}>
+                    <label className="form-label" style={{
+                      fontWeight: 700,
+                      color: editingStudent.status === 'graduated' ? '#15803d' : '#b91c1c',
+                      marginBottom: '6px',
+                    }}>
+                      {editingStudent.status === 'graduated'
+                        ? '🎓 سالِ فراغت و تاریخی کوائف / نوٹ (Graduation Details / Historical Note)'
+                        : '⚠️ اخراج / تعطل کی وجہ اور تاریخی نوٹ (Struck Off Reason / Note)'}
+                    </label>
+                    <textarea
+                      className="form-input"
+                      rows="2"
+                      placeholder={
+                        editingStudent.status === 'graduated'
+                          ? 'مثلاً: سالِ فراغت 1445ھ (2024ء)، شعبہ دورہ حدیث / حفظ، امتیازی پوزیشن یا اعزازات درج کریں'
+                          : 'مثلاً: غیر حاضری، نقل مکانی یا دیگر وجوہات کی بنا پر اخراج کی تاریخ و تفصیل درج کریں'
+                      }
+                      value={editingStudent.statusNote || editingStudent.remarks || ''}
+                      onChange={(e) => setEditingStudent({ ...editingStudent, statusNote: e.target.value, remarks: e.target.value })}
+                    />
+                  </div>
+                )}
                 <div className="form-group">
                   <label className="form-label">فون نمبر</label>
                   <input
