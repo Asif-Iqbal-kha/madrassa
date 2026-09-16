@@ -18,18 +18,6 @@ export default function Footer() {
                 صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان میں واقع ایک معتبر دینی تعلیمی ادارہ جو ناظرہ، حفظ القرآن اور
                 درجہ اول سے ہشتم تک دینی تعلیم فراہم کرتا ہے۔
               </p>
-              <div style={{ marginTop: '14px' }}>
-                <a
-                  href="https://www.facebook.com/share/14ormTsCHwV/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer-social-fb"
-                  title="فیس بک پر مدرسہ کا آفیشل پیج"
-                >
-                  <FaFacebook size={20} className="footer-fb-icon" />
-                  <span>آفیشل فیس بک پیج</span>
-                </a>
-              </div>
             </div>
 
             {/* Quick Links */}
