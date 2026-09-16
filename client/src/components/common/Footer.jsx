@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FaFacebook } from 'react-icons/fa';
 import './Footer.css';
 
 export default function Footer() {
@@ -17,6 +18,18 @@ export default function Footer() {
                 صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان میں واقع ایک معتبر دینی تعلیمی ادارہ جو ناظرہ، حفظ القرآن اور
                 درجہ اول سے ہشتم تک دینی تعلیم فراہم کرتا ہے۔
               </p>
+              <div style={{ marginTop: '14px' }}>
+                <a
+                  href="https://www.facebook.com/share/14ormTsCHwV/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-social-fb"
+                  title="فیس بک پر مدرسہ کا آفیشل پیج"
+                >
+                  <FaFacebook size={20} className="footer-fb-icon" />
+                  <span>آفیشل فیس بک پیج</span>
+                </a>
+              </div>
             </div>
 
             {/* Quick Links */}
@@ -51,6 +64,17 @@ export default function Footer() {
                 </p>
                 <p>فون / رابطہ: <a href="tel:03153044992" style={{ color: 'inherit' }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
                 <p>ای میل: infomadrassasadeeqoffice@gmail.com</p>
+                <p>
+                  <a
+                    href="https://www.facebook.com/share/14ormTsCHwV/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'inherit', marginTop: '2px' }}
+                  >
+                    <FaFacebook size={16} style={{ color: '#1877F2' }} />
+                    <span>فیس بک: آفیشل پیج</span>
+                  </a>
+                </p>
               </div>
             </div>
           </div>

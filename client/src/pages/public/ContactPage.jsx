@@ -1,4 +1,5 @@
 import SEOHead from '../../components/common/SEOHead';
+import { FaFacebook } from 'react-icons/fa';
 import './PublicPages.css';
 
 export default function ContactPage() {
@@ -31,7 +32,19 @@ export default function ContactPage() {
               </p>
               <p><strong>فون / واٹس ایپ: </strong><a href="tel:03153044992"><span dir="ltr" className="ltr-text">0315 3044992</span></a></p>
               <p><strong>ای میل: </strong>infomadrassasadeeqoffice@gmail.com</p>
-              <div style={{ marginTop: '12px' }}>
+              <p>
+                <strong>فیس بک: </strong>
+                <a
+                  href="https://www.facebook.com/share/14ormTsCHwV/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#1877F2', fontWeight: 600 }}
+                >
+                  <FaFacebook size={16} />
+                  <span>آفیشل فیس بک پیج (Facebook Page)</span>
+                </a>
+              </p>
+              <div style={{ marginTop: '14px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <a
                   href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7"
                   target="_blank"
@@ -40,6 +53,16 @@ export default function ContactPage() {
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   گوگل میپ پر لوکیشن کھولیں
+                </a>
+                <a
+                  href="https://www.facebook.com/share/14ormTsCHwV/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#1877F2', borderColor: '#1877F2' }}
+                >
+                  <FaFacebook size={14} />
+                  <span>فیس بک پیج وزٹ کریں</span>
                 </a>
               </div>
             </div>

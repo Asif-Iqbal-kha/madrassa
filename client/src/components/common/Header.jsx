@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { FaFacebook } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import './Header.css';
 
@@ -39,6 +40,19 @@ export default function Header() {
             <span>فون / واٹس ایپ: <a href="tel:03153044992" style={{ color: 'inherit', fontWeight: 600 }}><span dir="ltr" className="ltr-text">0315 3044992</span></a></span>
             <span className="header-top-divider">|</span>
             <span><a href="https://maps.app.goo.gl/VNxyjrHUKwRC9v2U7" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان (گوگل میپ)</a></span>
+            <span className="header-top-divider">|</span>
+            <span>
+              <a
+                href="https://www.facebook.com/share/14ormTsCHwV/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'inherit' }}
+                title="فیس بک آفیشل پیج"
+              >
+                <FaFacebook size={14} style={{ color: '#1877F2' }} />
+                <span>فیس بک</span>
+              </a>
+            </span>
           </div>
           <div className="header-top-actions">
             {user && (user.role === 'master_admin' || user.role === 'teacher') ? (
