@@ -354,10 +354,17 @@ export default function ResultPage() {
 
                     {/* Official Signatures & Verification Seal */}
                     <div className="result-card-signatures">
-                      <div className="sig-block">
-                        <div className="sig-space-holder"></div>
+                      <div className="sig-block sig-block-nazim">
+                        <div className="sig-img-wrapper">
+                          <img
+                            src="/nazim-signature.png"
+                            alt="دستخط ناظم امتحانات حضرت مولانا اسحاق صاحب"
+                            className="sig-nazim-img"
+                          />
+                        </div>
                         <div className="sig-line"></div>
                         <span className="sig-title">دستخط ممتحن / ناظم امتحانات</span>
+                        <span className="sig-name">(حضرت مولانا اسحاق صاحب مدظلہ)</span>
                       </div>
                       <div className="sig-stamp-box">
                         <div className="stamp-circle">
