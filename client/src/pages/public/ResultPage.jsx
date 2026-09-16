@@ -358,13 +358,13 @@ export default function ResultPage() {
                         <div className="sig-img-wrapper">
                           <img
                             src="/nazim-signature.png"
-                            alt="دستخط ناظم امتحانات حضرت مولانا اسحاق صاحب"
+                            alt="دستخط ناظم امتحانات حضرت مولانا مفتی عمر صاحب"
                             className="sig-nazim-img"
                           />
                         </div>
                         <div className="sig-line"></div>
                         <span className="sig-title">دستخط ممتحن / ناظم امتحانات</span>
-                        <span className="sig-name">(حضرت مولانا اسحاق صاحب مدظلہ)</span>
+                        <span className="sig-name">(حضرت مولانا مفتی عمر صاحب مدظلہ)</span>
                       </div>
                       <div className="sig-stamp-box">
                         <div className="stamp-circle">
@@ -376,13 +376,13 @@ export default function ResultPage() {
                         <div className="sig-img-wrapper">
                           <img
                             src="/muhtamim-signature.png"
-                            alt="دستخط مہتمم مولانا مفتی عمر صاحب"
+                            alt="دستخط مہتمم حضرت مولانا اسحاق صاحب"
                             className="sig-muhtamim-img"
                           />
                         </div>
                         <div className="sig-line"></div>
                         <span className="sig-title">دستخط مہتمم / صدر مدرس</span>
-                        <span className="sig-name">(حضرت مولانا مفتی عمر صاحب مدظلہ)</span>
+                        <span className="sig-name">(حضرت مولانا اسحاق صاحب مدظلہ)</span>
                       </div>
                     </div>
 
