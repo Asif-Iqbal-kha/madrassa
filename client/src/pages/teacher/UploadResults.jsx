@@ -16,11 +16,11 @@ import {
   FiPlus,
   FiRefreshCw,
   FiEye,
+  FiEyeOff,
   FiUsers,
   FiAward,
-  FiGlobe,
-  FiLock,
-  FiUnlock,
+  FiFileText,
+  FiClock,
 } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
@@ -318,7 +318,7 @@ export default function UploadResults() {
       return;
     }
 
-    const actionText = targetStatus ? 'شائع (Live)' : 'روک (Withhold / Hide)';
+    const actionText = targetStatus ? 'شائع' : 'روک (غیر شائع)';
     const confirmPrompt = ids
       ? `کیا آپ واقعی اس نتیجہ کو ${actionText} کرنا چاہتے ہیں؟`
       : `کیا آپ واقعی درجہ "${currentClass?.name}" کے "${examName}" کے تمام نتائج کو ${actionText} کرنا چاہتے ہیں؟`;
@@ -336,7 +336,7 @@ export default function UploadResults() {
         ids: ids || undefined,
       });
 
-      setSuccessMsg(res.message || (targetStatus ? 'نتائج کامیابی سے شائع ہو گئے۔' : 'نتائج طلباء سے روک دیے گئے۔'));
+      setSuccessMsg(res.message || (targetStatus ? 'نتائج باضابطہ طور پر شائع کر دیے گئے۔' : 'نتائج طلباء سے روک دیے گئے۔'));
 
       // Update local state
       setExistingResults((prev) =>
@@ -513,7 +513,7 @@ export default function UploadResults() {
         </div>
       </div>
 
-      {/* PUBLISH & WITHHOLD CONTROL BANNER */}
+      {/* PUBLISH & WITHHOLD CONTROL PANEL */}
       {selectedClass && (
         <div
           className={`result-publish-banner ${
@@ -529,36 +529,45 @@ export default function UploadResults() {
               {totalExisting === 0 ? (
                 <FiAward />
               ) : isAllPublished ? (
-                <FiGlobe />
+                <FiEye />
               ) : (
-                <FiLock />
+                <FiEyeOff />
               )}
             </div>
             <div>
               <div className="publish-banner-title">
                 {totalExisting === 0 ? (
-                  <span>درجہ "{currentClassName}" - کوئی نتیجہ محفوظ نہیں</span>
+                  <span>درجہ "{currentClassName}" — نتائج غیر محفوظ</span>
                 ) : isAllPublished ? (
-                  <span style={{ color: '#047857' }}>
-                    🟢 نتائج لائیو شائع شدہ ہیں (Published Live) — ({publishedCount} طلباء)
-                  </span>
+                  <>
+                    <span>نتائج پبلک پورٹل پر شائع شدہ ہیں</span>
+                    <span className="badge badge-success" style={{ fontSize: '0.78rem', padding: '2px 8px' }}>
+                      شائع شدہ ({publishedCount})
+                    </span>
+                  </>
                 ) : isPartiallyPublished ? (
-                  <span style={{ color: '#b45309' }}>
-                    🟡 جزوی شائع شدہ ({publishedCount} شائع / {withheldCount} روکے گئے)
-                  </span>
+                  <>
+                    <span>جزوی نتائج شائع شدہ ہیں</span>
+                    <span className="badge badge-warning" style={{ fontSize: '0.78rem', padding: '2px 8px' }}>
+                      {publishedCount} شائع / {withheldCount} غیر شائع
+                    </span>
+                  </>
                 ) : (
-                  <span style={{ color: '#b45309' }}>
-                    🔒 نتائج روکے گئے ہیں (Withheld / Unpublished) — ({withheldCount} طلباء)
-                  </span>
+                  <>
+                    <span>نتائج محفوظ ہیں (پبلک پورٹل پر روکے گئے ہیں)</span>
+                    <span className="badge badge-warning" style={{ fontSize: '0.78rem', padding: '2px 8px' }}>
+                      مسودہ / غیر شائع ({withheldCount})
+                    </span>
+                  </>
                 )}
               </div>
               <p className="publish-banner-desc">
                 {totalExisting === 0 ? (
-                  'طلباء کے نمبرات درج کر کے نیچے دیے گئے بٹن سے محفوظ کریں۔'
+                  'طلباء کے نمبرات درج کر کے نیچے دیے گئے بٹن سے محفوظ فرمائیں۔'
                 ) : isAllPublished ? (
-                  'اس امتحان کے تمام نتائج طلباء کے لیے پبلک رزلٹ پورٹل پر لائیو ہیں اور رول نمبر کے ذریعے تلاش کیے جا سکتے ہیں۔'
+                  'اس امتحان کے تمام نتائج طلباء کے لیے پبلک پورٹل پر لائیو ہیں اور رول نمبر کے ذریعے تلاش کیے جا سکتے ہیں۔'
                 ) : (
-                  'نتائج ڈیٹا بیس میں محفوظ ہیں لیکن طلباء کے لیے پبلک پورٹل پر چھپائے گئے ہیں۔ جب آپ "شائع کریں" دبائیں گے تب ہی طلباء دیکھ سکیں گے۔'
+                  'نتائج سسٹم میں محفوظ ہیں لیکن طلباء سے روکے گئے ہیں۔ باضابطہ اعلان کے وقت "نتائج شائع کریں" پر کلک کریں۔'
                 )}
               </p>
             </div>
@@ -570,34 +579,34 @@ export default function UploadResults() {
               {!isAllPublished && (
                 <button
                   type="button"
-                  className="btn btn-publish-live"
+                  className="btn btn-primary"
                   disabled={togglingPublish}
                   onClick={() => handleTogglePublish(true)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 18px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   {togglingPublish ? (
-                    <FiRefreshCw className="spin" size={16} />
+                    <FiRefreshCw className="spin" size={15} />
                   ) : (
-                    <FiGlobe size={16} />
+                    <FiEye size={15} />
                   )}
-                  <span>📢 نتائج شائع کریں (Show Results)</span>
+                  <span>نتائج شائع کریں</span>
                 </button>
               )}
 
               {publishedCount > 0 && (
                 <button
                   type="button"
-                  className="btn btn-withhold-live"
+                  className="btn btn-outline"
                   disabled={togglingPublish}
                   onClick={() => handleTogglePublish(false)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 18px' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   {togglingPublish ? (
-                    <FiRefreshCw className="spin" size={16} />
+                    <FiRefreshCw className="spin" size={15} />
                   ) : (
-                    <FiLock size={16} />
+                    <FiEyeOff size={15} />
                   )}
-                  <span>🔒 نتائج روکیں (Withhold / Hide)</span>
+                  <span>نتائج روکیں (غیر شائع کریں)</span>
                 </button>
               )}
             </div>
@@ -825,21 +834,21 @@ export default function UploadResults() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '10px 20px',
-                      fontSize: '0.95rem',
+                      padding: '10px 18px',
+                      fontSize: '0.92rem',
                       fontWeight: 600,
                     }}
                     title="نتائج محفوظ کریں لیکن پبلک پورٹل پر روکے رکھیں"
                   >
                     {saving ? (
                       <>
-                        <FiRefreshCw className="spin" size={18} />
+                        <FiRefreshCw className="spin" size={16} />
                         <span>محفوظ ہو رہا ہے...</span>
                       </>
                     ) : (
                       <>
-                        <FiLock size={18} />
-                        <span>محفوظ کریں (روکے رکھیں / Withhold)</span>
+                        <FiSave size={16} />
+                        <span>بطور مسودہ محفوظ کریں (روکے رکھیں)</span>
                       </>
                     )}
                   </button>
@@ -854,23 +863,21 @@ export default function UploadResults() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '8px',
-                      padding: '10px 22px',
-                      fontSize: '0.95rem',
-                      fontWeight: 700,
-                      backgroundColor: '#10b981',
-                      borderColor: '#10b981',
+                      padding: '10px 20px',
+                      fontSize: '0.92rem',
+                      fontWeight: 600,
                     }}
-                    title="نتائج محفوظ کر کے فوری پبلک رزلٹ پورٹل پر شائع کریں"
+                    title="نتائج محفوظ کر کے فوری پبلک پورٹل پر شائع کریں"
                   >
                     {saving ? (
                       <>
-                        <FiRefreshCw className="spin" size={18} />
+                        <FiRefreshCw className="spin" size={16} />
                         <span>شائع ہو رہا ہے...</span>
                       </>
                     ) : (
                       <>
-                        <FiGlobe size={18} />
-                        <span>محفوظ اور براہِ راست شائع کریں (Publish)</span>
+                        <FiCheckCircle size={16} />
+                        <span>محفوظ اور شائع کریں</span>
                       </>
                     )}
                   </button>
@@ -883,29 +890,27 @@ export default function UploadResults() {
         /* Saved Results Tab */
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-            <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--color-primary)' }}>
-              درجہ "{currentClassName}" - {examName} کے محفوظ شدہ نتائج ({existingResults.length})
+            <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--color-primary)' }}>
+              درجہ "{currentClassName}" — {examName} کے محفوظ شدہ نتائج ({existingResults.length})
             </h3>
 
             {existingResults.length > 0 && (
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline"
+                  className="btn btn-sm btn-primary"
                   onClick={() => handleTogglePublish(true)}
                   disabled={togglingPublish}
-                  style={{ color: '#047857', borderColor: '#10b981' }}
                 >
-                  <FiGlobe style={{ marginLeft: '4px' }} /> تمام شائع کریں
+                  <FiEye style={{ marginLeft: '4px' }} size={13} /> تمام شائع کریں
                 </button>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline"
                   onClick={() => handleTogglePublish(false)}
                   disabled={togglingPublish}
-                  style={{ color: '#b45309', borderColor: '#f59e0b' }}
                 >
-                  <FiLock style={{ marginLeft: '4px' }} /> تمام روکیں (Withhold)
+                  <FiEyeOff style={{ marginLeft: '4px' }} size={13} /> تمام روکیں
                 </button>
               </div>
             )}
@@ -929,7 +934,7 @@ export default function UploadResults() {
                     <th style={{ textAlign: 'center' }}>کل نمبرات</th>
                     <th style={{ textAlign: 'center' }}>فیصد</th>
                     <th style={{ textAlign: 'center' }}>گریڈ</th>
-                    <th style={{ textAlign: 'center' }}>اشاعت کی حیثیت</th>
+                    <th style={{ textAlign: 'center' }}>حیثیت اشاعت</th>
                     <th style={{ textAlign: 'center' }}>کارروائی</th>
                   </tr>
                 </thead>
@@ -943,7 +948,7 @@ export default function UploadResults() {
                         </td>
                         <td>
                           <strong>{item.studentName}</strong>
-                          {item.fatherName && <div style={{ fontSize: '0.8rem', color: '#666' }}>ولدیت: {item.fatherName}</div>}
+                          {item.fatherName && <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>ولدیت: {item.fatherName}</div>}
                         </td>
                         <td>{item.className}</td>
                         <td>{item.examName}</td>
@@ -987,15 +992,9 @@ export default function UploadResults() {
                           </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
-                          {isItemPublished ? (
-                            <span className="publish-pill-published" title="طلباء کے لیے پبلک پورٹل پر لائیو ہے">
-                              <FiGlobe size={12} /> شائع شدہ
-                            </span>
-                          ) : (
-                            <span className="publish-pill-withheld" title="طلباء کے لیے روکا گیا ہے">
-                              <FiLock size={12} /> روکا گیا
-                            </span>
-                          )}
+                          <span className={`badge ${isItemPublished ? 'badge-success' : 'badge-warning'}`}>
+                            {isItemPublished ? 'شائع شدہ' : 'غیر شائع'}
+                          </span>
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
@@ -1005,25 +1004,23 @@ export default function UploadResults() {
                               className="btn btn-sm btn-outline"
                               style={{
                                 padding: '3px 8px',
-                                fontSize: '0.75rem',
-                                color: isItemPublished ? '#b45309' : '#047857',
-                                borderColor: isItemPublished ? '#f59e0b' : '#10b981',
+                                fontSize: '0.78rem',
                               }}
                               onClick={() => handleTogglePublish(!isItemPublished, [item._id])}
                               title={isItemPublished ? 'نتیجہ روکیں' : 'نتیجہ شائع کریں'}
                             >
-                              {isItemPublished ? <FiLock size={12} /> : <FiGlobe size={12} />}
-                              <span style={{ marginRight: '3px' }}>{isItemPublished ? 'روکیں' : 'شائع کریں'}</span>
+                              {isItemPublished ? <FiEyeOff size={13} /> : <FiEye size={13} />}
+                              <span style={{ marginRight: '4px' }}>{isItemPublished ? 'روکیں' : 'شائع کریں'}</span>
                             </button>
 
                             <button
                               type="button"
-                              className="btn btn-outline"
-                              style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px' }}
+                              className="btn btn-sm btn-outline"
+                              style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '3px 8px' }}
                               onClick={() => handleDeleteExisting(item._id, item.studentName)}
                               title="نتیجہ حذف کریں"
                             >
-                              <FiTrash2 size={15} />
+                              <FiTrash2 size={13} />
                             </button>
                           </div>
                         </td>
@@ -1036,6 +1033,7 @@ export default function UploadResults() {
           )}
         </div>
       )}
+
       </>
       )}
     </div>
