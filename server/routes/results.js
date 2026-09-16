@@ -23,6 +23,9 @@ function sanitizeResultData(item) {
   if (!data.year) {
     data.year = '1447';
   }
+  if (typeof data.isPublished !== 'undefined') {
+    data.isPublished = Boolean(data.isPublished);
+  }
 
   // Recalculate marks totals and percentage if marks provided
   if (Array.isArray(data.marks) && data.marks.length > 0) {
@@ -51,7 +54,7 @@ function sanitizeResultData(item) {
 }
 
 // @route   GET /api/results/search
-// @desc    Public search results by student roll number (query param)
+// @desc    Public search results by student roll number (query param) - ONLY PUBLISHED
 // @access  Public
 router.get('/search', async (req, res) => {
   try {
@@ -60,14 +63,21 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ message: 'رول نمبر فراہم کریں' });
     }
 
-
-    const filter = { rollNumber };
+    const filter = { rollNumber, isPublished: true };
     if (req.query.examType && req.query.examType !== 'all') {
       filter.examName = new RegExp(req.query.examType, 'i');
     }
 
     const results = await Result.find(filter).sort('-year -createdAt');
     if (!results || results.length === 0) {
+      // Check if unpublished/withheld results exist for this student roll number
+      const unpublishedCount = await Result.countDocuments({ rollNumber, isPublished: { $ne: true } });
+      if (unpublishedCount > 0) {
+        return res.status(404).json({
+          message: `رول نمبر ${rollNumber} کا امتحانی نتیجہ محفوظ ہے لیکن ابھی انتظامیہ کی طرف سے باضابطہ طور پر شائع (Publish) نہیں کیا گیا۔ برائے مہربانی نتائج کے باقاعدہ اعلان کا انتظار فرمائیں۔`,
+          isWithheld: true,
+        });
+      }
       return res.status(404).json({ message: `رول نمبر ${rollNumber} کا کوئی امتحانی نتیجہ نہیں ملا` });
     }
     res.json(results);
@@ -78,15 +88,21 @@ router.get('/search', async (req, res) => {
 });
 
 // @route   GET /api/results/roll/:rollNumber
-// @desc    Public search results by student roll number (param)
+// @desc    Public search results by student roll number (param) - ONLY PUBLISHED
 // @access  Public
 router.get('/roll/:rollNumber', async (req, res) => {
   try {
     const rollNumber = req.params.rollNumber.trim();
 
-
-    const results = await Result.find({ rollNumber }).sort('-year -createdAt');
+    const results = await Result.find({ rollNumber, isPublished: true }).sort('-year -createdAt');
     if (!results || results.length === 0) {
+      const unpublishedCount = await Result.countDocuments({ rollNumber, isPublished: { $ne: true } });
+      if (unpublishedCount > 0) {
+        return res.status(404).json({
+          message: `رول نمبر ${rollNumber} کا امتحانی نتیجہ محفوظ ہے لیکن ابھی انتظامیہ کی طرف سے باضابطہ طور پر شائع (Publish) نہیں کیا گیا۔ برائے مہربانی نتائج کے باقاعدہ اعلان کا انتظار فرمائیں۔`,
+          isWithheld: true,
+        });
+      }
       return res.status(404).json({ message: `رول نمبر ${rollNumber} کا کوئی امتحانی نتیجہ نہیں ملا` });
     }
     res.json(results);
@@ -96,8 +112,54 @@ router.get('/roll/:rollNumber', async (req, res) => {
   }
 });
 
+// @route   PATCH /api/results/publish-toggle
+// @desc    Toggle isPublished for an exam/class or list of result IDs
+// @access  Admin/Teacher
+router.patch('/publish-toggle', protect, authorize('master_admin', 'teacher'), async (req, res) => {
+  try {
+    const { className, examName, year, isPublished, ids } = req.body;
+    const publishStatus = Boolean(isPublished);
+
+    let filter = {};
+    if (Array.isArray(ids) && ids.length > 0) {
+      filter._id = { $in: ids };
+    } else {
+      if (!className || !examName) {
+        return res.status(400).json({ message: 'درجہ (Class) اور امتحان کا نام فراہم کریں' });
+      }
+      filter.className = className;
+      filter.examName = examName;
+      if (year) filter.year = year;
+    }
+
+    const updateRes = await Result.updateMany(filter, { $set: { isPublished: publishStatus } });
+
+    // Also sync matching Exam model if present
+    try {
+      const Exam = require('../models/Exam');
+      await Exam.updateMany(
+        { name: examName, ...(year ? { year } : {}) },
+        { $set: { isPublished: publishStatus } }
+      );
+    } catch (e) {}
+
+    const totalModified = updateRes.modifiedCount || updateRes.matchedCount || 0;
+    res.json({
+      success: true,
+      isPublished: publishStatus,
+      modifiedCount: totalModified,
+      message: publishStatus
+        ? `ماشاءاللہ! ${totalModified} طلباء کے نتائج کامیابی سے شائع (Live / Public) کر دیے گئے۔ اب طلباء آن لائن معلوم کر سکتے ہیں۔`
+        : `${totalModified} طلباء کے نتائج طلباء سے روک (Withheld / Hidden) دیے گئے۔`,
+    });
+  } catch (error) {
+    console.error('Publish toggle error:', error);
+    res.status(500).json({ message: error.message || 'اشاعت کی کیفیت تبدیل کرنے میں خرابی پیش آئی' });
+  }
+});
+
 // @route   GET /api/results
-// @desc    Get results (filter by className, examName, examId, studentId, rollNumber)
+// @desc    Get results (filter by className, examName, examId, studentId, rollNumber, isPublished)
 // @access  Auth
 router.get('/', protect, async (req, res) => {
   try {
@@ -107,6 +169,9 @@ router.get('/', protect, async (req, res) => {
     if (req.query.className) filter.className = req.query.className;
     if (req.query.examName) filter.examName = new RegExp(req.query.examName, 'i');
     if (req.query.rollNumber) filter.rollNumber = req.query.rollNumber.trim();
+    if (typeof req.query.isPublished !== 'undefined') {
+      filter.isPublished = req.query.isPublished === 'true';
+    }
 
     let query = Result.find(filter);
     if (req.query.studentId && mongoose.Types.ObjectId.isValid(req.query.studentId)) {

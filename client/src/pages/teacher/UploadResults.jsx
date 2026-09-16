@@ -6,6 +6,7 @@ import {
   saveBulkResults,
   getResults,
   deleteResult,
+  togglePublishResults,
 } from '../../services/api';
 import {
   FiCheckCircle,
@@ -17,6 +18,9 @@ import {
   FiEye,
   FiUsers,
   FiAward,
+  FiGlobe,
+  FiLock,
+  FiUnlock,
 } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
@@ -49,6 +53,7 @@ export default function UploadResults() {
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [togglingPublish, setTogglingPublish] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -91,53 +96,54 @@ export default function UploadResults() {
   }, [selectedClass, classes]);
 
   // 3. Load Students & Existing Results for the Class
-  useEffect(() => {
-    async function loadStudentsAndExisting() {
-      if (!selectedClass) return;
-      try {
-        setLoading(true);
-        setErrorMsg('');
-        const currentClass = classes.find((c) => c._id === selectedClass);
-        const [allStudents, classResults] = await Promise.all([
-          getStudents(),
-          getResults({ className: currentClass?.name || '', examName: examName || '' }),
-        ]);
+  const loadStudentsAndExisting = async () => {
+    if (!selectedClass) return;
+    try {
+      setLoading(true);
+      setErrorMsg('');
+      const currentClass = classes.find((c) => c._id === selectedClass);
+      const [allStudents, classResults] = await Promise.all([
+        getStudents(),
+        getResults({ className: currentClass?.name || '', examName: examName || '' }),
+      ]);
 
-        // Filter students for this class - exclude graduated and inactive students
-        const eligibleStudents = (allStudents || []).filter((s) => {
-          if (s.status === 'graduated' || s.status === 'inactive') return false;
-          if (s.class === selectedClass || s.class?._id === selectedClass) return true;
-          if (currentClass && (s.className === currentClass.name || s.class === currentClass.name)) return true;
-          return false;
-        });
+      // Filter students for this class - exclude graduated and inactive students
+      const eligibleStudents = (allStudents || []).filter((s) => {
+        if (s.status === 'graduated' || s.status === 'inactive') return false;
+        if (s.class === selectedClass || s.class?._id === selectedClass) return true;
+        if (currentClass && (s.className === currentClass.name || s.class === currentClass.name)) return true;
+        return false;
+      });
 
-        setStudents(eligibleStudents);
+      setStudents(eligibleStudents);
 
-        // Pre-fill existing marks if any
-        const resultsMap = {};
-        const validResults = Array.isArray(classResults) ? classResults : [];
-        setExistingResults(validResults);
+      // Pre-fill existing marks if any
+      const resultsMap = {};
+      const validResults = Array.isArray(classResults) ? classResults : [];
+      setExistingResults(validResults);
 
-        finalList.forEach((s) => {
-          const matchedResult = validResults.find(
-            (r) => String(r.rollNumber).trim() === String(s.rollNumber).trim()
-          );
-          if (matchedResult && Array.isArray(matchedResult.marks)) {
-            const marksObj = {};
-            matchedResult.marks.forEach((m) => {
-              marksObj[m.subject] = m.obtainedMarks;
-            });
-            resultsMap[s._id] = marksObj;
-          }
-        });
+      eligibleStudents.forEach((s) => {
+        const matchedResult = validResults.find(
+          (r) => String(r.rollNumber).trim() === String(s.rollNumber).trim()
+        );
+        if (matchedResult && Array.isArray(matchedResult.marks)) {
+          const marksObj = {};
+          matchedResult.marks.forEach((m) => {
+            marksObj[m.subject] = m.obtainedMarks;
+          });
+          resultsMap[s._id] = marksObj;
+        }
+      });
 
-        setResults(resultsMap);
-      } catch (err) {
-        console.error('Failed to load students/results:', err);
-      } finally {
-        setLoading(false);
-      }
+      setResults(resultsMap);
+    } catch (err) {
+      console.error('Failed to load students/results:', err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadStudentsAndExisting();
   }, [selectedClass, classes, examName]);
 
@@ -219,7 +225,8 @@ export default function UploadResults() {
     setResults(updated);
   };
 
-  const handleSubmit = async () => {
+  // Submit results: can save as withheld (default) or publish directly
+  const handleSubmit = async (saveAsPublished = false) => {
     setErrorMsg('');
     setSuccessMsg('');
 
@@ -273,13 +280,19 @@ export default function UploadResults() {
         percentage,
         grade,
         status: percentage >= 50 ? 'کامیاب' : 'ناکام',
+        isPublished: Boolean(saveAsPublished),
       });
     });
 
     try {
       setSaving(true);
-      const res = await saveBulkResults(resultsToSave);
-      setSuccessMsg(`ماشاءاللہ! ${resultsToSave.length} طلباء کے نتائج کامیابی سے اپلوڈ اور محفوظ ہو گئے۔`);
+      await saveBulkResults(resultsToSave);
+
+      if (saveAsPublished) {
+        setSuccessMsg(`ماشاءاللہ! ${resultsToSave.length} طلباء کے نتائج محفوظ اور پبلک پورٹل پر لائیو شائع (Published) ہو گئے۔`);
+      } else {
+        setSuccessMsg(`ماشاءاللہ! ${resultsToSave.length} طلباء کے نتائج محفوظ ہو گئے ہیں (فی الوقت طلباء سے روکے گئے ہیں / Withheld)۔ آپ جب چاہیں "شائع کریں" دبا کر پبلک کر سکتے ہیں۔`);
+      }
 
       // Refresh existing results
       const refreshed = await getResults({
@@ -288,12 +301,59 @@ export default function UploadResults() {
       });
       setExistingResults(Array.isArray(refreshed) ? refreshed : []);
 
-      setTimeout(() => setSuccessMsg(''), 5000);
+      setTimeout(() => setSuccessMsg(''), 6000);
     } catch (err) {
       console.error('Save results error:', err);
       setErrorMsg(err.message || 'نتائج محفوظ کرنے میں خرابی پیش آئی۔ سرور سے رابطہ چیک کریں۔');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Toggle publication for the current class & exam or specific IDs
+  const handleTogglePublish = async (targetStatus, ids = null) => {
+    const currentClass = classes.find((c) => c._id === selectedClass);
+    if (!currentClass && !ids) {
+      setErrorMsg('پہلے درجہ منتخب کریں');
+      return;
+    }
+
+    const actionText = targetStatus ? 'شائع (Live)' : 'روک (Withhold / Hide)';
+    const confirmPrompt = ids
+      ? `کیا آپ واقعی اس نتیجہ کو ${actionText} کرنا چاہتے ہیں؟`
+      : `کیا آپ واقعی درجہ "${currentClass?.name}" کے "${examName}" کے تمام نتائج کو ${actionText} کرنا چاہتے ہیں؟`;
+
+    if (!window.confirm(confirmPrompt)) return;
+
+    try {
+      setTogglingPublish(true);
+      setErrorMsg('');
+      const res = await togglePublishResults({
+        className: currentClass?.name,
+        examName: examName.trim(),
+        year: year.trim(),
+        isPublished: targetStatus,
+        ids: ids || undefined,
+      });
+
+      setSuccessMsg(res.message || (targetStatus ? 'نتائج کامیابی سے شائع ہو گئے۔' : 'نتائج طلباء سے روک دیے گئے۔'));
+
+      // Update local state
+      setExistingResults((prev) =>
+        prev.map((item) => {
+          if (!ids || ids.includes(item._id)) {
+            return { ...item, isPublished: targetStatus };
+          }
+          return item;
+        })
+      );
+
+      setTimeout(() => setSuccessMsg(''), 5000);
+    } catch (err) {
+      console.error('Toggle publish error:', err);
+      setErrorMsg(err.message || 'اشاعت کی کیفیت تبدیل کرنے میں خرابی ہوئی');
+    } finally {
+      setTogglingPublish(false);
     }
   };
 
@@ -321,16 +381,23 @@ export default function UploadResults() {
     );
   });
 
+  // Publication metrics
+  const totalExisting = existingResults.length;
+  const publishedCount = existingResults.filter((r) => r.isPublished === true).length;
+  const withheldCount = totalExisting - publishedCount;
+  const isAllPublished = totalExisting > 0 && publishedCount === totalExisting;
+  const isPartiallyPublished = totalExisting > 0 && publishedCount > 0 && publishedCount < totalExisting;
+
   return (
     <div className="upload-results-container">
       {/* Page Title Bar */}
       <div className="page-title-bar">
         <div>
           <h2 className="page-title" style={{ margin: 0, paddingBottom: 0, border: 'none' }}>
-            امتحانی نتائج اپلوڈ و انتظام
+            امتحانی نتائج اپلوڈ و اشاعت کا انتظام
           </h2>
           <p style={{ margin: '4px 0 0', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-            درجہ منتخب کر کے طلباء کے نمبر درج کریں اور آن لائن رزلٹ پورٹل پر شائع کریں
+            طلباء کے نمبر درج کریں، نتائج محفوظ کریں اور ایک کلک سے طلباء کے لیے پبلش یا روکیں
           </p>
         </div>
 
@@ -379,7 +446,7 @@ export default function UploadResults() {
       ) : (
       <>
       {/* Control Panel: Class, Exam, Year */}
-      <div className="dash-card" style={{ marginBottom: '24px', padding: '16px 20px' }}>
+      <div className="dash-card" style={{ marginBottom: '20px', padding: '16px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', alignItems: 'end' }}>
           {/* Class Select */}
           <div className="form-group" style={{ margin: 0 }}>
@@ -445,6 +512,98 @@ export default function UploadResults() {
           </div>
         </div>
       </div>
+
+      {/* PUBLISH & WITHHOLD CONTROL BANNER */}
+      {selectedClass && (
+        <div
+          className={`result-publish-banner ${
+            totalExisting === 0
+              ? 'status-empty'
+              : isAllPublished
+              ? 'status-published'
+              : 'status-withheld'
+          }`}
+        >
+          <div className="publish-banner-info">
+            <div className="publish-icon-box">
+              {totalExisting === 0 ? (
+                <FiAward />
+              ) : isAllPublished ? (
+                <FiGlobe />
+              ) : (
+                <FiLock />
+              )}
+            </div>
+            <div>
+              <div className="publish-banner-title">
+                {totalExisting === 0 ? (
+                  <span>درجہ "{currentClassName}" - کوئی نتیجہ محفوظ نہیں</span>
+                ) : isAllPublished ? (
+                  <span style={{ color: '#047857' }}>
+                    🟢 نتائج لائیو شائع شدہ ہیں (Published Live) — ({publishedCount} طلباء)
+                  </span>
+                ) : isPartiallyPublished ? (
+                  <span style={{ color: '#b45309' }}>
+                    🟡 جزوی شائع شدہ ({publishedCount} شائع / {withheldCount} روکے گئے)
+                  </span>
+                ) : (
+                  <span style={{ color: '#b45309' }}>
+                    🔒 نتائج روکے گئے ہیں (Withheld / Unpublished) — ({withheldCount} طلباء)
+                  </span>
+                )}
+              </div>
+              <p className="publish-banner-desc">
+                {totalExisting === 0 ? (
+                  'طلباء کے نمبرات درج کر کے نیچے دیے گئے بٹن سے محفوظ کریں۔'
+                ) : isAllPublished ? (
+                  'اس امتحان کے تمام نتائج طلباء کے لیے پبلک رزلٹ پورٹل پر لائیو ہیں اور رول نمبر کے ذریعے تلاش کیے جا سکتے ہیں۔'
+                ) : (
+                  'نتائج ڈیٹا بیس میں محفوظ ہیں لیکن طلباء کے لیے پبلک پورٹل پر چھپائے گئے ہیں۔ جب آپ "شائع کریں" دبائیں گے تب ہی طلباء دیکھ سکیں گے۔'
+                )}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons for Whole Class Exam */}
+          {totalExisting > 0 && (
+            <div className="publish-btn-group">
+              {!isAllPublished && (
+                <button
+                  type="button"
+                  className="btn btn-publish-live"
+                  disabled={togglingPublish}
+                  onClick={() => handleTogglePublish(true)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 18px' }}
+                >
+                  {togglingPublish ? (
+                    <FiRefreshCw className="spin" size={16} />
+                  ) : (
+                    <FiGlobe size={16} />
+                  )}
+                  <span>📢 نتائج شائع کریں (Show Results)</span>
+                </button>
+              )}
+
+              {publishedCount > 0 && (
+                <button
+                  type="button"
+                  className="btn btn-withhold-live"
+                  disabled={togglingPublish}
+                  onClick={() => handleTogglePublish(false)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 18px' }}
+                >
+                  {togglingPublish ? (
+                    <FiRefreshCw className="spin" size={16} />
+                  ) : (
+                    <FiLock size={16} />
+                  )}
+                  <span>🔒 نتائج روکیں (Withhold / Hide)</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {activeTab === 'entry' ? (
         <>
@@ -635,14 +794,16 @@ export default function UploadResults() {
                 </table>
               </div>
 
-              {/* Submit Button Section */}
+              {/* Submit Buttons Section */}
               <div
                 style={{
                   marginTop: '24px',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '16px',
+                  flexWrap: 'wrap',
+                  gap: '16px',
+                  padding: '16px 20px',
                   backgroundColor: 'var(--color-bg)',
                   borderRadius: 'var(--radius-lg)',
                   border: '1px solid var(--color-border)',
@@ -653,31 +814,67 @@ export default function UploadResults() {
                   مضامین: <strong style={{ fontFamily: 'var(--font-english)', color: 'var(--color-primary)' }}>{subjects.length}</strong>
                 </div>
 
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleSubmit}
-                  disabled={saving || displayedStudents.length === 0}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '10px 24px',
-                    fontSize: '1rem',
-                  }}
-                >
-                  {saving ? (
-                    <>
-                      <FiRefreshCw className="spin" size={18} />
-                      <span>نتائج محفوظ ہو رہے ہیں...</span>
-                    </>
-                  ) : (
-                    <>
-                      <FiSave size={18} />
-                      <span>نتائج محفوظ اور شائع کریں</span>
-                    </>
-                  )}
-                </button>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {/* Save as Withheld / Draft */}
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => handleSubmit(false)}
+                    disabled={saving || displayedStudents.length === 0}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 20px',
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                    }}
+                    title="نتائج محفوظ کریں لیکن پبلک پورٹل پر روکے رکھیں"
+                  >
+                    {saving ? (
+                      <>
+                        <FiRefreshCw className="spin" size={18} />
+                        <span>محفوظ ہو رہا ہے...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiLock size={18} />
+                        <span>محفوظ کریں (روکے رکھیں / Withhold)</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Save & Publish Live directly */}
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => handleSubmit(true)}
+                    disabled={saving || displayedStudents.length === 0}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '10px 22px',
+                      fontSize: '0.95rem',
+                      fontWeight: 700,
+                      backgroundColor: '#10b981',
+                      borderColor: '#10b981',
+                    }}
+                    title="نتائج محفوظ کر کے فوری پبلک رزلٹ پورٹل پر شائع کریں"
+                  >
+                    {saving ? (
+                      <>
+                        <FiRefreshCw className="spin" size={18} />
+                        <span>شائع ہو رہا ہے...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiGlobe size={18} />
+                        <span>محفوظ اور براہِ راست شائع کریں (Publish)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </>
           )}
@@ -685,10 +882,33 @@ export default function UploadResults() {
       ) : (
         /* Saved Results Tab */
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--color-primary)' }}>
               درجہ "{currentClassName}" - {examName} کے محفوظ شدہ نتائج ({existingResults.length})
             </h3>
+
+            {existingResults.length > 0 && (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline"
+                  onClick={() => handleTogglePublish(true)}
+                  disabled={togglingPublish}
+                  style={{ color: '#047857', borderColor: '#10b981' }}
+                >
+                  <FiGlobe style={{ marginLeft: '4px' }} /> تمام شائع کریں
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline"
+                  onClick={() => handleTogglePublish(false)}
+                  disabled={togglingPublish}
+                  style={{ color: '#b45309', borderColor: '#f59e0b' }}
+                >
+                  <FiLock style={{ marginLeft: '4px' }} /> تمام روکیں (Withhold)
+                </button>
+              </div>
+            )}
           </div>
 
           {existingResults.length === 0 ? (
@@ -709,73 +929,107 @@ export default function UploadResults() {
                     <th style={{ textAlign: 'center' }}>کل نمبرات</th>
                     <th style={{ textAlign: 'center' }}>فیصد</th>
                     <th style={{ textAlign: 'center' }}>گریڈ</th>
+                    <th style={{ textAlign: 'center' }}>اشاعت کی حیثیت</th>
                     <th style={{ textAlign: 'center' }}>کارروائی</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {existingResults.map((item) => (
-                    <tr key={item._id}>
-                      <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
-                        {item.rollNumber}
-                      </td>
-                      <td>
-                        <strong>{item.studentName}</strong>
-                        {item.fatherName && <div style={{ fontSize: '0.8rem', color: '#666' }}>ولدیت: {item.fatherName}</div>}
-                      </td>
-                      <td>{item.className}</td>
-                      <td>{item.examName}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                          {item.marks?.map((m) => (
-                            <span
-                              key={m.subject}
-                              style={{
-                                fontSize: '0.75rem',
-                                background: 'var(--color-bg-secondary)',
-                                padding: '2px 6px',
-                                borderRadius: '3px',
-                                border: '1px solid var(--color-border)',
-                              }}
-                            >
-                              {m.subject}: <strong style={{ fontFamily: 'var(--font-english)' }}>{m.obtainedMarks}</strong>
+                  {existingResults.map((item) => {
+                    const isItemPublished = item.isPublished === true;
+                    return (
+                      <tr key={item._id}>
+                        <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
+                          {item.rollNumber}
+                        </td>
+                        <td>
+                          <strong>{item.studentName}</strong>
+                          {item.fatherName && <div style={{ fontSize: '0.8rem', color: '#666' }}>ولدیت: {item.fatherName}</div>}
+                        </td>
+                        <td>{item.className}</td>
+                        <td>{item.examName}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            {item.marks?.map((m) => (
+                              <span
+                                key={m.subject}
+                                style={{
+                                  fontSize: '0.75rem',
+                                  background: 'var(--color-bg-secondary)',
+                                  padding: '2px 6px',
+                                  borderRadius: '3px',
+                                  border: '1px solid var(--color-border)',
+                                }}
+                              >
+                                {m.subject}: <strong style={{ fontFamily: 'var(--font-english)' }}>{m.obtainedMarks}</strong>
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
+                          {item.totalObtained} / {item.totalMarks}
+                        </td>
+                        <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
+                          {item.percentage}%
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <span
+                            className={`badge ${
+                              item.percentage >= 80
+                                ? 'badge-success'
+                                : item.percentage >= 60
+                                ? 'badge-primary'
+                                : item.percentage >= 50
+                                ? 'badge-warning'
+                                : 'badge-danger'
+                            }`}
+                          >
+                            {item.grade}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          {isItemPublished ? (
+                            <span className="publish-pill-published" title="طلباء کے لیے پبلک پورٹل پر لائیو ہے">
+                              <FiGlobe size={12} /> شائع شدہ
                             </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
-                        {item.totalObtained} / {item.totalMarks}
-                      </td>
-                      <td style={{ fontFamily: 'var(--font-english)', textAlign: 'center', fontWeight: 600 }}>
-                        {item.percentage}%
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <span
-                          className={`badge ${
-                            item.percentage >= 80
-                              ? 'badge-success'
-                              : item.percentage >= 60
-                              ? 'badge-primary'
-                              : item.percentage >= 50
-                              ? 'badge-warning'
-                              : 'badge-danger'
-                          }`}
-                        >
-                          {item.grade}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'center' }}>
-                        <button
-                          type="button"
-                          className="btn btn-outline"
-                          style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px' }}
-                          onClick={() => handleDeleteExisting(item._id, item.studentName)}
-                          title="نتیجہ حذف کریں"
-                        >
-                          <FiTrash2 size={15} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                          ) : (
+                            <span className="publish-pill-withheld" title="طلباء کے لیے روکا گیا ہے">
+                              <FiLock size={12} /> روکا گیا
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
+                            {/* Toggle single item */}
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline"
+                              style={{
+                                padding: '3px 8px',
+                                fontSize: '0.75rem',
+                                color: isItemPublished ? '#b45309' : '#047857',
+                                borderColor: isItemPublished ? '#f59e0b' : '#10b981',
+                              }}
+                              onClick={() => handleTogglePublish(!isItemPublished, [item._id])}
+                              title={isItemPublished ? 'نتیجہ روکیں' : 'نتیجہ شائع کریں'}
+                            >
+                              {isItemPublished ? <FiLock size={12} /> : <FiGlobe size={12} />}
+                              <span style={{ marginRight: '3px' }}>{isItemPublished ? 'روکیں' : 'شائع کریں'}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-outline"
+                              style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)', padding: '4px 8px' }}
+                              onClick={() => handleDeleteExisting(item._id, item.studentName)}
+                              title="نتیجہ حذف کریں"
+                            >
+                              <FiTrash2 size={15} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -787,3 +1041,4 @@ export default function UploadResults() {
     </div>
   );
 }
+

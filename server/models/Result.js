@@ -50,13 +50,17 @@ const resultSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  isPublished: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true,
 });
 
-resultSchema.index({ rollNumber: 1, year: -1 });
-resultSchema.index({ exam: 1 });
-resultSchema.index({ className: 1 });
+resultSchema.index({ rollNumber: 1, isPublished: 1, year: -1 });
+resultSchema.index({ className: 1, examName: 1, year: 1, isPublished: 1 });
+resultSchema.index({ exam: 1, isPublished: 1 });
 resultSchema.index({ student: 1 });
 
 module.exports = mongoose.models.Result || mongoose.model('Result', resultSchema);

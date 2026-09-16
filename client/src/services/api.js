@@ -445,6 +445,15 @@ export async function saveBulkResults(resultsArray) {
   return handleResponse(res);
 }
 
+export async function togglePublishResults({ className, examName, year, isPublished, ids }) {
+  const res = await fetch(`${API_BASE}/results/publish-toggle`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ className, examName, year, isPublished, ids }),
+  });
+  return handleResponse(res);
+}
+
 export async function updateResult(id, resultData) {
   const res = await fetch(`${API_BASE}/results/${id}`, {
     method: 'PUT',
