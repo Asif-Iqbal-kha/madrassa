@@ -48,9 +48,10 @@ export default function PromoteStudents() {
   };
 
   const activeStudents = allStudents.filter(
-    (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
+    (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated' && s.status !== 'kharij')
   );
   const graduatedStudents = allStudents.filter((s) => s.status === 'graduated');
+  const kharijStudents = allStudents.filter((s) => s.status === 'kharij');
 
   // Filter students who are currently active in the selected fromClass
   const classStudents = activeStudents.filter((s) => matchesClass(s, fromClass));

@@ -13,7 +13,10 @@ export default function TeacherDashboard() {
     async function loadData() {
       try {
         const students = await getStudents();
-        setTotalStudents(students?.length || 0);
+        const activeOnly = (students || []).filter(
+          (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated' && s.status !== 'kharij')
+        );
+        setTotalStudents(activeOnly.length);
       } catch (err) {
         console.warn('TeacherDashboard error:', err);
       }

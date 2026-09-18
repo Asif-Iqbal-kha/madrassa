@@ -46,10 +46,10 @@ export default function MarkAttendance() {
           searchAttendance(date, selectedClass, currentClass ? currentClass.name : ''),
         ]);
 
-        // Filter active students belonging to this class (supporting aliases)
+        // Filter active students belonging to this class (supporting aliases) - exclude graduated, inactive, and kharij
         const targetName = (currentClass?.name || '').trim().toLowerCase();
         const filtered = (allStudents || []).filter((s) => {
-          if (s.status === 'graduated' || s.status === 'inactive') return false;
+          if (s.status === 'graduated' || s.status === 'inactive' || s.status === 'kharij') return false;
           const sId = s.class?._id || s.class;
           if (sId && sId.toString() === selectedClass) return true;
           const sName = (s.className || s.class?.name || '').trim().toLowerCase();

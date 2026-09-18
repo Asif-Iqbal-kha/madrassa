@@ -107,9 +107,9 @@ export default function UploadResults() {
         getResults({ className: currentClass?.name || '', examName: examName || '' }),
       ]);
 
-      // Filter students for this class - exclude graduated and inactive students
+      // Filter students for this class - exclude graduated, inactive, and kharij students
       const eligibleStudents = (allStudents || []).filter((s) => {
-        if (s.status === 'graduated' || s.status === 'inactive') return false;
+        if (s.status === 'graduated' || s.status === 'inactive' || s.status === 'kharij') return false;
         if (s.class === selectedClass || s.class?._id === selectedClass) return true;
         if (currentClass && (s.className === currentClass.name || s.class === currentClass.name)) return true;
         return false;

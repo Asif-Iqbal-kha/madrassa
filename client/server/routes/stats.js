@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
     const totalStudents = await Student.countDocuments();
     const activeStudents = await Student.countDocuments({ status: { $in: ['active', null, ''] } });
     const graduatedStudents = await Student.countDocuments({ status: 'graduated' });
+    const kharijStudents = await Student.countDocuments({ status: 'kharij' });
     const inactiveStudents = await Student.countDocuments({ status: 'inactive' });
 
     const totalTeachers = await Teacher.countDocuments({ isActive: true });
@@ -56,6 +57,7 @@ router.get('/', async (req, res) => {
       totalStudents,
       activeStudents,
       graduatedStudents,
+      kharijStudents,
       inactiveStudents,
       totalTeachers,
       totalClasses,

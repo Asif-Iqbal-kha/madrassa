@@ -52,9 +52,10 @@ export default function AdminDashboard() {
         ]);
 
         const activeStudents = (studentsData || []).filter(
-          (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
+          (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated' && s.status !== 'kharij')
         );
         const graduatedCount = statsData?.graduatedStudents ?? (studentsData || []).filter((s) => s.status === 'graduated').length;
+        const kharijCount = statsData?.kharijStudents ?? (studentsData || []).filter((s) => s.status === 'kharij').length;
         const activeCount = statsData?.activeStudents ?? activeStudents.length;
         const totalCount = statsData?.totalStudents ?? (studentsData?.length || 0);
 
@@ -62,6 +63,7 @@ export default function AdminDashboard() {
           totalStudents: totalCount,
           activeStudents: activeCount,
           graduatedStudents: graduatedCount,
+          kharijStudents: kharijCount,
           totalTeachers: statsData?.totalTeachers ?? teachersData?.length ?? 0,
           totalClasses: statsData?.totalClasses ?? (classesData?.length || 0),
           attendancePercentage: statsData?.attendancePercentage ?? 0,
@@ -212,6 +214,15 @@ export default function AdminDashboard() {
                           <td>فارغ التحصیل طلباء (Graduated)</td>
                           <td style={{ fontFamily: 'var(--font-english)', color: 'var(--color-text-secondary)', fontWeight: 700 }}>
                             {stats.graduatedStudents}
+                          </td>
+                          <td>—</td>
+                        </tr>
+                      )}
+                      {stats.kharijStudents > 0 && (
+                        <tr style={{ fontWeight: 600, background: 'var(--color-bg-alt)' }}>
+                          <td>خارج شدہ طلباء (Struck Off)</td>
+                          <td style={{ fontFamily: 'var(--font-english)', color: 'var(--color-text-secondary)', fontWeight: 700 }}>
+                            {stats.kharijStudents}
                           </td>
                           <td>—</td>
                         </tr>
