@@ -29,7 +29,7 @@ export default function ManageStudents() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('all');
-  const [statusTab, setStatusTab] = useState('all'); // 'all', 'active', 'present', 'graduated'
+  const [statusTab, setStatusTab] = useState('all'); // 'all', 'active', 'present', 'graduated', 'kharij'
   const [todayPresentData, setTodayPresentData] = useState({ date: '', totalPresent: 0, students: [] });
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [studentDetailsCache, setStudentDetailsCache] = useState({});
@@ -91,9 +91,10 @@ export default function ManageStudents() {
   }, []);
 
   const activeStudents = students.filter(
-    (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated')
+    (s) => s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated' && s.status !== 'kharij')
   );
   const graduatedStudents = students.filter((s) => s.status === 'graduated');
+  const kharijStudents = students.filter((s) => s.status === 'kharij');
 
   const activeStudentsToPrint = classFilter === 'all'
     ? activeStudents
@@ -111,9 +112,11 @@ export default function ManageStudents() {
 
     let matchesTab = true;
     if (statusTab === 'active') {
-      matchesTab = s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated');
+      matchesTab = s.status === 'active' || (!s.status && s.status !== 'inactive' && s.status !== 'graduated' && s.status !== 'kharij');
     } else if (statusTab === 'graduated') {
       matchesTab = s.status === 'graduated';
+    } else if (statusTab === 'kharij') {
+      matchesTab = s.status === 'kharij';
     }
 
     return matchesSearch && matchesClass && matchesTab;
@@ -128,6 +131,13 @@ export default function ManageStudents() {
 
   const handlePrintGraduatesList = () => {
     setPrintReportType('graduates_list');
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
+  const handlePrintKharijList = () => {
+    setPrintReportType('kharij_list');
     setTimeout(() => {
       window.print();
     }, 150);
@@ -374,6 +384,12 @@ export default function ManageStudents() {
         >
           🎓 فارغ التحصیل طلباء ({graduatedStudents.length})
         </button>
+        <button
+          className={`btn btn-sm ${statusTab === 'kharij' ? 'btn-primary' : 'btn-outline'}`}
+          onClick={() => setStatusTab('kharij')}
+        >
+          🚫 خارج کردہ طلباء ({kharijStudents.length})
+        </button>
 
         {/* Quick Report Print Buttons */}
         <div style={{ marginRight: 'auto', display: 'flex', gap: '8px' }}>
@@ -390,6 +406,11 @@ export default function ManageStudents() {
           {statusTab === 'graduated' && graduatedStudents.length > 0 && (
             <button className="btn btn-outline btn-sm" onClick={handlePrintGraduatesList}>
               <FiPrinter size={15} style={{ marginLeft: '4px' }} /> تمام فارغین رپورٹ PDF
+            </button>
+          )}
+          {statusTab === 'kharij' && kharijStudents.length > 0 && (
+            <button className="btn btn-outline btn-sm" onClick={handlePrintKharijList}>
+              <FiPrinter size={15} style={{ marginLeft: '4px' }} /> خارج کردہ طلباء رپورٹ PDF
             </button>
           )}
         </div>
@@ -574,6 +595,27 @@ export default function ManageStudents() {
             </div>
           )}
 
+          {statusTab === 'kharij' && (
+            <div style={{
+              padding: '12px 18px',
+              background: 'var(--color-bg-alt)',
+              borderBottom: '1px solid var(--color-border)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <strong>خارج / نکالے گئے طلباء کا رجسٹر:</strong>
+                <span style={{ marginRight: '8px' }}>کل خارج شدہ: {kharijStudents.length}</span>
+              </div>
+              {kharijStudents.length > 0 && (
+                <button className="btn btn-outline btn-sm" onClick={handlePrintKharijList}>
+                  <FiPrinter size={14} style={{ marginLeft: '4px' }} /> خارج کردہ طلباء کی فہرست پرنٹ کریں
+                </button>
+              )}
+            </div>
+          )}
+
           <table>
             <thead>
               <tr>
@@ -624,14 +666,18 @@ export default function ManageStudents() {
                     <span className={`badge ${
                       student.status === 'graduated'
                         ? 'badge-info'
+                        : student.status === 'kharij'
+                        ? 'badge-danger'
                         : student.status === 'active'
                         ? 'badge-success'
                         : 'badge-warning'
                     }`}>
                       {student.status === 'graduated'
                         ? 'فارغ التحصیل'
+                        : student.status === 'kharij'
+                        ? 'خارج کردہ'
                         : student.status === 'active'
-                        ? 'فعال'
+                        ? 'جاری / زیرِ تعلیم'
                         : 'غیر فعال'}
                     </span>
                   </td>
@@ -761,7 +807,15 @@ export default function ManageStudents() {
                       درجہ: {selectedStudent.className || selectedStudent.class?.name || selectedStudent.class || 'نا معلوم'}
                     </span>
                     <span className="student-pill-badge">
-                      کیفیت: {selectedStudent.status === 'active' ? 'فعال (زیر تعلیم)' : 'غیر فعال'}
+                      کیفیت: {
+                        selectedStudent.status === 'active'
+                          ? 'جاری / زیرِ تعلیم'
+                          : selectedStudent.status === 'graduated'
+                          ? 'فارغ التحصیل'
+                          : selectedStudent.status === 'kharij'
+                          ? 'خارج کردہ'
+                          : 'غیر فعال'
+                      }
                     </span>
                   </div>
                 </div>
@@ -929,6 +983,25 @@ export default function ManageStudents() {
                     </span>
                   </div>
                 </div>
+
+                {/* Admin Note — shown for graduated or kharij students */}
+                {selectedStudent.adminNote && (
+                  <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #ddd' }}>
+                    <span className="student-info-label" style={{ display: 'block', marginBottom: '6px' }}>
+                      ایڈمن نوٹ:
+                    </span>
+                    <div style={{
+                      background: selectedStudent.status === 'kharij' ? 'rgba(239,68,68,0.06)' : 'rgba(15,118,110,0.06)',
+                      border: `1px solid ${selectedStudent.status === 'kharij' ? 'rgba(239,68,68,0.25)' : 'rgba(15,118,110,0.25)'}`,
+                      borderRadius: '6px',
+                      padding: '8px 12px',
+                      fontSize: '0.875rem',
+                      color: 'var(--color-text)',
+                    }}>
+                      {selectedStudent.adminNote}
+                    </div>
+                  </div>
+                )}
 
                 {/* Screenshot if available */}
                 {selectedStudent.screenshotData && (
@@ -1245,17 +1318,36 @@ export default function ManageStudents() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">کیفیت (حالت)</label>
+                  <label className="form-label">طالب علم کی کیفیت *</label>
                   <select
                     className="form-select"
                     value={editingStudent.status}
-                    onChange={(e) => setEditingStudent({ ...editingStudent, status: e.target.value })}
+                    onChange={(e) => setEditingStudent({ ...editingStudent, status: e.target.value, adminNote: e.target.value === 'active' ? '' : (editingStudent.adminNote || '') })}
                   >
-                    <option value="active">فعال (Active)</option>
-                    <option value="inactive">غیر فعال (Inactive)</option>
+                    <option value="active">جاری / زیرِ تعلیم (Running)</option>
                     <option value="graduated">فارغ التحصیل (Graduated)</option>
+                    <option value="kharij">خارج / نکالا گیا (Khārij / Struck Off)</option>
                   </select>
                 </div>
+                {/* Conditional Admin Note — appears for Graduated or Kharij */}
+                {(editingStudent.status === 'graduated' || editingStudent.status === 'kharij') && (
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">
+                      ایڈمن نوٹ
+                      <span style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--color-text-muted)', marginRight: '6px' }}>
+                        (اختیاری — وجہ، تاریخ، یا دیگر تفصیل)
+                      </span>
+                    </label>
+                    <textarea
+                      className="form-input"
+                      rows={2}
+                      style={{ resize: 'vertical', minHeight: '52px' }}
+                      placeholder={editingStudent.status === 'kharij' ? 'مثلاً: بد اخلاقی کی بنا پر خارج کیا گیا، تاریخ...' : 'مثلاً: فارغ التحصیل، سنہ...'}
+                      value={editingStudent.adminNote || ''}
+                      onChange={(e) => setEditingStudent({ ...editingStudent, adminNote: e.target.value })}
+                    />
+                  </div>
+                )}
                 <div className="form-group">
                   <label className="form-label">فون نمبر</label>
                   <input
@@ -1449,6 +1541,78 @@ export default function ManageStudents() {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '20px' }}>
             <div style={{ textAlign: 'center', width: '200px', borderTop: '1px dashed #000' }}>
               دستخط ناظمِ امتحانات
+            </div>
+            <div style={{ textAlign: 'center', width: '200px', borderTop: '1px dashed #000' }}>
+              دستخط ناظمِ تعلیمات
+            </div>
+            <div style={{ textAlign: 'center', width: '200px', borderTop: '1px dashed #000' }}>
+              دستخط مہتممِ جامعہ
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PRINT-ONLY: KHARIJ / STRUCK-OFF STUDENTS REGISTRY REPORT */}
+      {printReportType === 'kharij_list' && (
+        <div className="print-only-attendance" style={{ display: 'none' }}>
+          <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
+            <p style={{ margin: '0 0 4px', fontSize: '0.9rem' }}>صدیق اکبر کالونی عقب توحید کالونی چارسدہ روڈ مردان خیبرپختونخوا پاکستان</p>
+            <h3 style={{ margin: '8px 0 0', fontSize: '1.15rem', textDecoration: 'underline' }}>
+              خارج / نکالے گئے طلباء کا دفتری رجسٹر (Struck-Off Students Registry)
+            </h3>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.95rem' }}>
+            <div><strong>کل خارج شدہ طلباء:</strong> {kharijStudents.length}</div>
+            <div><strong>تاریخِ پرنٹ:</strong> {new Date().toISOString().split('T')[0]}</div>
+          </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
+            <thead>
+              <tr style={{ background: '#7f1d1d', color: '#ffffff', borderBottom: '2px solid #000' }}>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '6%', color: '#ffffff' }}>شمار</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '12%', color: '#ffffff' }}>رول نمبر</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '20%', color: '#ffffff' }}>نام طالب علم</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '18%', color: '#ffffff' }}>والد کا نام</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '14%', color: '#ffffff' }}>درجہ</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '20%', color: '#ffffff' }}>ایڈمن نوٹ</th>
+                <th style={{ border: '1px solid #000', padding: '8px', width: '10%', color: '#ffffff' }}>حالت</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kharijStudents.map((s, idx) => (
+                <tr key={s._id}>
+                  <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'center' }}>{idx + 1}</td>
+                  <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'center', fontFamily: 'monospace' }}>
+                    {s.rollNumber}
+                  </td>
+                  <td style={{ border: '1px solid #000', padding: '6px', fontWeight: 600 }}>{s.name}</td>
+                  <td style={{ border: '1px solid #000', padding: '6px' }}>{s.fatherName}</td>
+                  <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'center' }}>
+                    {s.className || s.class?.name || '—'}
+                  </td>
+                  <td style={{ border: '1px solid #000', padding: '6px', fontSize: '0.85rem', color: '#555' }}>
+                    {s.adminNote || '—'}
+                  </td>
+                  <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'center', fontWeight: 700, color: '#991b1b' }}>
+                    خارج کردہ
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ background: '#f9fafb', fontWeight: 700 }}>
+                <td colSpan="7" style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>
+                  اللہ تعالیٰ انہیں ہدایت عطا فرمائے اور مدرسے کو محفوظ رکھے — آمین
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px', paddingTop: '20px' }}>
+            <div style={{ textAlign: 'center', width: '200px', borderTop: '1px dashed #000' }}>
+              دستخط ناظمِ نظم و ضبط
             </div>
             <div style={{ textAlign: 'center', width: '200px', borderTop: '1px dashed #000' }}>
               دستخط ناظمِ تعلیمات

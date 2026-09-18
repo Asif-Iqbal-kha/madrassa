@@ -115,8 +115,12 @@ const studentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'graduated'],
+    enum: ['active', 'inactive', 'graduated', 'kharij'],
     default: 'active',
+  },
+  adminNote: {
+    type: String,
+    default: '',
   },
   enrollmentDate: {
     type: String,
