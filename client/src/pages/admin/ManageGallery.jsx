@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getGalleryItems, uploadGalleryItem, deleteGalleryItem } from '../../services/api';
+import { compressImage } from '../../utils/imageCompressor';
 import { FiUpload, FiTrash2, FiImage, FiX, FiCheckCircle } from 'react-icons/fi';
 import '../dashboard/DashboardPages.css';
 
@@ -30,14 +31,24 @@ export default function ManageGallery() {
     loadGallery();
   }, []);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('برائے مہربانی صرف تصویری فائل منتخب کریں (JPG, PNG, WebP)');
+      return;
+    }
+    setError('');
+    try {
+      const { file: compressed, dataUrl } = await compressImage(file, { maxWidth: 1600, maxHeight: 1400, quality: 0.82 });
+      setImageFile(compressed);
+      setPreview(dataUrl);
+    } catch {
+      // Fallback: use original file without compression
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
-      setError('');
     }
   };
 
