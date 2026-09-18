@@ -23,6 +23,34 @@ import {
 import { compressImage } from '../../utils/imageCompressor';
 import '../dashboard/DashboardPages.css';
 
+const EMPTY_NEW_STUDENT = {
+  name: '',
+  fatherName: '',
+  className: '',
+  status: 'active',
+  adminNote: '',
+  phone: '',
+  address: '',
+  permanentAddress: '',
+  currentAddress: '',
+  cnic: '',
+  dateOfBirth: '',
+  identificationMark: '',
+  maritalStatus: 'مجرد',
+  previousEducation: '',
+  guardianName: '',
+  guardianFatherName: '',
+  guardianRelation: 'والد',
+  guardianPhone: '',
+  guardianCnic: '',
+  guardianPermanentAddress: '',
+  guardianCurrentAddress: '',
+  mardanRelative: '',
+  studentPhotoData: '',
+  admissionFee: 1000,
+  paymentMethod: 'JazzCash',
+};
+
 export default function ManageStudents() {
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -38,31 +66,7 @@ export default function ManageStudents() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [printReportType, setPrintReportType] = useState('all'); // 'all' or 'present_list'
 
-  const [newStudent, setNewStudent] = useState({
-    name: '',
-    fatherName: '',
-    className: '',
-    phone: '',
-    address: '',
-    permanentAddress: '',
-    currentAddress: '',
-    cnic: '',
-    dateOfBirth: '',
-    identificationMark: '',
-    maritalStatus: 'مجرد',
-    previousEducation: '',
-    guardianName: '',
-    guardianFatherName: '',
-    guardianRelation: 'والد',
-    guardianPhone: '',
-    guardianCnic: '',
-    guardianPermanentAddress: '',
-    guardianCurrentAddress: '',
-    mardanRelative: '',
-    studentPhotoData: '',
-    admissionFee: 1000,
-    paymentMethod: 'JazzCash',
-  });
+  const [newStudent, setNewStudent] = useState(EMPTY_NEW_STUDENT);
 
   const [editingStudent, setEditingStudent] = useState(null);
   const [error, setError] = useState('');
@@ -174,9 +178,12 @@ export default function ManageStudents() {
         class: selectedCls ? selectedCls._id : undefined,
         guardianName: newStudent.guardianName || newStudent.fatherName,
         guardianPhone: newStudent.guardianPhone || newStudent.phone,
-        status: 'active',
+        status: newStudent.status || 'active',
+        adminNote: (newStudent.status === 'graduated' || newStudent.status === 'kharij') ? (newStudent.adminNote || '') : '',
         enrollmentDate: new Date().toISOString().split('T')[0],
       });
+
+      setNewStudent(EMPTY_NEW_STUDENT);
 
       setShowModal(false);
       await loadData();
@@ -343,7 +350,7 @@ export default function ManageStudents() {
           <Link to="/admin/promote" className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <FiTrendingUp size={14} /> طلباء کو ترقی دیں
           </Link>
-          <button className="btn btn-primary btn-sm" onClick={() => { setError(''); setShowModal(true); }}>
+          <button className="btn btn-primary btn-sm" onClick={() => { setError(''); setNewStudent(EMPTY_NEW_STUDENT); setShowModal(true); }}>
             <FiPlus size={14} style={{ marginLeft: '4px' }} /> نیا طالب علم
           </button>
         </div>
@@ -1149,6 +1156,36 @@ export default function ManageStudents() {
                     ))}
                   </select>
                 </div>
+                <div className="form-group">
+                  <label className="form-label">طالب علم کی کیفیت *</label>
+                  <select
+                    className="form-select"
+                    value={newStudent.status || 'active'}
+                    onChange={(e) => setNewStudent({ ...newStudent, status: e.target.value, adminNote: e.target.value === 'active' ? '' : (newStudent.adminNote || '') })}
+                  >
+                    <option value="active">جاری / زیرِ تعلیم (Running)</option>
+                    <option value="graduated">فارغ التحصیل (Graduated)</option>
+                    <option value="kharij">خارج / نکالا گیا (Khārij / Struck Off)</option>
+                  </select>
+                </div>
+                {(newStudent.status === 'graduated' || newStudent.status === 'kharij') && (
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label">
+                      ایڈمن نوٹ
+                      <span style={{ fontSize: '0.75rem', fontWeight: 400, color: 'var(--color-text-muted)', marginRight: '6px' }}>
+                        (اختیاری — وجہ، تاریخ، یا دیگر تفصیل)
+                      </span>
+                    </label>
+                    <textarea
+                      className="form-input"
+                      rows={2}
+                      style={{ resize: 'vertical', minHeight: '52px' }}
+                      placeholder={newStudent.status === 'kharij' ? 'مثلاً: بد اخلاقی کی بنا پر خارج کیا گیا، تاریخ...' : 'مثلاً: فارغ التحصیل، سنہ...'}
+                      value={newStudent.adminNote || ''}
+                      onChange={(e) => setNewStudent({ ...newStudent, adminNote: e.target.value })}
+                    />
+                  </div>
+                )}
                 <div className="form-group">
                   <label className="form-label">تاریخِ پیدائش</label>
                   <input type="date" className="form-input" value={newStudent.dateOfBirth}
