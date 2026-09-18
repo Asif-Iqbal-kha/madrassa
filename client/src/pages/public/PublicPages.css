@@ -686,6 +686,77 @@
   margin: 0 !important;
 }
 
+/* Payment logo inside cards */
+.payment-logo {
+  width: auto;
+  height: 52px;
+  max-width: 130px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Payment method logo-tile selector */
+.payment-method-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.payment-method-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border: 2px solid var(--color-border-light);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--color-bg-alt);
+  transition: all 0.18s ease;
+  min-width: 82px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text);
+  user-select: none;
+}
+
+.payment-method-option:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 21,101,68), 0.05);
+}
+
+.payment-method-option--active {
+  border-color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb, 21,101,68), 0.08);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb, 21,101,68), 0.18);
+}
+
+.payment-method-logo {
+  width: auto;
+  height: 34px;
+  max-width: 80px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Compact version for inside admission form */
+.admission-payment-selector .payment-method-option {
+  padding: 6px 10px;
+  min-width: 72px;
+  font-size: 0.73rem;
+}
+
+.admission-payment-selector .payment-method-logo {
+  height: 28px;
+  max-width: 66px;
+}
+
+
 /* Donation Form */
 .donation-form-wrapper {
   background: var(--color-bg);

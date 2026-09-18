@@ -817,25 +817,46 @@ export default function AdmissionPage() {
                         style={{ color: '#143223', fontWeight: 700 }}
                       />
                     </div>
-                    <div className="sheet-field-half">
+                    <div className="sheet-field-half" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '6px' }}>
                       <span className="sheet-label">ادائیگی کا ذریعہ: *</span>
-                      <select
-                        value={form.paymentMethod}
-                        onChange={(e) => handleChange('paymentMethod', e.target.value)}
-                        style={{
-                          border: 'none',
-                          borderBottom: '1px dotted #374151',
-                          background: 'transparent',
-                          padding: '4px',
-                          outline: 'none',
-                          fontSize: '0.88rem',
-                          flex: 1,
-                        }}
-                      >
-                        <option value="JazzCash">JazzCash (0302-2855766)</option>
-                        <option value="EasyPaisa">EasyPaisa (0315-3044992)</option>
-                        <option value="بینک ٹرانسفر">بینک ٹرانسفر (Faysal Bank: PK66FAYS3125301000005358)</option>
-                      </select>
+                      <div className="payment-method-selector admission-payment-selector">
+                        <label className={`payment-method-option ${form.paymentMethod === 'JazzCash' ? 'payment-method-option--active' : ''}`}>
+                          <input
+                            type="radio"
+                            name="admissionMethod"
+                            value="JazzCash"
+                            checked={form.paymentMethod === 'JazzCash'}
+                            onChange={(e) => handleChange('paymentMethod', e.target.value)}
+                            style={{ display: 'none' }}
+                          />
+                          <img src="/logos/jazzcash.png" alt="JazzCash" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                          <span>JazzCash</span>
+                        </label>
+                        <label className={`payment-method-option ${form.paymentMethod === 'EasyPaisa' ? 'payment-method-option--active' : ''}`}>
+                          <input
+                            type="radio"
+                            name="admissionMethod"
+                            value="EasyPaisa"
+                            checked={form.paymentMethod === 'EasyPaisa'}
+                            onChange={(e) => handleChange('paymentMethod', e.target.value)}
+                            style={{ display: 'none' }}
+                          />
+                          <img src="/logos/easypaisa.png" alt="EasyPaisa" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                          <span>EasyPaisa</span>
+                        </label>
+                        <label className={`payment-method-option ${form.paymentMethod === 'بینک ٹرانسفر' ? 'payment-method-option--active' : ''}`}>
+                          <input
+                            type="radio"
+                            name="admissionMethod"
+                            value="بینک ٹرانسفر"
+                            checked={form.paymentMethod === 'بینک ٹرانسفر'}
+                            onChange={(e) => handleChange('paymentMethod', e.target.value)}
+                            style={{ display: 'none' }}
+                          />
+                          <img src="/logos/faysalbank.png" alt="Faysal Bank" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                          <span>بینک ٹرانسفر</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
 

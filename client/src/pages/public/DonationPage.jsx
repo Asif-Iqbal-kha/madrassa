@@ -171,16 +171,34 @@ export default function DonationPage() {
             <h2>ادائیگی کی تفصیلات</h2>
             <div className="payment-details-grid">
               <div className="payment-detail-card">
+                <img
+                  src="/logos/jazzcash.png"
+                  alt="JazzCash"
+                  className="payment-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
                 <h4>JazzCash</h4>
                 <p className="payment-number">0302-2855766</p>
                 <p className="payment-name">Account Title: Hazrat Umar</p>
               </div>
               <div className="payment-detail-card">
+                <img
+                  src="/logos/easypaisa.png"
+                  alt="EasyPaisa"
+                  className="payment-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
                 <h4>EasyPaisa</h4>
                 <p className="payment-number">0315-3044992</p>
                 <p className="payment-name">Account Title: Hazrat Umar</p>
               </div>
               <div className="payment-detail-card">
+                <img
+                  src="/logos/faysalbank.png"
+                  alt="Faysal Bank"
+                  className="payment-logo"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
                 <h4>Faysal Bank (فیصل بینک)</h4>
                 <p className="payment-number" style={{ fontSize: '0.85rem', wordBreak: 'break-all' }}>PK66FAYS3125301000005358</p>
                 <p className="payment-name">Account Title: Hazrat Umar</p>
@@ -235,16 +253,44 @@ export default function DonationPage() {
 
                   <div className="form-group">
                     <label className="form-label">ادائیگی کا طریقہ *</label>
-                    <select
-                      className={`form-select ${errors.method ? 'form-input-error' : ''}`}
-                      value={form.method}
-                      onChange={(e) => handleChange('method', e.target.value)}
-                    >
-                      <option value="">طریقہ منتخب کریں</option>
-                      {paymentMethods.map((m) => (
-                        <option key={m.value} value={m.value}>{m.icon} {m.label}</option>
-                      ))}
-                    </select>
+                    <div className="payment-method-selector">
+                      <label className={`payment-method-option ${form.method === 'JazzCash' ? 'payment-method-option--active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="donationMethod"
+                          value="JazzCash"
+                          checked={form.method === 'JazzCash'}
+                          onChange={(e) => handleChange('method', e.target.value)}
+                          style={{ display: 'none' }}
+                        />
+                        <img src="/logos/jazzcash.png" alt="JazzCash" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                        <span>JazzCash</span>
+                      </label>
+                      <label className={`payment-method-option ${form.method === 'EasyPaisa' ? 'payment-method-option--active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="donationMethod"
+                          value="EasyPaisa"
+                          checked={form.method === 'EasyPaisa'}
+                          onChange={(e) => handleChange('method', e.target.value)}
+                          style={{ display: 'none' }}
+                        />
+                        <img src="/logos/easypaisa.png" alt="EasyPaisa" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                        <span>EasyPaisa</span>
+                      </label>
+                      <label className={`payment-method-option ${form.method === 'بینک ٹرانسفر' ? 'payment-method-option--active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="donationMethod"
+                          value="بینک ٹرانسفر"
+                          checked={form.method === 'بینک ٹرانسفر'}
+                          onChange={(e) => handleChange('method', e.target.value)}
+                          style={{ display: 'none' }}
+                        />
+                        <img src="/logos/faysalbank.png" alt="Faysal Bank" className="payment-method-logo" onError={(e) => { e.target.style.display='none'; }} />
+                        <span>بینک ٹرانسفر</span>
+                      </label>
+                    </div>
                     {errors.method && <span className="form-error-text">{errors.method}</span>}
                   </div>
                 </div>
