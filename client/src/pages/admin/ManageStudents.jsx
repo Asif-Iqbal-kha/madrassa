@@ -154,10 +154,6 @@ export default function ManageStudents() {
     }, 150);
   };
 
-  const generateRollNumber = () => {
-    const now = Date.now();
-    return String(now).slice(-6);
-  };
 
   const handleAdd = async () => {
     if (!newStudent.name || !newStudent.fatherName) {
@@ -173,7 +169,6 @@ export default function ManageStudents() {
     try {
       await createStudent({
         ...newStudent,
-        rollNumber: generateRollNumber(),
         className: selectedClassName,
         class: selectedCls ? selectedCls._id : undefined,
         guardianName: newStudent.guardianName || newStudent.fatherName,
@@ -433,314 +428,313 @@ export default function ManageStudents() {
         </div>
       ) : (
         <>
-      <div className="mgmt-toolbar no-print" style={{ flexWrap: 'wrap', gap: '12px' }}>
-        <div className="mgmt-search" style={{ flex: '1 1 260px' }}>
-          <input
-            type="text"
-            placeholder="نام، والد کا نام، رول نمبر یا فون سے تلاش کریں..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FiFilter size={16} style={{ color: 'var(--color-text-muted)' }} />
-          <select
-            className="form-select"
-            value={classFilter}
-            onChange={(e) => setClassFilter(e.target.value)}
-            style={{ width: 'auto', minWidth: '160px' }}
-          >
-            <option value="all">تمام درجات ({students.length})</option>
-            {classes.map((c) => {
-              const count = students.filter(
-                (s) => (s.className || s.class?.name || s.class) === c.name
-              ).length;
-              return (
-                <option key={c._id} value={c.name}>
-                  {c.name} ({count})
-                </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-          تعداد: {filtered.length} طلباء
-        </span>
-      </div>
-
-      {/* Currently Present Students Tab View */}
-      {statusTab === 'present' ? (
-        <div className="table-container no-print">
-          <div style={{
-            padding: '14px 18px',
-            background: 'var(--color-bg-alt)',
-            borderBottom: '1px solid var(--color-border)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px',
-          }}>
-            <div>
-              <strong style={{ fontSize: '1rem', color: 'var(--color-primary-dark)' }}>
-                آج کے حاضر طلباء کا ریکارڈ (حاضری رجسٹر)
-              </strong>
-              <span style={{ margin: '0 8px', color: 'var(--color-text-muted)' }}>|</span>
-              <span>تاریخ: <strong style={{ fontFamily: 'var(--font-english)' }}>{todayPresentData.date}</strong></span>
-              <span style={{ margin: '0 8px', color: 'var(--color-text-muted)' }}>|</span>
-              <span>کل حاضر طلباء: <strong style={{ color: '#15803d', fontFamily: 'var(--font-english)' }}>{todayPresentData.totalPresent}</strong></span>
+          <div className="mgmt-toolbar no-print" style={{ flexWrap: 'wrap', gap: '12px' }}>
+            <div className="mgmt-search" style={{ flex: '1 1 260px' }}>
+              <input
+                type="text"
+                placeholder="نام، والد کا نام، رول نمبر یا فون سے تلاش کریں..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
-            {todayPresentData.totalPresent > 0 && (
-              <button className="btn btn-primary btn-sm" onClick={handlePrintPresentList}>
-                <FiPrinter size={15} style={{ marginLeft: '4px' }} /> حاضر طلباء رپورٹ PDF ڈاؤنلوڈ / پرنٹ
-              </button>
-            )}
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FiFilter size={16} style={{ color: 'var(--color-text-muted)' }} />
+              <select
+                className="form-select"
+                value={classFilter}
+                onChange={(e) => setClassFilter(e.target.value)}
+                style={{ width: 'auto', minWidth: '160px' }}
+              >
+                <option value="all">تمام درجات ({students.length})</option>
+                {classes.map((c) => {
+                  const count = students.filter(
+                    (s) => (s.className || s.class?.name || s.class) === c.name
+                  ).length;
+                  return (
+                    <option key={c._id} value={c.name}>
+                      {c.name} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+              تعداد: {filtered.length} طلباء
+            </span>
           </div>
 
-          <table>
-            <thead>
-              <tr>
-                <th>شمار</th>
-                <th>رول نمبر</th>
-                <th>نام طالب علم</th>
-                <th>درجہ</th>
-                <th>تاریخ</th>
-                <th>حاضری کیفیت</th>
-              </tr>
-            </thead>
-            <tbody>
-              {todayPresentData.students.length === 0 && (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '36px', color: 'var(--color-text-muted)' }}>
-                    اس تاریخ میں کوئی حاضر طالب علم درج نہیں ہے
-                  </td>
-                </tr>
-              )}
-              {todayPresentData.students.map((ps, idx) => (
-                <tr key={idx}>
-                  <td style={{ textAlign: 'center' }}>{idx + 1}</td>
-                  <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700 }}>{ps.rollNumber}</td>
-                  <td><strong style={{ color: 'var(--color-primary-dark)' }}>{ps.studentName}</strong></td>
-                  <td>{ps.className}</td>
-                  <td style={{ fontFamily: 'var(--font-english)' }}>{ps.date}</td>
-                  <td><span className="badge badge-success">حاضر (Present)</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="table-container no-print">
-          {statusTab === 'active' && (
-            <div style={{
-              padding: '12px 18px',
-              background: 'var(--color-bg-alt)',
-              borderBottom: '1px solid var(--color-border)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div>
-                <strong>زیرِ تعلیم طلباء کا رجسٹر:</strong>
-                <span style={{ marginRight: '8px' }}>
-                  کل زیرِ تعلیم: {activeStudents.length}
-                  {classFilter !== 'all' && ` (درجہ: ${classFilter})`}
-                </span>
+          {/* Currently Present Students Tab View */}
+          {statusTab === 'present' ? (
+            <div className="table-container no-print">
+              <div style={{
+                padding: '14px 18px',
+                background: 'var(--color-bg-alt)',
+                borderBottom: '1px solid var(--color-border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px',
+              }}>
+                <div>
+                  <strong style={{ fontSize: '1rem', color: 'var(--color-primary-dark)' }}>
+                    آج کے حاضر طلباء کا ریکارڈ (حاضری رجسٹر)
+                  </strong>
+                  <span style={{ margin: '0 8px', color: 'var(--color-text-muted)' }}>|</span>
+                  <span>تاریخ: <strong style={{ fontFamily: 'var(--font-english)' }}>{todayPresentData.date}</strong></span>
+                  <span style={{ margin: '0 8px', color: 'var(--color-text-muted)' }}>|</span>
+                  <span>کل حاضر طلباء: <strong style={{ color: '#15803d', fontFamily: 'var(--font-english)' }}>{todayPresentData.totalPresent}</strong></span>
+                </div>
+                {todayPresentData.totalPresent > 0 && (
+                  <button className="btn btn-primary btn-sm" onClick={handlePrintPresentList}>
+                    <FiPrinter size={15} style={{ marginLeft: '4px' }} /> حاضر طلباء رپورٹ PDF ڈاؤنلوڈ / پرنٹ
+                  </button>
+                )}
               </div>
-              {activeStudents.length > 0 && (
-                <button className="btn btn-outline btn-sm" onClick={handlePrintActiveStudentsList}>
-                  <FiPrinter size={14} style={{ marginLeft: '4px' }} /> تمام زیرِ تعلیم طلباء کی فہرست پرنٹ کریں
-                </button>
-              )}
-            </div>
-          )}
 
-          {statusTab === 'all' && (
-            <div style={{
-              padding: '12px 18px',
-              background: 'var(--color-bg-alt)',
-              borderBottom: '1px solid var(--color-border)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div>
-                <strong>طلباء کا عمومی رجسٹر:</strong>
-                <span style={{ marginRight: '8px' }}>
-                  کل طلباء: {students.length} | زیرِ تعلیم: {activeStudents.length}
-                  {classFilter !== 'all' && ` (درجہ: ${classFilter})`}
-                </span>
-              </div>
-              {activeStudents.length > 0 && (
-                <button className="btn btn-outline btn-sm" onClick={handlePrintActiveStudentsList}>
-                  <FiPrinter size={14} style={{ marginLeft: '4px' }} /> زیرِ تعلیم طلباء کی فہرست پرنٹ کریں
-                </button>
-              )}
+              <table>
+                <thead>
+                  <tr>
+                    <th>شمار</th>
+                    <th>رول نمبر</th>
+                    <th>نام طالب علم</th>
+                    <th>درجہ</th>
+                    <th>تاریخ</th>
+                    <th>حاضری کیفیت</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {todayPresentData.students.length === 0 && (
+                    <tr>
+                      <td colSpan="6" style={{ textAlign: 'center', padding: '36px', color: 'var(--color-text-muted)' }}>
+                        اس تاریخ میں کوئی حاضر طالب علم درج نہیں ہے
+                      </td>
+                    </tr>
+                  )}
+                  {todayPresentData.students.map((ps, idx) => (
+                    <tr key={idx}>
+                      <td style={{ textAlign: 'center' }}>{idx + 1}</td>
+                      <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700 }}>{ps.rollNumber}</td>
+                      <td><strong style={{ color: 'var(--color-primary-dark)' }}>{ps.studentName}</strong></td>
+                      <td>{ps.className}</td>
+                      <td style={{ fontFamily: 'var(--font-english)' }}>{ps.date}</td>
+                      <td><span className="badge badge-success">حاضر (Present)</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          )}
-
-          {statusTab === 'graduated' && (
-            <div style={{
-              padding: '12px 18px',
-              background: 'var(--color-bg-alt)',
-              borderBottom: '1px solid var(--color-border)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div>
-                <strong>فارغ التحصیل طلباء کا رجسٹر:</strong>
-                <span style={{ marginRight: '8px' }}>کل فارغین: {graduatedStudents.length}</span>
-              </div>
-              {graduatedStudents.length > 0 && (
-                <button className="btn btn-outline btn-sm" onClick={handlePrintGraduatesList}>
-                  <FiPrinter size={14} style={{ marginLeft: '4px' }} /> تمام فارغین کی فہرست پرنٹ کریں
-                </button>
-              )}
-            </div>
-          )}
-
-          {statusTab === 'kharij' && (
-            <div style={{
-              padding: '12px 18px',
-              background: 'var(--color-bg-alt)',
-              borderBottom: '1px solid var(--color-border)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              <div>
-                <strong>خارج / نکالے گئے طلباء کا رجسٹر:</strong>
-                <span style={{ marginRight: '8px' }}>کل خارج شدہ: {kharijStudents.length}</span>
-              </div>
-              {kharijStudents.length > 0 && (
-                <button className="btn btn-outline btn-sm" onClick={handlePrintKharijList}>
-                  <FiPrinter size={14} style={{ marginLeft: '4px' }} /> خارج کردہ طلباء کی فہرست پرنٹ کریں
-                </button>
-              )}
-            </div>
-          )}
-
-          <table>
-            <thead>
-              <tr>
-                <th>رول نمبر</th>
-                <th>نام طالب علم</th>
-                <th>والد کا نام</th>
-                <th>درجہ</th>
-                <th>رابطہ نمبر</th>
-                <th>حالت</th>
-                <th>اقدامات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading && (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
-                    لوڈ ہو رہا ہے...
-                  </td>
-                </tr>
-              )}
-              {filtered.map((student) => (
-                <tr
-                  key={student._id}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handleSelectStudent(student)}
-                  title="طالب علم و والد کے مکمل کوائف دیکھنے کے لیے کلک کریں"
-                >
-                  <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700 }}>{student.rollNumber}</td>
-                  <td>
-                    <strong style={{ color: 'var(--color-primary-dark)' }}>{student.name}</strong>
-                  </td>
-                  <td>{student.fatherName}</td>
-                  <td>
-                    <span style={{
-                      padding: '3px 10px',
-                      borderRadius: '6px',
-                      background: 'rgba(20, 50, 35, 0.08)',
-                      color: 'var(--color-primary)',
-                      fontWeight: 600,
-                    }}>
-                      {student.className || student.class?.name || student.class || '-'}
+          ) : (
+            <div className="table-container no-print">
+              {statusTab === 'active' && (
+                <div style={{
+                  padding: '12px 18px',
+                  background: 'var(--color-bg-alt)',
+                  borderBottom: '1px solid var(--color-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <strong>زیرِ تعلیم طلباء کا رجسٹر:</strong>
+                    <span style={{ marginRight: '8px' }}>
+                      کل زیرِ تعلیم: {activeStudents.length}
+                      {classFilter !== 'all' && ` (درجہ: ${classFilter})`}
                     </span>
-                  </td>
-                  <td style={{ direction: 'ltr', textAlign: 'right', fontFamily: 'var(--font-english)' }}>
-                    {student.phone || student.guardianPhone || '-'}
-                  </td>
-                  <td>
-                    <span className={`badge ${
-                      student.status === 'graduated'
-                        ? 'badge-info'
-                        : student.status === 'kharij'
-                        ? 'badge-danger'
-                        : student.status === 'active'
-                        ? 'badge-success'
-                        : 'badge-warning'
-                    }`}>
-                      {student.status === 'graduated'
-                        ? 'فارغ التحصیل'
-                        : student.status === 'kharij'
-                        ? 'خارج کردہ'
-                        : student.status === 'active'
-                        ? 'جاری / زیرِ تعلیم'
-                        : 'غیر فعال'}
-                    </span>
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <div className="action-btns">
-                      <button
-                        className="action-btn action-btn-primary"
-                        onClick={() => handleSelectStudent(student)}
-                        title="مکمل کوائف دیکھیں"
-                        style={{ padding: '6px' }}
-                      >
-                        <FiEye size={14} />
-                      </button>
-                      <button
-                        className="action-btn action-btn-outline"
-                        onClick={() => {
-                          handleSelectStudent(student);
-                          setTimeout(() => window.print(), 250);
-                        }}
-                        title={student.status === 'graduated' ? 'سندِ فراغت پرنٹ کریں' : 'کوائف پرنٹ کریں'}
-                        style={{ padding: '6px' }}
-                      >
-                        <FiPrinter size={14} />
-                      </button>
-                      <button
-                        className="action-btn action-btn-info"
-                        onClick={() => handleEditOpen(student)}
-                        title="ترمیم کریں"
-                        style={{ padding: '6px' }}
-                      >
-                        <FiEdit2 size={14} />
-                      </button>
-                      <button
-                        className="action-btn action-btn-danger"
-                        onClick={() => handleDelete(student._id)}
-                        title="حذف کریں"
-                        style={{ padding: '6px' }}
-                      >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && !loading && (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
-                    کوئی طالب علم نہیں ملا
-                  </td>
-                </tr>
+                  </div>
+                  {activeStudents.length > 0 && (
+                    <button className="btn btn-outline btn-sm" onClick={handlePrintActiveStudentsList}>
+                      <FiPrinter size={14} style={{ marginLeft: '4px' }} /> تمام زیرِ تعلیم طلباء کی فہرست پرنٹ کریں
+                    </button>
+                  )}
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
-      )}
-      </>
+
+              {statusTab === 'all' && (
+                <div style={{
+                  padding: '12px 18px',
+                  background: 'var(--color-bg-alt)',
+                  borderBottom: '1px solid var(--color-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <strong>طلباء کا عمومی رجسٹر:</strong>
+                    <span style={{ marginRight: '8px' }}>
+                      کل طلباء: {students.length} | زیرِ تعلیم: {activeStudents.length}
+                      {classFilter !== 'all' && ` (درجہ: ${classFilter})`}
+                    </span>
+                  </div>
+                  {activeStudents.length > 0 && (
+                    <button className="btn btn-outline btn-sm" onClick={handlePrintActiveStudentsList}>
+                      <FiPrinter size={14} style={{ marginLeft: '4px' }} /> زیرِ تعلیم طلباء کی فہرست پرنٹ کریں
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {statusTab === 'graduated' && (
+                <div style={{
+                  padding: '12px 18px',
+                  background: 'var(--color-bg-alt)',
+                  borderBottom: '1px solid var(--color-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <strong>فارغ التحصیل طلباء کا رجسٹر:</strong>
+                    <span style={{ marginRight: '8px' }}>کل فارغین: {graduatedStudents.length}</span>
+                  </div>
+                  {graduatedStudents.length > 0 && (
+                    <button className="btn btn-outline btn-sm" onClick={handlePrintGraduatesList}>
+                      <FiPrinter size={14} style={{ marginLeft: '4px' }} /> تمام فارغین کی فہرست پرنٹ کریں
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {statusTab === 'kharij' && (
+                <div style={{
+                  padding: '12px 18px',
+                  background: 'var(--color-bg-alt)',
+                  borderBottom: '1px solid var(--color-border)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div>
+                    <strong>خارج / نکالے گئے طلباء کا رجسٹر:</strong>
+                    <span style={{ marginRight: '8px' }}>کل خارج شدہ: {kharijStudents.length}</span>
+                  </div>
+                  {kharijStudents.length > 0 && (
+                    <button className="btn btn-outline btn-sm" onClick={handlePrintKharijList}>
+                      <FiPrinter size={14} style={{ marginLeft: '4px' }} /> خارج کردہ طلباء کی فہرست پرنٹ کریں
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>رول نمبر</th>
+                    <th>نام طالب علم</th>
+                    <th>والد کا نام</th>
+                    <th>درجہ</th>
+                    <th>رابطہ نمبر</th>
+                    <th>حالت</th>
+                    <th>اقدامات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                        لوڈ ہو رہا ہے...
+                      </td>
+                    </tr>
+                  )}
+                  {filtered.map((student) => (
+                    <tr
+                      key={student._id}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleSelectStudent(student)}
+                      title="طالب علم و والد کے مکمل کوائف دیکھنے کے لیے کلک کریں"
+                    >
+                      <td style={{ fontFamily: 'var(--font-english)', fontWeight: 700 }}>{student.rollNumber}</td>
+                      <td>
+                        <strong style={{ color: 'var(--color-primary-dark)' }}>{student.name}</strong>
+                      </td>
+                      <td>{student.fatherName}</td>
+                      <td>
+                        <span style={{
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          background: 'rgba(20, 50, 35, 0.08)',
+                          color: 'var(--color-primary)',
+                          fontWeight: 600,
+                        }}>
+                          {student.className || student.class?.name || student.class || '-'}
+                        </span>
+                      </td>
+                      <td style={{ direction: 'ltr', textAlign: 'right', fontFamily: 'var(--font-english)' }}>
+                        {student.phone || student.guardianPhone || '-'}
+                      </td>
+                      <td>
+                        <span className={`badge ${student.status === 'graduated'
+                            ? 'badge-info'
+                            : student.status === 'kharij'
+                              ? 'badge-danger'
+                              : student.status === 'active'
+                                ? 'badge-success'
+                                : 'badge-warning'
+                          }`}>
+                          {student.status === 'graduated'
+                            ? 'فارغ التحصیل'
+                            : student.status === 'kharij'
+                              ? 'خارج کردہ'
+                              : student.status === 'active'
+                                ? 'جاری / زیرِ تعلیم'
+                                : 'غیر فعال'}
+                        </span>
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <div className="action-btns">
+                          <button
+                            className="action-btn action-btn-primary"
+                            onClick={() => handleSelectStudent(student)}
+                            title="مکمل کوائف دیکھیں"
+                            style={{ padding: '6px' }}
+                          >
+                            <FiEye size={14} />
+                          </button>
+                          <button
+                            className="action-btn action-btn-outline"
+                            onClick={() => {
+                              handleSelectStudent(student);
+                              setTimeout(() => window.print(), 250);
+                            }}
+                            title={student.status === 'graduated' ? 'سندِ فراغت پرنٹ کریں' : 'کوائف پرنٹ کریں'}
+                            style={{ padding: '6px' }}
+                          >
+                            <FiPrinter size={14} />
+                          </button>
+                          <button
+                            className="action-btn action-btn-info"
+                            onClick={() => handleEditOpen(student)}
+                            title="ترمیم کریں"
+                            style={{ padding: '6px' }}
+                          >
+                            <FiEdit2 size={14} />
+                          </button>
+                          <button
+                            className="action-btn action-btn-danger"
+                            onClick={() => handleDelete(student._id)}
+                            title="حذف کریں"
+                            style={{ padding: '6px' }}
+                          >
+                            <FiTrash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && !loading && (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: '32px', color: 'var(--color-text-muted)' }}>
+                        کوئی طالب علم نہیں ملا
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
       )}
 
       {/* ========================================================================= */}
@@ -818,10 +812,10 @@ export default function ManageStudents() {
                         selectedStudent.status === 'active'
                           ? 'جاری / زیرِ تعلیم'
                           : selectedStudent.status === 'graduated'
-                          ? 'فارغ التحصیل'
-                          : selectedStudent.status === 'kharij'
-                          ? 'خارج کردہ'
-                          : 'غیر فعال'
+                            ? 'فارغ التحصیل'
+                            : selectedStudent.status === 'kharij'
+                              ? 'خارج کردہ'
+                              : 'غیر فعال'
                       }
                     </span>
                   </div>
