@@ -50,6 +50,7 @@ const EMPTY_NEW_STUDENT = {
   admissionFee: 1000,
   paymentMethod: 'JazzCash',
   enrollmentDate: new Date().toISOString().split('T')[0],
+  residenceType: '',
 };
 
 export default function ManageStudents() {
@@ -885,6 +886,10 @@ export default function ManageStudents() {
                     <span className="student-info-value">{selectedStudent.maritalStatus || 'مجرد'}</span>
                   </div>
                   <div className="student-info-item">
+                    <span className="student-info-label">رہائش کی نوعیت:</span>
+                    <span className="student-info-value">{selectedStudent.residenceType || 'درج نہیں'}</span>
+                  </div>
+                  <div className="student-info-item">
                     <span className="student-info-label">رابطہ فون نمبر:</span>
                     <span className="student-info-value" style={{ fontFamily: 'var(--font-english)', direction: 'ltr', textAlign: 'right' }}>
                       {selectedStudent.phone || 'درج نہیں'}
@@ -1213,6 +1218,18 @@ export default function ManageStudents() {
                     onChange={(e) => setNewStudent({ ...newStudent, enrollmentDate: e.target.value })}
                     required
                   />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">رہائش کی نوعیت *</label>
+                  <select
+                    className="form-select"
+                    value={newStudent.residenceType}
+                    onChange={(e) => setNewStudent({ ...newStudent, residenceType: e.target.value })}
+                  >
+                    <option value="">منتخب کریں</option>
+                    <option value="رہائشی">رہائشی — مدرسہ میں قیام</option>
+                    <option value="گھر رہائشی">گھر رہائشی — روزانہ آنے والے</option>
+                  </select>
                 </div>
               </div>
 

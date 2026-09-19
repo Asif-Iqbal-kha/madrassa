@@ -126,6 +126,11 @@ const studentSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  residenceType: {
+    type: String,
+    enum: ['رہائشی', 'گھر رہائشی', ''],
+    default: '',
+  },
 }, {
   timestamps: true,
 });
