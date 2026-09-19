@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const Class = require('../models/Class');
 const { protect, authorize } = require('../middleware/auth');
+const generateRollNumber = require('../utils/generateRollNumber');
 
 const router = express.Router();
 
@@ -173,10 +174,7 @@ router.post('/', protect, authorize('master_admin'), async (req, res) => {
 
     // Auto-generate rollNumber if missing
     if (!data.rollNumber) {
-      const existing = await Student.find({}, 'rollNumber').lean();
-      const numbers = existing.map(s => parseInt(s.rollNumber, 10)).filter(n => !isNaN(n));
-      const nextRoll = numbers.length > 0 ? Math.max(...numbers) + 1 : 1001;
-      data.rollNumber = String(nextRoll);
+      data.rollNumber = await generateRollNumber();
     }
 
     // Ensure status defaults to active

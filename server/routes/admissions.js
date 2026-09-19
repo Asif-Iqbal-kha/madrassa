@@ -5,6 +5,7 @@ const Student = require('../models/Student');
 const Class = require('../models/Class');
 const upload = require('../middleware/upload');
 const { protect, authorize } = require('../middleware/auth');
+const generateRollNumber = require('../utils/generateRollNumber');
 
 const router = express.Router();
 
@@ -231,12 +232,7 @@ router.put('/:id/status', protect, authorize('master_admin'), async (req, res) =
 
         if (!existingStudent) {
           // Generate unique numeric roll number
-          const existingStudents = await Student.find({}, 'rollNumber').lean();
-          const rollNumbers = existingStudents
-            .map((s) => parseInt(s.rollNumber, 10))
-            .filter((n) => !isNaN(n));
-          const nextRoll = rollNumbers.length > 0 ? Math.max(...rollNumbers) + 1 : 1001;
-          const rollNumber = String(nextRoll);
+          const rollNumber = await generateRollNumber();
 
           // Find matching Class in database
           const aliases = getClassAliases(application.desiredClass);
