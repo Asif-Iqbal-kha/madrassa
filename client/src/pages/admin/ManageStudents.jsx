@@ -49,6 +49,7 @@ const EMPTY_NEW_STUDENT = {
   studentPhotoData: '',
   admissionFee: 1000,
   paymentMethod: 'JazzCash',
+  enrollmentDate: new Date().toISOString().split('T')[0],
 };
 
 export default function ManageStudents() {
@@ -160,6 +161,10 @@ export default function ManageStudents() {
       setError('طالب علم کا نام اور والد کا نام درج کرنا ضروری ہے');
       return;
     }
+    if (!newStudent.enrollmentDate) {
+      setError('داخلے کی تاریخ درج کرنا ضروری ہے');
+      return;
+    }
     setError('');
     setSaving(true);
 
@@ -175,7 +180,7 @@ export default function ManageStudents() {
         guardianPhone: newStudent.guardianPhone || newStudent.phone,
         status: newStudent.status || 'active',
         adminNote: (newStudent.status === 'graduated' || newStudent.status === 'kharij') ? (newStudent.adminNote || '') : '',
-        enrollmentDate: new Date().toISOString().split('T')[0],
+        enrollmentDate: newStudent.enrollmentDate,
       });
 
       setNewStudent(EMPTY_NEW_STUDENT);
@@ -1196,6 +1201,18 @@ export default function ManageStudents() {
                   <input type="tel" className="form-input" value={newStudent.phone}
                     onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
                     style={{ direction: 'ltr', textAlign: 'right' }} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">تاریخِ داخلہ *
+                    <span style={{ fontSize: '0.73rem', fontWeight: 400, color: 'var(--color-text-muted)', marginRight: '6px' }}>(ضروری)</span>
+                  </label>
+                  <input
+                    type="date"
+                    className="form-input"
+                    value={newStudent.enrollmentDate}
+                    onChange={(e) => setNewStudent({ ...newStudent, enrollmentDate: e.target.value })}
+                    required
+                  />
                 </div>
               </div>
 
