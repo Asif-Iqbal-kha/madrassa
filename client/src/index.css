@@ -16,6 +16,7 @@
        local('Jameel Noori Nastaliq'),
        local('JameelNooriNastaleeq'),
        local('JameelNooriNastaliq'),
+       url('/fonts/jameel-noori.woff2') format('woff2'),
        url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
@@ -28,6 +29,7 @@
        local('Jameel Noori Nastaliq'),
        local('JameelNooriNastaleeq'),
        local('JameelNooriNastaliq'),
+       url('/fonts/jameel-noori.woff2') format('woff2'),
        url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
@@ -41,6 +43,7 @@
        local('Jameel Noori Nastaliq'),
        local('JameelNooriNastaleeq'),
        local('JameelNooriNastaliq'),
+       url('/fonts/jameel-noori.woff2') format('woff2'),
        url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
