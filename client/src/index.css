@@ -10,13 +10,6 @@
 }
 
 /* Noto Nastaliq Urdu - loaded via Google Fonts in index.html */
-/* size-adjust scales the font down to match Jameel Noori's visual size */
-@font-face {
-  font-family: 'Noto Nastaliq Urdu';
-  size-adjust: 75%;
-  src: local('Noto Nastaliq Urdu');
-}
-
 
 /* CSS Custom Properties */
 :root {
