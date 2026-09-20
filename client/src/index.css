@@ -9,43 +9,7 @@
   text-align: left !important;
 }
 
-/* Jameel Noori Nastaleeq Webfont */
-@font-face {
-  font-family: 'Jameel Noori Nastaleeq';
-  src: local('Jameel Noori Nastaleeq'),
-       local('Jameel Noori Nastaliq'),
-       local('JameelNooriNastaleeq'),
-       local('JameelNooriNastaliq'),
-       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'JameelNooriNastaliq';
-  src: local('Jameel Noori Nastaleeq'),
-       local('Jameel Noori Nastaliq'),
-       local('JameelNooriNastaleeq'),
-       local('JameelNooriNastaliq'),
-       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Jameel Noori Nastaleeq';
-  src: local('Jameel Noori Nastaleeq Bold'),
-       local('Jameel Noori Nastaleeq'),
-       local('Jameel Noori Nastaliq'),
-       local('JameelNooriNastaleeq'),
-       local('JameelNooriNastaliq'),
-       url('https://cdn.jsdelivr.net/npm/jameel-noori/fonts/jameel-noori-nastaleeq4.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
+/* Noto Nastaliq Urdu - loaded via Google Fonts in index.html */
 
 /* CSS Custom Properties */
 :root {
@@ -71,9 +35,9 @@
   --color-info: #1565C0;
 
   /* Typography */
-  --font-urdu: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
-  --font-heading: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
-  --font-body: 'Jameel Noori Nastaleeq', 'JameelNooriNastaliq', 'Noto Nastaliq Urdu', serif;
+  --font-urdu: 'Noto Nastaliq Urdu', serif;
+  --font-heading: 'Noto Nastaliq Urdu', serif;
+  --font-body: 'Noto Nastaliq Urdu', serif;
   --font-english: 'Inter', sans-serif;
 
   /* Spacing */

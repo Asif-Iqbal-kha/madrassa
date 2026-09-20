@@ -2639,7 +2639,7 @@
 }
 
 .urdu-poetry-lines {
-  font-family: var(--font-heading, 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif);
+  font-family: var(--font-heading, 'Noto Nastaliq Urdu', serif);
   font-size: 1.65rem;
   line-height: 2.6;
   color: #fef08a;
@@ -2711,7 +2711,7 @@
 }
 
 .sheet-title-main {
-  font-family: var(--font-heading, 'Jameel Noori Nastaleeq', 'Noto Nastaliq Urdu', serif);
+  font-family: var(--font-heading, 'Noto Nastaliq Urdu', serif);
   font-size: 2.2rem;
   font-weight: 800;
   color: #143223;
