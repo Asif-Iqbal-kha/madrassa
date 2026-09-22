@@ -982,6 +982,12 @@
     print-color-adjust: exact !important;
   }
 
+  /* When printing an individual student profile record, force-hide any batch list attendance or registry reports */
+  .modal-overlay ~ .print-only-attendance,
+  body:has(.student-detail-modal-dialog) .print-only-attendance {
+    display: none !important;
+  }
+
   .print-only-attendance thead tr {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

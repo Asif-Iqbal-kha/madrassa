@@ -74,6 +74,15 @@ export default function ManageStudents() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // Auto-reset printReportType after print preview dialog closes
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setPrintReportType('all');
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -701,6 +710,7 @@ export default function ManageStudents() {
                           <button
                             className="action-btn action-btn-outline"
                             onClick={() => {
+                              setPrintReportType('single_student');
                               handleSelectStudent(student);
                               setTimeout(() => window.print(), 250);
                             }}
@@ -747,7 +757,7 @@ export default function ManageStudents() {
       {/* COMPREHENSIVE STUDENT & FATHER/GUARDIAN DETAILED PROFILE MODAL             */}
       {/* ========================================================================= */}
       {selectedStudent && (
-        <div className="modal-overlay" onClick={() => setSelectedStudent(null)}>
+        <div className="modal-overlay" onClick={() => { setSelectedStudent(null); setPrintReportType('all'); }}>
           <div className="student-detail-modal-dialog" onClick={(e) => e.stopPropagation()}>
             {/* Official Madrassa Header for Print Only */}
             <div className="student-modal-print-header">
@@ -832,7 +842,10 @@ export default function ManageStudents() {
                 <button
                   type="button"
                   className="btn btn-sm"
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    setPrintReportType('single_student');
+                    setTimeout(() => window.print(), 50);
+                  }}
                   style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid rgba(255,255,255,0.4)' }}
                   title="ریکارڈ پرنٹ کریں"
                 >
@@ -841,7 +854,10 @@ export default function ManageStudents() {
                 <button
                   type="button"
                   className="modal-close"
-                  onClick={() => setSelectedStudent(null)}
+                  onClick={() => {
+                    setSelectedStudent(null);
+                    setPrintReportType('all');
+                  }}
                   style={{ color: '#fff' }}
                 >
                   ✕
@@ -1057,6 +1073,7 @@ export default function ManageStudents() {
                 onClick={() => {
                   handleEditOpen(selectedStudent);
                   setSelectedStudent(null);
+                  setPrintReportType('all');
                 }}
               >
                 <FiEdit2 size={14} /> معلومات میں ترمیم کریں
@@ -1064,7 +1081,10 @@ export default function ManageStudents() {
               <button
                 type="button"
                 className="btn btn-primary btn-sm"
-                onClick={() => setSelectedStudent(null)}
+                onClick={() => {
+                  setSelectedStudent(null);
+                  setPrintReportType('all');
+                }}
               >
                 بند کریں
               </button>
@@ -1482,7 +1502,7 @@ export default function ManageStudents() {
         </div>
       )}
       {/* PRINT-ONLY: CURRENTLY PRESENT STUDENTS REPORT */}
-      {printReportType === 'present_list' && (
+      {printReportType === 'present_list' && !selectedStudent && (
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
@@ -1550,7 +1570,7 @@ export default function ManageStudents() {
       )}
 
       {/* PRINT-ONLY: GRADUATED STUDENTS REGISTRY REPORT */}
-      {printReportType === 'graduates_list' && (
+      {printReportType === 'graduates_list' && !selectedStudent && (
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
@@ -1618,7 +1638,7 @@ export default function ManageStudents() {
       )}
 
       {/* PRINT-ONLY: KHARIJ / STRUCK-OFF STUDENTS REGISTRY REPORT */}
-      {printReportType === 'kharij_list' && (
+      {printReportType === 'kharij_list' && !selectedStudent && (
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
@@ -1690,7 +1710,7 @@ export default function ManageStudents() {
       )}
 
       {/* PRINT-ONLY: ACTIVE / CURRENTLY STUDYING STUDENTS REPORT */}
-      {printReportType === 'active_list' && (
+      {printReportType === 'active_list' && !selectedStudent && (
         <div className="print-only-attendance" style={{ display: 'none' }}>
           <div style={{ textAlign: 'center', borderBottom: '2px solid #000', paddingBottom: '12px', marginBottom: '16px' }}>
             <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem' }}>مدرسہ عربیہ سیدنا صدیق اکبر رضی اللہ تعالیٰ عنہ</h2>
